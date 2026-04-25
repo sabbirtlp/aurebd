@@ -1,0 +1,115 @@
+.sliderContainer {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  overflow: hidden;
+  padding: var(--sp-6) 0;
+}
+
+.slider {
+  position: relative;
+  height: 250px;
+  display: flex;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+  visibility: hidden;
+}
+
+.slide.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.card {
+  width: 90%;
+  padding: var(--sp-6);
+  background: var(--bg-color);
+  border-radius: var(--sp-5);
+  text-align: left;
+}
+
+.avatarRow {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  background: var(--nm-shadow-dark);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--primary);
+  box-shadow: var(--nm-outer-raised-sm);
+}
+
+.avatarRow h4 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.avatarRow span {
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+
+.stars {
+  margin-left: auto;
+  color: var(--accent);
+}
+
+.text {
+  font-style: italic;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: var(--text-dark);
+}
+
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-4);
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: none;
+  background: var(--nm-shadow-dark);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--nm-inner-pressed);
+}
+
+.dot.activeDot {
+  width: 32px;
+  border-radius: 6px;
+  background: var(--primary);
+  box-shadow: var(--nm-outer-raised-sm);
+}
+
+@media (max-width: 576px) {
+  .slider { height: 350px; }
+  .avatarRow { flex-direction: column; text-align: center; }
+  .stars { margin: var(--sp-2) 0 0; }
+}

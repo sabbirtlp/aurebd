@@ -1,0 +1,96 @@
+.aboutHero {
+  position: relative;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: var(--bg-color);
+}
+
+.heroImage {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 10;
+  max-width: 700px;
+}
+
+.heroContent h1 {
+  font-size: 4.5rem;
+  color: var(--primary);
+  margin-bottom: var(--sp-4);
+  letter-spacing: -3px;
+}
+
+.heroContent p {
+  font-size: 1.25rem;
+  color: var(--text-dark);
+  line-height: 1.8;
+}
+
+.storyGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-12);
+  align-items: center;
+}
+
+.badge {
+  display: inline-block;
+  color: var(--primary);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.85rem;
+  margin-bottom: var(--sp-3);
+}
+
+.storyText h2 {
+  font-size: 3rem;
+  margin-bottom: var(--sp-4);
+}
+
+.storyText p {
+  font-size: 1.1rem;
+  margin-bottom: var(--sp-4);
+}
+
+.storyImage {
+  padding: var(--sp-10);
+  display: flex;
+  justify-content: center;
+}
+
+.valuesGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-6);
+}
+
+.valueCard {
+  text-align: center;
+  padding: var(--sp-8) var(--sp-4);
+}
+
+.valueIcon {
+  font-size: 3rem;
+  margin-bottom: var(--sp-4);
+}
+
+.valueCard h3 {
+  margin-bottom: var(--sp-2);
+}
+
+@media (max-width: 992px) {
+  .storyGrid { grid-template-columns: 1fr; gap: var(--sp-6); text-align: center; }
+  .valuesGrid { grid-template-columns: repeat(2, 1fr); }
+  .heroContent h1 { font-size: 3rem; }
+}
+
+@media (max-width: 576px) {
+  .valuesGrid { grid-template-columns: 1fr; }
+}
