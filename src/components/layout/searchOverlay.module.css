@@ -1,0 +1,121 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(254, 250, 246, 0.9);
+  backdrop-filter: blur(10px);
+  z-index: 3000;
+  display: flex;
+  align-items: flex-end;
+}
+
+.searchCard {
+  width: 100%;
+  background: var(--bg-color);
+  border-radius: 32px 32px 0 0;
+  padding: 2rem 1.5rem 4rem;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.header h3 {
+  font-family: var(--font-poppins);
+  font-weight: 600;
+  color: var(--text-dark);
+  font-size: 1.25rem;
+}
+
+.closeBtn {
+  background: var(--bg-color);
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--nm-outer-raised-sm);
+  color: var(--text-light);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.closeBtn:active {
+  box-shadow: var(--nm-inner-pressed-sm);
+  transform: scale(0.95);
+}
+
+.form {
+  margin-bottom: 2rem;
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  background: var(--bg-color);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  box-shadow: var(--nm-inner-pressed-sm);
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 0.75rem;
+  font-size: 1.1rem;
+  color: var(--text-dark);
+  outline: none;
+}
+
+.searchBtn {
+  background: var(--primary);
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 15px rgba(203, 163, 148, 0.4);
+  cursor: pointer;
+}
+
+.suggestions p {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  margin-bottom: 1rem;
+}
+
+.tagGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.tag {
+  background: var(--bg-color);
+  border: none;
+  padding: 0.6rem 1.25rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  box-shadow: var(--nm-outer-raised-sm);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tag:active {
+  box-shadow: var(--nm-inner-pressed-sm);
+  color: var(--primary);
+}
