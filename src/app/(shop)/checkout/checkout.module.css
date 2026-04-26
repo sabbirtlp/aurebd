@@ -11,18 +11,18 @@
 
 .sectionCard {
   background: var(--bg-color);
-  padding: var(--sp-6);
-  border-radius: var(--sp-5);
+  padding: var(--sp-8);
+  border-radius: 24px;
   box-shadow: var(--nm-outer-raised-sm);
   margin-bottom: var(--sp-6);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .sectionTitle {
-  font-size: 1.5rem;
-  color: var(--primary);
+  font-size: 1.8rem;
+  color: var(--text-dark);
   margin-bottom: var(--sp-6);
-  font-weight: 700;
+  font-weight: 300;
 }
 
 .inputGroup {
@@ -39,24 +39,24 @@
 
 .inputField label {
   font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-light);
+  font-weight: 500;
+  color: var(--text-dark);
 }
 
 .nmInput {
   background: var(--bg-color);
-  border: 1px solid var(--border);
-  box-shadow: var(--nm-inner-pressed);
+  border: none;
+  box-shadow: var(--nm-inner-pressed-sm);
   padding: var(--sp-3) var(--sp-4);
   border-radius: 12px;
   outline: none;
   font-size: 1rem;
   transition: all 0.3s ease;
+  color: var(--text-dark);
 }
 
 .nmInput:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 10px rgba(21, 128, 61, 0.1);
+  box-shadow: var(--nm-inner-pressed);
 }
 
 .deliveryOptions {
@@ -113,7 +113,8 @@
 .summaryTitle {
   font-size: 1.8rem;
   margin-bottom: var(--sp-6);
-  color: var(--primary);
+  color: var(--text-dark);
+  font-weight: 300;
 }
 
 .itemList {
@@ -135,14 +136,15 @@
   position: relative;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: var(--nm-inner-pressed);
+  box-shadow: var(--nm-inner-pressed-sm);
+  background: var(--bg-color);
 }
 
 .itemQty {
   position: absolute;
   top: -5px;
   right: -5px;
-  background: var(--primary);
+  background: var(--accent);
   color: white;
   font-size: 0.7rem;
   width: 20px;
@@ -158,22 +160,25 @@
 }
 
 .itemInfo h4 {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  font-weight: 500;
   margin: 0;
+  color: var(--text-dark);
 }
 
 .itemInfo p {
   font-size: 0.85rem;
   margin: 0;
+  color: var(--text-light);
 }
 
 .itemTotal {
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-dark);
 }
 
 .calculation {
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(255, 255, 255, 0.4);
   padding-top: var(--sp-4);
   margin-bottom: var(--sp-6);
 }
@@ -183,15 +188,16 @@
   justify-content: space-between;
   margin-bottom: var(--sp-2);
   color: var(--text-light);
+  font-size: 0.95rem;
 }
 
 .totalRow {
   margin-top: var(--sp-4);
   padding-top: var(--sp-4);
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(255, 255, 255, 0.4);
   font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--primary);
+  font-weight: 600;
+  color: var(--text-dark);
 }
 
 .paymentSection {
@@ -201,31 +207,33 @@
 .paymentSection h3 {
   font-size: 1.1rem;
   margin-bottom: var(--sp-3);
+  color: var(--text-dark);
+  font-weight: 500;
 }
 
 .paymentOptions {
   display: flex;
-  gap: var(--sp-2);
+  gap: var(--sp-3);
 }
 
 .paymentBtn {
   flex: 1;
   padding: var(--sp-3);
   border-radius: 12px;
-  border: 1px solid var(--border);
+  border: none;
   background: var(--bg-color);
   box-shadow: var(--nm-outer-raised-sm);
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 500;
+  color: var(--text-light);
   cursor: pointer;
-  transition: 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .paymentBtn.active {
-  background: var(--primary);
-  color: white;
-  border: none;
-  box-shadow: var(--nm-inner-pressed);
+  background: var(--bg-color);
+  color: var(--primary);
+  box-shadow: var(--nm-inner-pressed-sm);
 }
 
 @media (max-width: 992px) {

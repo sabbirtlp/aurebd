@@ -80,7 +80,7 @@
   padding: 1.5rem;
   background: var(--bg-color);
   border-radius: 20px;
-  box-shadow: var(--nm-outer-raised);
+  box-shadow: var(--nm-outer-raised-sm);
   position: relative;
   border: 1px solid rgba(255, 255, 255, 0.4);
 }
@@ -91,7 +91,7 @@
   position: relative;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: var(--nm-inner-pressed);
+  box-shadow: var(--nm-inner-pressed-sm);
 }
 
 .itemDetails {
@@ -102,11 +102,12 @@
   font-size: 1rem;
   margin-bottom: 0.25rem;
   color: var(--text-dark);
+  font-weight: 500;
 }
 
 .itemPrice {
-  color: var(--primary);
-  font-weight: 700;
+  color: var(--text-dark);
+  font-weight: 600;
   margin-bottom: 1rem;
 }
 
@@ -114,7 +115,7 @@
   display: inline-flex;
   align-items: center;
   background: var(--bg-color);
-  box-shadow: var(--nm-inner-pressed);
+  box-shadow: var(--nm-inner-pressed-sm);
   border-radius: 99px;
   padding: 0.25rem;
   gap: 1rem;
@@ -126,12 +127,13 @@
   border-radius: 50%;
   border: none;
   background: var(--bg-color);
-  box-shadow: var(--nm-outer-raised);
+  box-shadow: var(--nm-outer-raised-sm);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
+  color: var(--text-dark);
 }
 
 .removeBtn {
@@ -140,7 +142,7 @@
   right: 1rem;
   background: none;
   border: none;
-  color: #ef4444;
+  color: #cba394; /* muted blush / rose gold instead of bright red */
   cursor: pointer;
   opacity: 0.6;
   transition: opacity 0.3s ease;
@@ -153,7 +155,7 @@
 .footer {
   padding: 2rem;
   background: var(--bg-color);
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -163,13 +165,13 @@
   display: flex;
   justify-content: space-between;
   font-weight: 500;
+  color: var(--text-dark);
 }
 
 .total {
   font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--primary);
-  border-top: 1px solid var(--nm-shadow-dark);
+  font-weight: 600;
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
   padding-top: 1rem;
 }
 

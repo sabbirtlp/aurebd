@@ -109,7 +109,7 @@
   position: absolute;
   top: -8px;
   right: -8px;
-  background: var(--primary);
+  background: var(--accent);
   color: white;
   font-size: 0.7rem;
   width: 18px;
@@ -125,7 +125,7 @@
   display: flex;
   align-items: center;
   background: var(--bg-color);
-  box-shadow: var(--nm-inner-pressed);
+  box-shadow: var(--nm-inner-pressed-sm);
   border-radius: 99px;
   padding: 4px 4px 4px 16px;
   width: 250px;
@@ -134,6 +134,7 @@
 
 .searchForm:focus-within {
   width: 300px;
+  box-shadow: var(--nm-inner-pressed);
 }
 
 .searchInput {
@@ -146,8 +147,8 @@
 }
 
 .searchBtn {
-  background: var(--primary);
-  color: white;
+  background: var(--bg-color);
+  color: var(--primary);
   border: none;
   width: 32px;
   height: 32px;
@@ -156,6 +157,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  box-shadow: var(--nm-outer-raised-sm);
 }
 
 .menuBtn {
