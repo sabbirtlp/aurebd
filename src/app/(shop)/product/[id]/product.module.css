@@ -300,19 +300,7 @@
   .benefitsGrid, .reviewsGrid { grid-template-columns: repeat(2, 1fr); }
   .relatedGrid { grid-template-columns: repeat(2, 1fr); }
   .title { font-size: 2.2rem; }
-  .mobileStickyBar { 
-    display: flex; 
-    bottom: 110px; /* Elevated to stay above the global bottom bar */
-    left: 12px;
-    right: 12px;
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-  }
-}
-
-@media (max-width: 768px) {
+  
   .tabsHeader {
     justify-content: flex-start;
     overflow-x: auto;
@@ -321,6 +309,9 @@
     margin-right: calc(var(--sp-4) * -1);
     scrollbar-width: none;
     -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+    /* Premium scroll indicator fade */
+    mask-image: linear-gradient(to right, black 85%, transparent 100%);
   }
   .tabsHeader::-webkit-scrollbar {
     display: none;
@@ -328,6 +319,17 @@
   .tabBtn {
     white-space: nowrap;
     flex-shrink: 0;
+  }
+
+  .mobileStickyBar { 
+    display: flex; 
+    bottom: 110px;
+    left: 12px;
+    right: 12px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 1px solid rgba(255, 255, 255, 0.5);
   }
 }
 
@@ -338,5 +340,9 @@
   .title { font-size: 1.8rem; }
   .price { font-size: 2rem; }
   .mobileStickyBar { bottom: 100px; }
+  .tabsHeader {
+    mask-image: linear-gradient(to right, black 80%, transparent 100%);
+  }
 }
+
 
