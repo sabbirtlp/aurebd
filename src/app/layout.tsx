@@ -6,6 +6,8 @@ import CartSidebar from '@/features/cart/CartSidebar';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 
+import MobileBottomBar from '@/components/layout/MobileBottomBar';
+
 const poppins = Poppins({ 
   subsets: ["latin"], 
   weight: ["300", "400", "500", "600", "700"],
@@ -29,6 +31,7 @@ export default function RootLayout({
           <CartSidebar />
           <Navbar />
           {children}
+          <MobileBottomBar />
           <Footer />
         </Providers>
       </body>
