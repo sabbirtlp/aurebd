@@ -6,14 +6,17 @@ export default function AboutPage() {
     <main className="animate-fade-in">
       {/* HERO SECTION */}
       <section className={styles.aboutHero}>
-        <div className="container">
+        <div className={styles.heroImage}>
+          <Image src="/images/sakura-set.png" alt="About Aurea" fill style={{ objectFit: "cover", opacity: 0.4, filter: "blur(10px) brightness(1.2)" }} />
+        </div>
+        <div className="container" style={{ position: "relative", zIndex: 10, height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
           <div className={styles.heroContent}>
+            <div className={styles.breadcrumb}>
+              <a href="/">Home</a> <span>/</span> <span>About Us</span>
+            </div>
             <h1>Crafting Radiance</h1>
             <p>Our journey began with a simple belief: that everyone deserves to feel confident in their own skin. We bring you the essence of Japanese beauty, distilled into pure, effective skincare.</p>
           </div>
-        </div>
-        <div className={styles.heroImage}>
-          <Image src="/images/premium-hero-bg.png" alt="About Aurea" fill style={{ objectFit: "cover", opacity: 0.7 }} />
         </div>
       </section>
 

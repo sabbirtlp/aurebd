@@ -3,8 +3,9 @@
   height: 500px;
   display: flex;
   align-items: center;
+  justify-content: center;
   overflow: hidden;
-  background: var(--bg-color);
+  background: radial-gradient(circle at center, rgba(255,255,255,0.6) 0%, var(--bg-color) 100%);
 }
 
 .heroImage {
@@ -16,21 +17,52 @@
 .heroContent {
   position: relative;
   z-index: 10;
-  max-width: 700px;
+  max-width: 800px;
+  text-align: center;
+  padding: var(--sp-6);
+  background: rgba(253, 250, 246, 0.4);
+  backdrop-filter: blur(10px);
+  border-radius: 32px;
+  box-shadow: var(--nm-outer-raised-sm);
+  border: 1px solid rgba(255,255,255,0.5);
+}
+
+.breadcrumb {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-light);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.breadcrumb a {
+  color: var(--accent);
+  transition: opacity 0.3s ease;
+}
+
+.breadcrumb a:hover {
+  opacity: 0.7;
 }
 
 .heroContent h1 {
-  font-size: 4.5rem;
+  font-size: 4rem;
   color: var(--text-dark);
   margin-bottom: var(--sp-4);
-  letter-spacing: -3px;
+  letter-spacing: -1px;
   font-weight: 300;
 }
 
 .heroContent p {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   color: var(--text-light);
   line-height: 1.8;
+  max-width: 90%;
+  margin: 0 auto;
 }
 
 .storyGrid {
