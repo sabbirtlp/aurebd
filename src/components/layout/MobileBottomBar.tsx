@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
 import { useSession } from "next-auth/react";
+import { motion } from "framer-motion";
 import styles from "./mobileBottomBar.module.css";
 
 export default function MobileBottomBar() {
@@ -35,18 +36,47 @@ export default function MobileBottomBar() {
 
   return (
     <nav className={styles.bottomBar}>
-      {navItems.map((item) => (
-        <Link 
-          key={item.path} 
-          href={item.path} 
-          className={`${styles.navItem} ${pathname === item.path ? styles.active : ""}`}
-        >
-          <div className={styles.iconWrapper}>
-            {item.icon}
-            {pathname === item.path && <div className={styles.activeIndicator} />}
-          </div>
-        </Link>
-      ))}
+      {navItems.map((item) => {
+        const isActive = pathname === item.path;
+        return (
+          <Link 
+            key={item.path} 
+            href={item.path} 
+            className={`${styles.navItem} ${isActive ? styles.active : ""}`}
+          >
+            <div className={styles.iconWrapper}>
+              {item.icon}
+              
+              {isActive && (
+                <>
+                  <motion.div 
+                    layoutId="active-pill"
+                    className={styles.activePill}
+                    initial={false}
+                    transition={{
+                      type: "spring",
+                      stiffness: 400,
+                      damping: 35,
+                      mass: 1
+                    }}
+                  />
+                  <motion.div 
+                    layoutId="active-indicator"
+                    className={styles.activeIndicator}
+                    initial={false}
+                    transition={{
+                      type: "spring",
+                      stiffness: 400,
+                      damping: 35,
+                      mass: 1
+                    }}
+                  />
+                </>
+              )}
+            </div>
+          </Link>
+        );
+      })}
       
       <button 
         className={styles.navItem} 

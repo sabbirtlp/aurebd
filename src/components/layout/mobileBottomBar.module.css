@@ -42,36 +42,42 @@
 
 
 .iconWrapper {
-  width: 52px;
-  height: 52px;
+  width: 54px;
+  height: 54px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  background: var(--bg-color);
-  box-shadow: var(--nm-outer-raised-sm);
+  transition: color 0.3s ease;
+  background: transparent;
   position: relative;
   color: var(--text-light);
   flex-shrink: 0;
+  z-index: 2;
 }
 
 .navItem.active .iconWrapper {
-  box-shadow: var(--nm-inner-pressed-sm);
-  transform: translateY(-4px);
   color: var(--primary);
-  background: linear-gradient(145deg, #ffffff, #fdfaf6);
+}
+
+.activePill {
+  position: absolute;
+  width: 54px;
+  height: 54px;
+  background: linear-gradient(145deg, #fdfaf6, #ffffff);
+  border-radius: 50%;
+  box-shadow: inset 4px 4px 8px var(--nm-dark), inset -4px -4px 8px var(--nm-light);
+  z-index: 1;
 }
 
 .activeIndicator {
   position: absolute;
-  bottom: -12px;
+  bottom: -10px;
   width: 6px;
   height: 6px;
   background: var(--primary);
   border-radius: 50%;
-  box-shadow: 0 0 10px var(--primary);
-  animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 0 12px var(--primary);
 }
 
 @keyframes popIn {
