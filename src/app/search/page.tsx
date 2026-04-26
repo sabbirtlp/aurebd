@@ -3,7 +3,6 @@ import Product from "@/models/Product";
 import ProductCard from '@/features/products/ProductCard';
 import styles from "../page.module.css";
 
-export const dynamic = 'force-dynamic';
 
 export default async function SearchPage({
   searchParams,
@@ -49,6 +48,5 @@ export default async function SearchPage({
           </div>
         )}
       </div>
-    </div>
   );
 }
