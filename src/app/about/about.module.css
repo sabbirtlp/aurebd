@@ -82,6 +82,11 @@
   margin-bottom: var(--sp-3);
 }
 
+.storyText {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
 .storyText h2 {
   font-size: 3rem;
   margin-bottom: var(--sp-4);
@@ -99,6 +104,13 @@
   padding: var(--sp-10);
   display: flex;
   justify-content: center;
+  width: 100%;
+}
+
+.storyImage img {
+  max-width: 100%;
+  height: auto !important;
+  border-radius: 20px;
 }
 
 .valuesGrid {
@@ -168,7 +180,7 @@
     padding: var(--sp-10) var(--sp-3); 
   }
   .heroContent { 
-    padding: var(--sp-6) var(--sp-3); 
+    padding: var(--sp-6) var(--sp-4); 
     border-radius: 20px; 
     width: 100%;
     margin: 0;
