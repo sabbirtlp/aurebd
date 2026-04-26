@@ -156,12 +156,7 @@ export default function ProductClient({ product, relatedProducts }: { product: a
         <section className="section">
           <h2 className="section-title">Customer Reviews</h2>
           <div className={styles.reviewsSliderWrapper}>
-            <motion.div 
-              className={styles.reviewsSlider}
-              drag="x"
-              dragConstraints={{ right: 0, left: -600 }} // Will adjust with more reviews
-              whileTap={{ cursor: "grabbing" }}
-            >
+            <div className={styles.reviewsSlider}>
               {[
                 { name: "Tahmid A.", date: "2 days ago", comment: "Amazing product! My skin has never felt so soft.", rating: 5 },
                 { name: "Sadiya J.", date: "1 week ago", comment: "I love the subtle floral scent. Very premium feel.", rating: 5 },
@@ -183,7 +178,7 @@ export default function ProductClient({ product, relatedProducts }: { product: a
                   <p>{rev.comment}</p>
                 </div>
               ))}
-            </motion.div>
+            </div>
           </div>
         </section>
 
