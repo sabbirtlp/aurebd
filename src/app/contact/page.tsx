@@ -6,7 +6,7 @@ export default function ContactPage() {
       <section className="section container">
         <div className={styles.header}>
           <h1>Get in Touch</h1>
-          <p>Have questions about our products or your order? We're here to help.</p>
+          <p>Have questions about our products or your order? We&apos;re here to help.</p>
         </div>
 
         <div className={styles.contactGrid}>

@@ -114,7 +114,7 @@ export default function HeaderSearch() {
               </Link>
             ))
           ) : !isLoading ? (
-            <div className={styles.noResults}>No products found for "{query}"</div>
+            <div className={styles.noResults}>No products found for &quot;{query}&quot;</div>
           ) : null}
         </div>
       )}

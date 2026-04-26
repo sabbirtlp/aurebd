@@ -34,7 +34,7 @@ export default async function SearchPage({
       
       <div className="container" style={{ padding: "4rem 1.5rem" }}>
         <h2 className="section-title" style={{ textAlign: "left", marginBottom: "1rem" }}>
-          Search Results for "{query}"
+          Search Results for &quot;{query}&quot;
         </h2>
         <p style={{ marginBottom: "3rem", color: "var(--text-light)", fontSize: "1.1rem" }}>
           Found {products.length} {products.length === 1 ? 'product' : 'products'}

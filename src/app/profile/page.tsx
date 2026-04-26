@@ -25,7 +25,7 @@ export default function DashboardPage() {
     <div className="animate-fade-in">
       <div className={styles.dashboardHeader}>
         <h1>Welcome back, {session?.user?.name}!</h1>
-        <p>Here's what's happening with your account today.</p>
+        <p>Here&apos;s what&apos;s happening with your account today.</p>
       </div>
 
       {/* STATS */}

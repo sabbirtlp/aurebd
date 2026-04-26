@@ -38,7 +38,7 @@ export default function TestimonialSlider() {
                 </div>
                 <div className={styles.stars}>★★★★★</div>
               </div>
-              <p className={styles.text}>"{t.text}"</p>
+              <p className={styles.text}>&quot;{t.text}&quot;</p>
             </div>
           </div>
         ))}

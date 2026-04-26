@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import styles from "./profile.module.css";
-
+import Image from "next/image";
 import { useUserStore } from "@/store/userStore";
 import { useHasHydrated } from "@/store/useHasHydrated";
 
@@ -23,7 +23,6 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
   const pathname = usePathname();
   const router = useRouter();
   const { profileImage, userName } = useUserStore();
-
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -44,11 +43,16 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
           {/* SIDEBAR */}
           <aside className={styles.sidebar}>
             <div className={styles.userBrief}>
-              <div className={styles.avatar} style={{ overflow: "hidden" }}>
+              <div className={styles.avatar} style={{ overflow: "hidden", position: "relative" }}>
                 {!hasHydrated ? (
                   <div className="animate-pulse bg-slate-100 w-full h-full" />
                 ) : profileImage ? (
-                  <img src={profileImage} alt="Profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <Image 
+                    src={profileImage} 
+                    alt="Profile" 
+                    fill 
+                    style={{ objectFit: "cover" }} 
+                  />
                 ) : (
                   userName.charAt(0)
                 )}

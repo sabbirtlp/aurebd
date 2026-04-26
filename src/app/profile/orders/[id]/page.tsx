@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import styles from "../../profile.module.css";
 
 export default function OrderDetailsPage({ params }: { params: { id: string } }) {
@@ -45,7 +46,9 @@ export default function OrderDetailsPage({ params }: { params: { id: string } })
             <div className={styles.orderItems}>
               {order.items.map((item, i) => (
                 <div key={i} className={styles.orderItem}>
-                  <img src={item.image} alt={item.name} className={styles.orderItemImg} />
+                  <div className={styles.orderItemImg} style={{ position: "relative", overflow: "hidden" }}>
+                    <Image src={item.image} alt={item.name} fill style={{ objectFit: "contain" }} />
+                  </div>
                   <div className={styles.orderItemInfo}>
                     <h4>{item.name}</h4>
                     <p>Quantity: {item.quantity}</p>

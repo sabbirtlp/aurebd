@@ -8,7 +8,7 @@ export default function Footer() {
       <div className={`container ${styles.footerGrid}`}>
         <div className={styles.footerCol}>
           <Image src="/images/logo-cropped.png" alt="Aurea BD" width={120} height={34} style={{ marginBottom: "var(--sp-3)" }} />
-          <p>Your premium destination for authentic Japanese skincare in Bangladesh. Elevate your beauty routine with nature's finest ingredients.</p>
+          <p>Your premium destination for authentic Japanese skincare in Bangladesh. Elevate your beauty routine with nature&apos;s finest ingredients.</p>
         </div>
         <div className={styles.footerCol}>
           <h4>Explore</h4>

@@ -1,6 +1,8 @@
 "use client";
 
 import { useSession } from "next-auth/react";
+import Image from "next/image";
+
 import { useState } from "react";
 import styles from "../profile.module.css";
 
@@ -108,9 +110,14 @@ export default function SettingsPage() {
         {activeTab === "profile" && (
           <div className={styles.settingsFormCard}>
             <div className={styles.profileUploadSection}>
-              <div className={styles.largeAvatar} style={{ overflow: "hidden" }}>
+              <div className={styles.largeAvatar} style={{ overflow: "hidden", position: "relative" }}>
                 {profileImage ? (
-                  <img src={profileImage} alt="Profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <Image 
+                    src={profileImage} 
+                    alt="Profile" 
+                    fill 
+                    style={{ objectFit: "cover" }} 
+                  />
                 ) : (
                   userName.charAt(0)
                 )}
