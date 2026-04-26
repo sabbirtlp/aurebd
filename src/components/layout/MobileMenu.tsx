@@ -75,7 +75,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
           {/* USER ACTIONS */}
           <div className={styles.userSection}>
-            <Link href="/auth/login" className={styles.userLink} onClick={onClose}>
+            <Link href="/login" className={styles.userLink} onClick={onClose}>
               <span className={styles.icon}>👤</span> Account
             </Link>
             <Link href="/wishlist" className={styles.userLink} onClick={onClose}>

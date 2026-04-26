@@ -54,35 +54,54 @@ export default function LoginPage() {
   };
 
   return (
-    <main style={{ minHeight: "100vh", backgroundColor: "var(--bg-color)" }}>
-      <Navbar />
-      <div className="container" style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "calc(100vh - 80px)" }}>
-        <div style={{ background: "white", padding: "3rem", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.05)", width: "100%", maxWidth: "400px" }}>
-          <h2 style={{ textAlign: "center", marginBottom: "2rem", fontFamily: "var(--font-playfair)", fontSize: "2rem" }}>
-            {isLogin ? "Welcome Back" : "Create Account"}
-          </h2>
+    <div className="container" style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "calc(100vh - 120px)", padding: "var(--sp-8) 0" }}>
+      <div className="nm-card" style={{ padding: "var(--sp-10) var(--sp-8)", width: "100%", maxWidth: "450px", textAlign: "center" }}>
+        <h2 style={{ marginBottom: "var(--sp-6)", fontWeight: 300, fontSize: "2.5rem", color: "var(--text-dark)" }}>
+          {isLogin ? "Welcome Back" : "Create Account"}
+        </h2>
 
-          {error && <div style={{ color: "red", marginBottom: "1rem", textAlign: "center" }}>{error}</div>}
+        {error && <div style={{ color: "#d32f2f", marginBottom: "var(--sp-4)", fontSize: "0.9rem" }}>{error}</div>}
 
-          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-            {!isLogin && (
-              <input required placeholder="Full Name" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border)" }} />
-            )}
-            <input required type="email" placeholder="Email Address" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border)" }} />
-            <input required type="password" placeholder="Password" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border)" }} />
-            
-            <button type="submit" className="btn-primary" disabled={loading} style={{ marginTop: "1rem" }}>
-              {loading ? "Please wait..." : (isLogin ? "Login" : "Register")}
-            </button>
-          </form>
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "var(--sp-4)" }}>
+          {!isLogin && (
+            <div className="input-group">
+              <input 
+                required 
+                placeholder="Full Name" 
+                value={formData.name} 
+                onChange={e => setFormData({...formData, name: e.target.value})} 
+                style={{ width: "100%", padding: "14px 20px", borderRadius: "12px", border: "none", background: "var(--bg-color)", boxShadow: "var(--nm-inner-pressed-sm)", outline: "none", color: "var(--text-dark)" }} 
+              />
+            </div>
+          )}
+          <input 
+            required 
+            type="email" 
+            placeholder="Email Address" 
+            value={formData.email} 
+            onChange={e => setFormData({...formData, email: e.target.value})} 
+            style={{ width: "100%", padding: "14px 20px", borderRadius: "12px", border: "none", background: "var(--bg-color)", boxShadow: "var(--nm-inner-pressed-sm)", outline: "none", color: "var(--text-dark)" }} 
+          />
+          <input 
+            required 
+            type="password" 
+            placeholder="Password" 
+            value={formData.password} 
+            onChange={e => setFormData({...formData, password: e.target.value})} 
+            style={{ width: "100%", padding: "14px 20px", borderRadius: "12px", border: "none", background: "var(--bg-color)", boxShadow: "var(--nm-inner-pressed-sm)", outline: "none", color: "var(--text-dark)" }} 
+          />
+          
+          <button type="submit" className="btn-nm btn-nm-primary" disabled={loading} style={{ marginTop: "var(--sp-4)", width: "100%", height: "54px" }}>
+            {loading ? "Processing..." : (isLogin ? "Sign In" : "Create Account")}
+          </button>
+        </form>
 
-          <div style={{ textAlign: "center", marginTop: "2rem" }}>
-            <button onClick={() => setIsLogin(!isLogin)} style={{ background: "none", border: "none", color: "var(--primary)", cursor: "pointer", fontWeight: "500" }}>
-              {isLogin ? "Don't have an account? Register" : "Already have an account? Login"}
-            </button>
-          </div>
+        <div style={{ marginTop: "var(--sp-6)" }}>
+          <button onClick={() => setIsLogin(!isLogin)} style={{ background: "none", border: "none", color: "var(--primary)", cursor: "pointer", fontWeight: "500", fontSize: "0.95rem" }}>
+            {isLogin ? "New to Aurea? Register here" : "Already have an account? Login"}
+          </button>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

@@ -177,3 +177,14 @@ ul {
 .pulse {
   animation: pulse 2s infinite;
 }
+
+.main-content {
+  min-height: calc(100vh - 80px);
+}
+
+@media (max-width: 992px) {
+  .main-content {
+    padding-bottom: 120px;
+  }
+}
+

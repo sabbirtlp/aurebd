@@ -380,6 +380,15 @@
 
 @media (max-width: 576px) {
   .heroTitle { font-size: 2.5rem; }
+  .heroActions {
+    flex-direction: column;
+    width: 100%;
+    gap: var(--sp-3);
+  }
+  .btnPrimary, .btnSecondary {
+    width: 100%;
+    padding: 14px 28px;
+  }
   .productGrid, .categoryGrid { grid-template-columns: 1fr; }
   .trustGrid { grid-template-columns: 1fr; }
   .heroImageCircle { width: 95%; }

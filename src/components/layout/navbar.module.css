@@ -160,18 +160,34 @@
   box-shadow: var(--nm-outer-raised-sm);
 }
 
-.menuBtn {
-  display: none;
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.desktopActions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
 }
 
 @media (max-width: 992px) {
-  .desktopNav, .searchForm {
+  .desktopNav, .searchForm, .desktopActions {
     display: none;
+  }
+  .navMain {
+    height: 70px;
+  }
+  .logoWrapper img {
+    width: 100px !important;
+    height: auto !important;
   }
   .menuBtn {
     display: block;
     background: none;
     border: none;
     cursor: pointer;
+    color: var(--text-dark);
   }
 }

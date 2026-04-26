@@ -30,7 +30,9 @@ export default function RootLayout({
         <Providers>
           <CartSidebar />
           <Navbar />
-          {children}
+          <main className="main-content">
+            {children}
+          </main>
           <MobileBottomBar />
           <Footer />
         </Providers>
