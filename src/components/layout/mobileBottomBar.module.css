@@ -3,31 +3,29 @@
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  width: calc(100% - 32px);
-  max-width: 400px;
-  height: 72px;
+  width: calc(100% - 24px);
+  max-width: 450px;
+  height: 80px;
   background: var(--bg-color);
-  backdrop-filter: blur(20px);
-  border-radius: 36px;
+  backdrop-filter: blur(25px);
+  border-radius: 40px;
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
-  padding: 0 12px;
+  justify-content: space-between;
+  padding: 0 8px;
   box-shadow: var(--nm-outer-raised);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   z-index: 2100;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .navItem {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
   transition: all 0.3s ease;
-  width: 60px;
-  height: 60px;
-  flex-shrink: 0;
+  height: 100%;
   position: relative;
   border: none;
   background: none;
@@ -42,22 +40,19 @@
 
 
 .iconWrapper {
-  width: 54px;
-  height: 54px;
+  width: 50px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  transition: color 0.3s ease;
-  background: transparent;
   position: relative;
-  color: var(--text-light);
-  flex-shrink: 0;
   z-index: 2;
+  flex-shrink: 0;
 }
 
 .navItem.active .iconWrapper {
-  color: var(--primary);
+  filter: drop-shadow(0 0 8px rgba(203, 163, 148, 0.3));
 }
 
 .activePill {
@@ -66,8 +61,9 @@
   height: 54px;
   background: linear-gradient(145deg, #fdfaf6, #ffffff);
   border-radius: 50%;
-  box-shadow: inset 4px 4px 8px var(--nm-dark), inset -4px -4px 8px var(--nm-light);
+  box-shadow: 8px 8px 16px var(--nm-dark), -8px -8px 16px var(--nm-light);
   z-index: 1;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .activeIndicator {
