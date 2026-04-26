@@ -1,0 +1,156 @@
+/* Product Card Premium Styles */
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 0; /* Premium minimalist blocks */
+  overflow: hidden;
+  transition: all 0.4s ease;
+  group: hover;
+}
+
+.card:hover {
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+  transform: translateY(-4px);
+  z-index: 2;
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/5;
+  background-color: #f7f7f7;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image {
+  object-fit: contain;
+  padding: 24px;
+  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.card:hover .image {
+  transform: scale(1.08);
+}
+
+.wishlistBtn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+  color: #aaa;
+  transition: all 0.2s ease;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.card:hover .wishlistBtn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.wishlistBtn:hover {
+  color: #ff3366;
+  transform: scale(1.1) translateY(0) !important;
+}
+
+.quickAddBtn {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(5px);
+  color: #111;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  padding: 14px 0;
+  border: none;
+  border-top: 1px solid #eee;
+  cursor: pointer;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  z-index: 10;
+}
+
+.card:hover .quickAddBtn {
+  transform: translateY(0);
+}
+
+.quickAddBtn:hover {
+  background: #111;
+  color: #fff;
+}
+
+.info {
+  padding: 16px 0 8px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.brand {
+  font-size: 0.75rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.name {
+  font-size: 1rem;
+  color: #111;
+  font-weight: 500;
+  margin-bottom: 6px;
+  text-decoration: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.2s;
+}
+
+.name:hover {
+  color: #666;
+}
+
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+}
+
+.price {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #111;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: #333;
+}
+
+.ratingStar {
+  color: #111;
+}

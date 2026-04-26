@@ -1,20 +1,20 @@
 :root {
-  /* Color Palette - Luxury Softness */
-  --bg-color: #f8faf9; /* Extremely soft off-white/pale green */
-  --primary: #15803d; /* Deep Forest Green */
-  --secondary: #22c55e; /* Fresh Leaf Green */
+  /* Color Palette - Premium Minimalist */
+  --bg-color: #faf9f6; /* Soft Beige/Alabaster */
+  --primary: #111111; /* Deep Black */
+  --secondary: #4b5563; /* Slate Gray */
   --accent: #d4af37; /* Soft Gold */
-  --text-dark: #1f2937;
-  --text-light: #6b7280;
-  --border: rgba(0, 0, 0, 0.04);
+  --text-dark: #111111;
+  --text-light: #666666;
+  --border: #e5e5e5;
   
-  /* Neumorphic Tokens - Refined & Soft */
-  --nm-shadow-light: #ffffff;
-  --nm-shadow-dark: #e0e9e3;
-  --nm-outer-raised: 8px 8px 16px var(--nm-shadow-dark), -8px -8px 16px var(--nm-shadow-light);
-  --nm-outer-raised-sm: 4px 4px 8px var(--nm-shadow-dark), -4px -4px 8px var(--nm-shadow-light);
-  --nm-outer-raised-lg: 12px 12px 24px var(--nm-shadow-dark), -12px -12px 24px var(--nm-shadow-light);
-  --nm-inner-pressed: inset 4px 4px 8px var(--nm-shadow-dark), inset -4px -4px 8px var(--nm-shadow-light);
+  /* Shadows - Refined & Crisp */
+  --nm-shadow-light: rgba(255, 255, 255, 0.8);
+  --nm-shadow-dark: rgba(0, 0, 0, 0.05);
+  --nm-outer-raised: 0 10px 30px rgba(0, 0, 0, 0.08);
+  --nm-outer-raised-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --nm-outer-raised-lg: 0 20px 40px rgba(0, 0, 0, 0.12);
+  --nm-inner-pressed: inset 0 2px 4px rgba(0, 0, 0, 0.05);
   
   /* Spacing System - 8px Grid */
   --sp-1: 8px;
