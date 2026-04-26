@@ -1,61 +1,77 @@
 .bottomBar {
   position: fixed;
-  bottom: var(--sp-4);
+  bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  width: calc(100% - var(--sp-8));
-  max-width: 450px;
-  height: 70px;
+  width: calc(100% - 32px);
+  max-width: 400px;
+  height: 72px;
   background: var(--bg-color);
-  backdrop-filter: blur(15px);
-  border-radius: 35px;
+  backdrop-filter: blur(20px);
+  border-radius: 36px;
   display: flex;
   align-items: center;
-  justify-content: space-around;
-  padding: 0 var(--sp-4);
+  justify-content: space-evenly;
+  padding: 0 12px;
   box-shadow: var(--nm-outer-raised);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  z-index: 2100; /* Higher than CartSidebar overlay which is 2000 */
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  z-index: 2100;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .navItem {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  color: var(--text-light);
   text-decoration: none;
-  font-size: 0.7rem;
-  font-weight: 600;
   transition: all 0.3s ease;
-  padding: var(--sp-2);
-  border-radius: 50%;
-  width: 54px;
-  height: 54px;
-}
-
-.navItem:hover, .navItem.active {
-  color: var(--primary);
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  position: relative;
 }
 
 .iconWrapper {
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  transition: all 0.3s ease;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   background: var(--bg-color);
   box-shadow: var(--nm-outer-raised-sm);
   position: relative;
+  color: var(--text-light);
+  flex-shrink: 0;
 }
 
-.navItem:active .iconWrapper, .navItem.active .iconWrapper {
+.navItem.active .iconWrapper {
   box-shadow: var(--nm-inner-pressed-sm);
-  transform: scale(0.95);
+  transform: translateY(-4px);
+  color: var(--primary);
+  background: linear-gradient(145deg, #ffffff, #fdfaf6);
+}
+
+.activeIndicator {
+  position: absolute;
+  bottom: -12px;
+  width: 6px;
+  height: 6px;
+  background: var(--primary);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--primary);
+  animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.navItem:active .iconWrapper {
+  box-shadow: var(--nm-inner-pressed);
+  transform: scale(0.9);
 }
 
 .cartBadge {
@@ -72,18 +88,19 @@
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  box-shadow: 0 2px 5px rgba(184, 134, 117, 0.3);
+  box-shadow: 0 4px 10px rgba(184, 134, 117, 0.4);
+  border: 2px solid var(--bg-color);
+  z-index: 5;
 }
 
 @media (min-width: 993px) {
-  .bottomBar {
-    display: none;
-  }
+  .bottomBar { display: none; }
 }
 
 @media (max-width: 480px) {
   .bottomBar {
-    width: calc(100% - var(--sp-4));
-    bottom: var(--sp-2);
+    width: calc(100% - 16px);
+    bottom: 12px;
   }
 }
+
