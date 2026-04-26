@@ -1,10 +1,10 @@
 import dbConnect from "@/lib/db";
 import Product from "@/models/Product";
-import Navbar from '@/components/layout/Navbar';
 import ProductCard from '@/features/products/ProductCard';
 import styles from "../page.module.css";
 
-// This is required to access search params in a Server Component
+export const dynamic = 'force-dynamic';
+
 export default async function SearchPage({
   searchParams,
 }: {
@@ -16,7 +16,6 @@ export default async function SearchPage({
   
   if (query) {
     await dbConnect();
-    // Perform a case-insensitive regex search on name and description
     const rawProducts = await Product.find({
       $or: [
         { name: { $regex: query, $options: "i" } },
@@ -29,13 +28,10 @@ export default async function SearchPage({
   }
 
   return (
-    <main style={{ minHeight: "100vh", backgroundColor: "var(--bg-color)" }}>
-      <Navbar />
-      
-      <div className="container" style={{ padding: "4rem 1.5rem" }}>
-        <h2 className="section-title" style={{ textAlign: "left", marginBottom: "1rem" }}>
-          Search Results for &quot;{query}&quot;
-        </h2>
+    <div className="container" style={{ padding: "8rem 1.5rem 4rem" }}>
+      <h2 className="section-title" style={{ textAlign: "left", marginBottom: "1rem" }}>
+        Search Results for &quot;{query}&quot;
+      </h2>
         <p style={{ marginBottom: "3rem", color: "var(--text-light)", fontSize: "1.1rem" }}>
           Found {products.length} {products.length === 1 ? 'product' : 'products'}
         </p>
@@ -53,6 +49,6 @@ export default async function SearchPage({
           </div>
         )}
       </div>
-    </main>
+    </div>
   );
 }
