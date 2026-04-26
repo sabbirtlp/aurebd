@@ -1,20 +1,21 @@
 :root {
-  /* Color Palette - Premium Minimalist */
-  --bg-color: #faf9f6; /* Soft Beige/Alabaster */
-  --primary: #111111; /* Deep Black */
-  --secondary: #4b5563; /* Slate Gray */
-  --accent: #d4af37; /* Soft Gold */
-  --text-dark: #111111;
-  --text-light: #666666;
-  --border: #e5e5e5;
+  /* Color Palette - Luxury Cosmetics Neumorphic */
+  --bg-color: #fdfaf6; /* Soft Ivory/Cream */
+  --primary: #cba394; /* Rose Gold / Muted Blush */
+  --secondary: #e6d5cb; /* Soft Champagne */
+  --accent: #b88675; /* Deeper Rose Gold Accent */
+  --text-dark: #4a3f3b; /* Warm dark brown/gray for high-end readability */
+  --text-light: #8a7d78; /* Soft warm gray */
+  --border: rgba(203, 163, 148, 0.15);
   
-  /* Shadows - Refined & Crisp */
-  --nm-shadow-light: rgba(255, 255, 255, 0.8);
-  --nm-shadow-dark: rgba(0, 0, 0, 0.05);
-  --nm-outer-raised: 0 10px 30px rgba(0, 0, 0, 0.08);
-  --nm-outer-raised-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
-  --nm-outer-raised-lg: 0 20px 40px rgba(0, 0, 0, 0.12);
-  --nm-inner-pressed: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  /* Neumorphic 2.0 Tokens - Soft & Tactile */
+  --nm-light: #ffffff;
+  --nm-dark: #ebdcd3;
+  --nm-outer-raised: 8px 8px 16px var(--nm-dark), -8px -8px 16px var(--nm-light);
+  --nm-outer-raised-sm: 4px 4px 8px var(--nm-dark), -4px -4px 8px var(--nm-light);
+  --nm-outer-raised-lg: 12px 12px 24px var(--nm-dark), -12px -12px 24px var(--nm-light);
+  --nm-inner-pressed: inset 4px 4px 8px var(--nm-dark), inset -4px -4px 8px var(--nm-light);
+  --nm-inner-pressed-sm: inset 2px 2px 4px var(--nm-dark), inset -2px -2px 4px var(--nm-light);
   
   /* Spacing System - 8px Grid */
   --sp-1: 8px;

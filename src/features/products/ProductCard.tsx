@@ -64,8 +64,8 @@ export default function ProductCard({ product }: ProductCardProps) {
             width="18" 
             height="18" 
             viewBox="0 0 24 24" 
-            fill={isWishlisted ? "#ff3366" : "none"} 
-            stroke={isWishlisted ? "#ff3366" : "currentColor"} 
+            fill={isWishlisted ? "var(--accent)" : "none"} 
+            stroke={isWishlisted ? "var(--accent)" : "currentColor"} 
             strokeWidth="2" 
             strokeLinecap="round" 
             strokeLinejoin="round"

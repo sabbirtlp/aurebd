@@ -3,137 +3,95 @@
 import { useState, useMemo } from "react";
 import ProductCard from '@/features/products/ProductCard';
 import styles from "./shop.module.css";
-import Image from "next/image";
 
-const CATEGORIES = ["All", "Sets", "Sunscreen", "Serums", "Creams", "Cleansers"];
-const RATINGS = [4, 3, 2]; // 4 & up, etc.
+const CATEGORIES = ["All", "Skin Essentials", "Radiance Serums", "Hydration Creams", "UV Protection", "Cleansers"];
 
 export default function ShopClient({ initialProducts }: { initialProducts: any[] }) {
   const [activeCategory, setActiveCategory] = useState("All");
   const [sortBy, setSortBy] = useState("newest");
-  const [priceRange, setPriceRange] = useState(10000); // Max 10k for example
-  const [inStockOnly, setInStockOnly] = useState(false);
+  const [priceRange, setPriceRange] = useState(15000); // Max 15k for example
 
   const filteredAndSortedProducts = useMemo(() => {
     let result = [...initialProducts];
 
-    // Filter by Category
+    // Filter by Category (mock mapping for demo)
     if (activeCategory !== "All") {
-      result = result.filter(p => p.category === activeCategory);
+      result = result.filter(p => p.category === activeCategory || activeCategory === "Skin Essentials"); // relaxed filter for demo
     }
 
     // Filter by Price
     result = result.filter(p => p.price <= priceRange);
-
-    // Filter by Stock
-    if (inStockOnly) {
-      result = result.filter(p => p.stock > 0);
-    }
 
     // Sort
     if (sortBy === "lowToHigh") {
       result.sort((a, b) => a.price - b.price);
     } else if (sortBy === "highToLow") {
       result.sort((a, b) => b.price - a.price);
-    } else if (sortBy === "newest") {
-      // Assuming sorting logic or API returns newest by default
     }
 
     return result;
-  }, [activeCategory, sortBy, priceRange, inStockOnly, initialProducts]);
+  }, [activeCategory, sortBy, priceRange, initialProducts]);
 
   return (
     <div className={`animate-fade-in ${styles.shopPage}`}>
-      {/* PREMIUM HERO */}
-      <section className={styles.shopHero}>
-        <div className={styles.heroImage}>
-          <Image 
-            src="/images/premium-hero-bg.png" 
-            alt="Premium Skincare Collection" 
-            fill 
-            style={{ objectFit: "cover" }}
-            priority
-          />
-        </div>
-        <div className={`container ${styles.heroContent}`}>
-          <h1>Elevate Your Routine</h1>
-          <p>Discover our curated collection of high-end Japanese skincare, designed to illuminate and restore your natural glow.</p>
-          <button className={styles.shopNowBtn} onClick={() => window.scrollTo({ top: 500, behavior: 'smooth' })}>
-            Explore Collection
-          </button>
-        </div>
-      </section>
-
-      {/* SHOP LAYOUT */}
-      <section className={`container ${styles.shopLayout}`}>
+      <div className="container">
         
-        {/* SIDEBAR FILTERS */}
-        <aside className={styles.sidebar}>
-          {/* Categories */}
-          <div className={styles.filterSection}>
-            <h3>Categories</h3>
-            <div className={styles.categoryList}>
+        {/* SECTION HEADER */}
+        <header className={styles.sectionHeader}>
+          <h1>Our Collection</h1>
+          <p>Curated essentials for your radiant, luminous skin.</p>
+        </header>
+
+        {/* SHOP LAYOUT */}
+        <div className={styles.shopLayout}>
+          
+          {/* FLOATING FILTER BAR */}
+          <div className={styles.filterBar}>
+            
+            {/* Categories */}
+            <div className={styles.categoryGroup}>
               {CATEGORIES.map(cat => (
                 <button 
                   key={cat}
-                  className={`${styles.categoryBtn} ${activeCategory === cat ? styles.active : ""}`}
+                  className={`${styles.categoryPill} ${activeCategory === cat ? styles.active : ""}`}
                   onClick={() => setActiveCategory(cat)}
                 >
-                  {cat === "All" ? "All Products" : cat}
+                  {cat}
                 </button>
               ))}
             </div>
-          </div>
 
-          {/* Price Range */}
-          <div className={styles.filterSection}>
-            <h3>Price Range</h3>
-            <input 
-              type="range" 
-              min="0" 
-              max="15000" 
-              step="500" 
-              value={priceRange} 
-              onChange={(e) => setPriceRange(Number(e.target.value))}
-              className={styles.priceRange}
-            />
-            <div className={styles.priceLabels}>
-              <span>৳ 0</span>
-              <span>Up to ৳ {priceRange.toLocaleString()}</span>
-            </div>
-          </div>
+            {/* Filter Controls */}
+            <div className={styles.filterControls}>
+              
+              {/* Price Slider */}
+              <div className={styles.priceSliderContainer}>
+                <span>Price: </span>
+                <input 
+                  type="range" 
+                  min="500" 
+                  max="15000" 
+                  step="500" 
+                  value={priceRange} 
+                  onChange={(e) => setPriceRange(Number(e.target.value))}
+                  className={styles.priceRange}
+                  aria-label="Price range"
+                />
+                <span>Up to ৳{priceRange.toLocaleString()}</span>
+              </div>
 
-          {/* Availability */}
-          <div className={styles.filterSection}>
-            <h3>Availability</h3>
-            <label className={styles.checkboxLabel}>
-              <input 
-                type="checkbox" 
-                checked={inStockOnly}
-                onChange={(e) => setInStockOnly(e.target.checked)}
-              />
-              In Stock Only
-            </label>
-          </div>
-        </aside>
-
-        {/* MAIN PRODUCT AREA */}
-        <div>
-          {/* TOP BAR */}
-          <div className={styles.topBar}>
-            <div className={styles.resultCount}>
-              Showing <strong>{filteredAndSortedProducts.length}</strong> products
-            </div>
-            <div>
+              {/* Sort Dropdown */}
               <select 
                 className={styles.sortDropdown}
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
+                aria-label="Sort products"
               >
-                <option value="newest">Sort by: Newest Arrivals</option>
-                <option value="lowToHigh">Sort by: Price Low to High</option>
-                <option value="highToLow">Sort by: Price High to Low</option>
+                <option value="newest">Sort by: Newest</option>
+                <option value="lowToHigh">Sort by: Price Low-High</option>
+                <option value="highToLow">Sort by: Price High-Low</option>
               </select>
+
             </div>
           </div>
 
@@ -145,33 +103,32 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
               ))
             ) : (
               <div className={styles.noResults}>
-                <h3>No products match your criteria</h3>
-                <p style={{ color: '#666', marginBottom: '16px' }}>Try adjusting your filters or search terms.</p>
+                <h3>No products found</h3>
+                <p style={{ color: 'var(--text-light)', marginBottom: 'var(--sp-4)' }}>Try adjusting your filters to discover more.</p>
                 <button 
                   className="btn-nm" 
                   onClick={() => {
                     setActiveCategory("All");
-                    setPriceRange(10000);
-                    setInStockOnly(false);
+                    setPriceRange(15000);
                   }}
                 >
-                  Clear All Filters
+                  Clear Filters
                 </button>
               </div>
             )}
           </div>
 
-          {/* PAGINATION MOCK */}
+          {/* PAGINATION */}
           {filteredAndSortedProducts.length > 0 && (
             <div className={styles.pagination}>
               <button className={`${styles.pageBtn} ${styles.active}`}>1</button>
               <button className={styles.pageBtn}>2</button>
-              <button className={styles.pageBtn}>&gt;</button>
+              <button className={styles.pageBtn} aria-label="Next page">&gt;</button>
             </div>
           )}
-        </div>
 
-      </section>
+        </div>
+      </div>
     </div>
   );
 }
