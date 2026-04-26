@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import styles from "./about.module.css";
 
 export default function AboutPage() {
@@ -12,7 +13,7 @@ export default function AboutPage() {
         <div className="container" style={{ position: "relative", zIndex: 10, height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
           <div className={styles.heroContent}>
             <div className={styles.breadcrumb}>
-              <a href="/">Home</a> <span>/</span> <span>About Us</span>
+              <Link href="/">Home</Link> <span>/</span> <span>About Us</span>
             </div>
             <h1>Crafting Radiance</h1>
             <p>Our journey began with a simple belief: that everyone deserves to feel confident in their own skin. We bring you the essence of Japanese beauty, distilled into pure, effective skincare.</p>

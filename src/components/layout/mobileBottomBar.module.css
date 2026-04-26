@@ -29,7 +29,17 @@
   height: 60px;
   flex-shrink: 0;
   position: relative;
+  border: none;
+  background: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
+
+.navItem:focus, .navItem:active {
+  outline: none;
+  border: none;
+}
+
 
 .iconWrapper {
   width: 52px;
