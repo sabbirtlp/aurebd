@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import styles from "./profile.module.css";
 import Image from "next/image";
 import { useUserStore } from "@/store/userStore";
-import { useHasHydrated } from "@/store/useHasHydrated";
+import { useHasHydrated } from '@/hooks/useHasHydrated';
 
 const menuItems = [
   { label: "Dashboard", href: "/profile", icon: "📊" },

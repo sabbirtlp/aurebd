@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useCartStore } from "@/store/cartStore";
 import styles from "./product.module.css";
-import ProductCard from "@/components/ProductCard";
+import ProductCard from '@/features/products/ProductCard';
 
 export default function ProductClient({ product, relatedProducts }: { product: any, relatedProducts: any[] }) {
   const [mainImage, setMainImage] = useState(product.image);

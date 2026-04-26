@@ -1,7 +1,7 @@
 import dbConnect from "@/lib/db";
 import Product from "@/models/Product";
-import Navbar from "@/components/Navbar";
-import ProductCard from "@/components/ProductCard";
+import Navbar from '@/components/layout/Navbar';
+import ProductCard from '@/features/products/ProductCard';
 import styles from "../page.module.css";
 
 // This is required to access search params in a Server Component

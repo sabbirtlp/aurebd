@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import ProductCard from "@/components/ProductCard";
+import ProductCard from '@/features/products/ProductCard';
 import styles from "./shop.module.css";
 import Image from "next/image";
 

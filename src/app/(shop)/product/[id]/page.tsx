@@ -1,4 +1,4 @@
-import { getProductById, getProducts } from "@/actions/product";
+import { getProductById, getProducts } from '@/services/product.service';
 import ProductClient from "./ProductClient";
 import { notFound } from "next/navigation";
 

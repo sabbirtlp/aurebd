@@ -1,12 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./page.module.css";
-import Navbar from "@/components/Navbar";
-import ProductCard from "@/components/ProductCard";
-import Hero from "@/components/Hero";
-import { getProducts } from "@/actions/product";
-import TestimonialSlider from "@/components/TestimonialSlider";
-import Newsletter from "@/components/Newsletter";
+import Navbar from '@/components/layout/Navbar';
+import ProductCard from '@/features/products/ProductCard';
+import Hero from '@/components/shared/Hero';
+import { getProducts } from '@/services/product.service';
+import TestimonialSlider from '@/components/shared/TestimonialSlider';
+import Newsletter from '@/components/shared/Newsletter';
 
 export default async function Home() {
   const products = await getProducts() || [];

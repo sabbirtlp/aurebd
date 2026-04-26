@@ -7,7 +7,7 @@ import { useState } from "react";
 import styles from "../profile.module.css";
 
 import { useUserStore } from "@/store/userStore";
-import { useHasHydrated } from "@/store/useHasHydrated";
+import { useHasHydrated } from '@/hooks/useHasHydrated';
 
 export default function SettingsPage() {
   const { data: session } = useSession();

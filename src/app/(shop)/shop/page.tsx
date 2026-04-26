@@ -1,4 +1,4 @@
-import { getProducts } from "@/actions/product";
+import { getProducts } from '@/services/product.service';
 import ShopClient from "./ShopClient";
 
 export default async function ShopPage() {

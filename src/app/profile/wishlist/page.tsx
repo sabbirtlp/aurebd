@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "../profile.module.css";
 import { useState } from "react";
-import { useHasHydrated } from "@/store/useHasHydrated";
+import { useHasHydrated } from '@/hooks/useHasHydrated';
 
 const initialWishlist = [
   { id: "1", name: "Sakura Glow Serum", price: 2450, image: "/images/sakura-serum.png", category: "Serums" },
