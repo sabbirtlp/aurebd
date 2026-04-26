@@ -1,17 +1,16 @@
 .sliderContainer {
   position: relative;
   width: 100%;
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
+  padding: var(--sp-4) 0 var(--sp-8);
   overflow: hidden;
-  padding: var(--sp-6) 0;
 }
 
 .slider {
   position: relative;
-  height: 250px;
-  display: flex;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  height: 280px;
+  width: 100%;
 }
 
 .slide {
@@ -20,73 +19,87 @@
   left: 0;
   width: 100%;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.8s ease;
+  padding: var(--sp-4);
   opacity: 0;
-  visibility: hidden;
 }
 
-.slide.active {
+.active {
   opacity: 1;
-  visibility: visible;
 }
 
 .card {
-  width: 90%;
-  padding: var(--sp-6);
+  height: 100%;
+  padding: var(--sp-8);
   background: var(--bg-color);
-  border-radius: var(--sp-5);
-  text-align: left;
+  border-radius: 32px;
+  box-shadow: var(--nm-outer-raised-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: var(--nm-outer-raised);
 }
 
 .avatarRow {
   display: flex;
   align-items: center;
-  gap: var(--sp-3);
-  margin-bottom: var(--sp-4);
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-5);
 }
 
 .avatar {
-  width: 50px;
-  height: 50px;
-  background: var(--nm-shadow-dark);
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
+  background: var(--bg-color);
+  box-shadow: var(--nm-inner-pressed-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 300;
   color: var(--primary);
-  box-shadow: var(--nm-outer-raised-sm);
 }
 
-.avatarRow h4 {
-  margin: 0;
+.authorInfo {
+  flex: 1;
+}
+
+.authorInfo h4 {
   font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  margin-bottom: 2px;
 }
 
-.avatarRow span {
-  font-size: 0.8rem;
+.authorInfo span {
+  font-size: 0.85rem;
   color: var(--text-light);
 }
 
 .stars {
-  margin-left: auto;
   color: var(--accent);
+  letter-spacing: 2px;
+  font-size: 1rem;
 }
 
 .text {
-  font-style: italic;
-  font-size: 1.1rem;
-  line-height: 1.8;
+  font-size: 1.25rem;
+  font-weight: 300;
   color: var(--text-dark);
+  line-height: 1.6;
+  font-style: italic;
 }
 
 .dots {
   display: flex;
   justify-content: center;
-  gap: var(--sp-2);
+  gap: var(--sp-3);
   margin-top: var(--sp-4);
 }
 
@@ -94,22 +107,26 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
+  background: var(--bg-color);
+  box-shadow: var(--nm-inner-pressed-sm);
   border: none;
-  background: var(--nm-shadow-dark);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
+}
+
+.dot:hover {
   box-shadow: var(--nm-inner-pressed);
 }
 
-.dot.activeDot {
-  width: 32px;
-  border-radius: 6px;
+.activeDot {
   background: var(--primary);
-  box-shadow: var(--nm-outer-raised-sm);
+  box-shadow: 0 0 10px rgba(203, 163, 148, 0.4);
 }
 
-@media (max-width: 576px) {
+@media (max-width: 768px) {
   .slider { height: 350px; }
-  .avatarRow { flex-direction: column; text-align: center; }
-  .stars { margin: var(--sp-2) 0 0; }
+  .card { padding: var(--sp-6); }
+  .avatarRow { flex-direction: column; text-align: center; gap: var(--sp-2); }
+  .text { font-size: 1.1rem; text-align: center; }
+  .stars { margin-top: var(--sp-2); }
 }

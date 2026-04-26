@@ -32,7 +32,7 @@ export default function TestimonialSlider() {
             <div className={`${styles.card} nm-card`}>
               <div className={styles.avatarRow}>
                 <div className={styles.avatar}>{t.initial}</div>
-                <div>
+                <div className={styles.authorInfo}>
                   <h4>{t.name}</h4>
                   <span>{t.location}</span>
                 </div>

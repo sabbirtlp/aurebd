@@ -1,6 +1,6 @@
 "use client";
 
-import styles from "@/app/page.module.css";
+import styles from "./newsletter.module.css";
 
 export default function Newsletter() {
   const handleSubmit = (e: React.FormEvent) => {
@@ -9,15 +9,24 @@ export default function Newsletter() {
   };
 
   return (
-    <section className={styles.sectionNewsletter}>
+    <section className={styles.newsletterSection}>
       <div className="container">
         <div className={styles.newsletterCard}>
-          <h2 style={{ fontSize: "2.5rem", marginBottom: "var(--sp-2)" }}>Join the Glow Club</h2>
-          <p>Subscribe to receive skincare tips, personalized offers, and exclusive access to new arrivals.</p>
-          <form className={styles.newsletterForm} onSubmit={handleSubmit}>
-            <input type="email" placeholder="Enter your email" required />
-            <button type="submit" className="btn-nm btn-nm-primary">Subscribe</button>
-          </form>
+          <div className={styles.contentWrapper}>
+            <h2 className={styles.title}>Join Our Inner Circle</h2>
+            <p className={styles.subtitle}>
+              Subscribe to receive exclusive access to new arrivals, personalized skincare advice, and member-only privileges.
+            </p>
+            <form className={styles.form} onSubmit={handleSubmit}>
+              <input 
+                type="email" 
+                placeholder="Enter your email address" 
+                required 
+                className={styles.input}
+              />
+              <button type="submit" className={styles.button}>Subscribe</button>
+            </form>
+          </div>
         </div>
       </div>
     </section>
