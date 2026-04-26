@@ -221,15 +221,25 @@
 }
 
 /* REVIEWS */
-.reviewsGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.reviewsSliderWrapper {
+  overflow: hidden;
+  margin: 0 calc(var(--sp-4) * -1);
+  padding: var(--sp-4);
+  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent 100%);
+}
+
+.reviewsSlider {
+  display: flex;
   gap: var(--sp-6);
+  cursor: grab;
 }
 
 .reviewCard {
+  flex: 0 0 350px;
   padding: var(--sp-6);
+  scroll-snap-align: start;
 }
+
 
 .reviewHeader {
   display: flex;
@@ -343,6 +353,8 @@
   .tabsHeader {
     mask-image: linear-gradient(to right, black 80%, transparent 100%);
   }
+  .reviewCard { flex-basis: 280px; }
 }
+
 
 

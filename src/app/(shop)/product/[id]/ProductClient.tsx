@@ -155,26 +155,35 @@ export default function ProductClient({ product, relatedProducts }: { product: a
         {/* REVIEWS SECTION */}
         <section className="section">
           <h2 className="section-title">Customer Reviews</h2>
-          <div className={styles.reviewsGrid}>
-            {[
-              { name: "Tahmid A.", date: "2 days ago", comment: "Amazing product! My skin has never felt so soft.", rating: 5 },
-              { name: "Sadiya J.", date: "1 week ago", comment: "I love the subtle floral scent. Very premium feel.", rating: 5 },
-              { name: "Fahim S.", date: "2 weeks ago", comment: "Fast delivery and authentic product. Highly recommend.", rating: 4 }
-            ].map((rev, i) => (
-              <div key={i} className={`${styles.reviewCard} nm-card`}>
-                <div className={styles.reviewHeader}>
-                  <div className={styles.reviewUser}>
-                    <div className={styles.reviewAvatar}>{rev.name[0]}</div>
-                    <div>
-                      <h4>{rev.name}</h4>
-                      <span>{rev.date}</span>
+          <div className={styles.reviewsSliderWrapper}>
+            <motion.div 
+              className={styles.reviewsSlider}
+              drag="x"
+              dragConstraints={{ right: 0, left: -600 }} // Will adjust with more reviews
+              whileTap={{ cursor: "grabbing" }}
+            >
+              {[
+                { name: "Tahmid A.", date: "2 days ago", comment: "Amazing product! My skin has never felt so soft.", rating: 5 },
+                { name: "Sadiya J.", date: "1 week ago", comment: "I love the subtle floral scent. Very premium feel.", rating: 5 },
+                { name: "Fahim S.", date: "2 weeks ago", comment: "Fast delivery and authentic product. Highly recommend.", rating: 4 },
+                { name: "Anika R.", date: "3 weeks ago", comment: "The packaging is so luxury. Perfect for gifting.", rating: 5 },
+                { name: "Raisa M.", date: "1 month ago", comment: "Best Japanese skincare in BD. Totally worth it.", rating: 5 }
+              ].map((rev, i) => (
+                <div key={i} className={`${styles.reviewCard} nm-card`}>
+                  <div className={styles.reviewHeader}>
+                    <div className={styles.reviewUser}>
+                      <div className={styles.reviewAvatar}>{rev.name[0]}</div>
+                      <div>
+                        <h4>{rev.name}</h4>
+                        <span>{rev.date}</span>
+                      </div>
                     </div>
+                    <div className={styles.reviewStars}>{"★".repeat(rev.rating)}</div>
                   </div>
-                  <div className={styles.reviewStars}>{"★".repeat(rev.rating)}</div>
+                  <p>{rev.comment}</p>
                 </div>
-                <p>{rev.comment}</p>
-              </div>
-            ))}
+              ))}
+            </motion.div>
           </div>
         </section>
 
