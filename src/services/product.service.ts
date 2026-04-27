@@ -1,4 +1,4 @@
-"use server";
+import "server-only";
 
 import dbConnect from "@/lib/db";
 import Product from "@/models/Product";

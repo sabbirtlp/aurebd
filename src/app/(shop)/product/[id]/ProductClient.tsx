@@ -154,8 +154,25 @@ export default function ProductClient({ product, relatedProducts }: { product: a
 
         {/* REVIEWS SECTION */}
         <section className="section">
-          <h2 className="section-title">Customer Reviews</h2>
-          <div className={styles.reviewsSliderWrapper}>
+          <div className={styles.sectionHeaderRow}>
+            <h2 className="section-title">Customer Reviews</h2>
+            <div className={styles.sliderControls}>
+              <button className={styles.controlBtn} onClick={() => {
+                const el = document.getElementById('reviews-slider');
+                if (el) el.scrollBy({ left: -350, behavior: 'smooth' });
+              }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
+              </button>
+              <button className={styles.controlBtn} onClick={() => {
+                const el = document.getElementById('reviews-slider');
+                if (el) el.scrollBy({ left: 350, behavior: 'smooth' });
+              }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div className={styles.reviewsSliderWrapper} id="reviews-slider">
             <div className={styles.reviewsSlider}>
               {[
                 { name: "Tahmid A.", date: "2 days ago", comment: "Amazing product! My skin has never felt so soft.", rating: 5 },

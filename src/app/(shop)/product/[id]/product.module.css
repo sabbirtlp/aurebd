@@ -221,6 +221,42 @@
 }
 
 /* REVIEWS */
+.sectionHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--sp-8);
+}
+
+.sliderControls {
+  display: flex;
+  gap: var(--sp-3);
+}
+
+.controlBtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg-color);
+  box-shadow: var(--nm-outer-raised-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-dark);
+  transition: all 0.3s ease;
+}
+
+.controlBtn:active {
+  box-shadow: var(--nm-inner-pressed-sm);
+  transform: scale(0.95);
+}
+
+.controlBtn:hover {
+  color: var(--primary);
+}
+
 .reviewsSliderWrapper {
   overflow-x: auto;
   margin: 0 calc(var(--sp-4) * -1);
