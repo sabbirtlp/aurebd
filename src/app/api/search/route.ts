@@ -1,13 +1,12 @@
-import { NextResponse } from "next/server";
-
-export const dynamic = 'force-dynamic';
+import { NextResponse, NextRequest } from "next/server";
 import dbConnect from "@/lib/db";
 import Product from "@/models/Product";
 
-export async function GET(request: Request) {
+export const dynamic = 'force-dynamic';
+
+export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const query = searchParams.get("q");
+    const query = request.nextUrl.searchParams.get("q");
 
     if (!query || query.length < 2) {
       return NextResponse.json([]);
