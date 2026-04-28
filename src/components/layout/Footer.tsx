@@ -2,13 +2,26 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import { useLanguageStore } from "@/store/languageStore";
 import styles from "./footer.module.css";
 
 export default function Footer() {
+  const { t } = useLanguageStore();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const tr = (key: string) => mounted ? t(key) : key;
+
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Thank you for subscribing to our newsletter.');
+    alert(language === 'bn' ? 'আমাদের নিউজলেটারে সাবস্ক্রাইব করার জন্য ধন্যবাদ।' : 'Thank you for subscribing to our newsletter.');
   };
+
+  const { language } = useLanguageStore();
 
   return (
     <footer className={styles.footerSection}>
@@ -19,14 +32,14 @@ export default function Footer() {
             {/* BRAND COLUMN */}
             <div className={styles.brandCol}>
               <Image 
-                src="/images/logo-cropped.png" 
+                src="/images/logo-v2.png" 
                 alt="Aurea BD" 
-                width={120} 
-                height={34} 
-                style={{ filter: "brightness(0.8) sepia(1) hue-rotate(-50deg) saturate(0.5)" }} // Tint logo slightly to match palette if it's black
+                width={600} 
+                height={200} 
+                style={{ width: "auto", height: "64px", objectFit: "contain" }} 
               />
               <p className={styles.brandDesc}>
-                Your premium destination for authentic Japanese skincare in Bangladesh. Elevate your beauty routine with nature&apos;s finest ingredients.
+                {tr('footer.description')}
               </p>
               
               <div className={styles.socialIcons}>
@@ -44,48 +57,48 @@ export default function Footer() {
 
             {/* SHOP COLUMN */}
             <div className={styles.linkCol}>
-              <h4>Shop</h4>
+              <h4>{tr('footer.shop')}</h4>
               <ul>
-                <li><Link href="/shop">All Products</Link></li>
-                <li><Link href="/shop?category=Skin+Essentials">Skin Essentials</Link></li>
-                <li><Link href="/shop?category=Radiance+Serums">Radiance Serums</Link></li>
-                <li><Link href="/shop?category=Hydration+Creams">Hydration Creams</Link></li>
+                <li><Link href="/shop">{tr('footer.all_products')}</Link></li>
+                <li><Link href="/shop?category=Skin+Essentials">{language === 'bn' ? 'স্কিন এসেনশিয়ালস' : 'Skin Essentials'}</Link></li>
+                <li><Link href="/shop?category=Radiance+Serums">{language === 'bn' ? 'রেডিয়েন্স সিরাম' : 'Radiance Serums'}</Link></li>
+                <li><Link href="/shop?category=Hydration+Creams">{language === 'bn' ? 'হাইড্রেশন ক্রিম' : 'Hydration Creams'}</Link></li>
               </ul>
             </div>
 
             {/* SUPPORT COLUMN */}
             <div className={styles.linkCol}>
-              <h4>Support</h4>
+              <h4>{tr('footer.support')}</h4>
               <ul>
-                <li><Link href="/contact">Shipping Policy</Link></li>
-                <li><Link href="/contact">Returns & Refunds</Link></li>
-                <li><Link href="/contact">Contact Us</Link></li>
-                <li><Link href="/contact">FAQ</Link></li>
+                <li><Link href="/shipping">{tr('footer.shipping_policy')}</Link></li>
+                <li><Link href="/returns">{tr('footer.returns')}</Link></li>
+                <li><Link href="/contact">{tr('nav.contact')}</Link></li>
+                <li><Link href="/faq">{tr('footer.faq')}</Link></li>
               </ul>
             </div>
 
             {/* NEWSLETTER COLUMN */}
             <div className={styles.newsletterCol}>
-              <h4>Stay Connected</h4>
-              <p>Subscribe for exclusive offers and skincare advice.</p>
+              <h4>{tr('footer.stay_connected')}</h4>
+              <p>{tr('footer.newsletter_text')}</p>
               <form className={styles.newsletterForm} onSubmit={handleSubscribe}>
                 <input 
                   type="email" 
-                  placeholder="Email address" 
+                  placeholder={language === 'bn' ? 'ইমেল অ্যাড্রেস' : 'Email address'} 
                   required 
                   className={styles.input}
                 />
-                <button type="submit" className={styles.button}>Subscribe</button>
+                <button type="submit" className={styles.button}>{tr('footer.subscribe')}</button>
               </form>
             </div>
 
           </div>
 
           <div className={styles.bottomBar}>
-            <span className={styles.bottomText}>&copy; {new Date().getFullYear()} Aurea BD. Designed for Radiance.</span>
+            <span className={styles.bottomText}>&copy; {new Date().getFullYear()} Aurea BD. {tr('footer.rights')}</span>
             <div className={styles.bottomLinks}>
-              <Link href="#">Privacy Policy</Link>
-              <Link href="#">Terms of Service</Link>
+              <Link href="/privacy-policy">{tr('footer.privacy')}</Link>
+              <Link href="/terms-of-service">{tr('footer.terms')}</Link>
             </div>
           </div>
           

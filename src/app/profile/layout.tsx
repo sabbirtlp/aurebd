@@ -13,7 +13,7 @@ const menuItems = [
   { label: "Dashboard", href: "/profile", icon: "📊" },
   { label: "My Orders", href: "/profile/orders", icon: "📦" },
   { label: "Addresses", href: "/profile/addresses", icon: "📍" },
-  { label: "Wishlist", href: "/profile/wishlist", icon: "💖" },
+  { label: "Wishlist", href: "/wishlist", icon: "💖" },
   { label: "Settings", href: "/profile/settings", icon: "⚙️" },
 ];
 

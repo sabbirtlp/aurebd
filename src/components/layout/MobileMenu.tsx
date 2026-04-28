@@ -34,7 +34,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         {/* HEADER */}
         <div className={styles.header}>
           <div className={styles.logoWrapper}>
-            <Image src="/images/logo-cropped.png" alt="Aurea BD" width={100} height={28} />
+            <Image src="/images/logo-v2.png" alt="Aurea BD" width={180} height={60} style={{ width: "auto", height: "32px", objectFit: "contain" }} />
             <p className={styles.tagline}>Premium Japanese Skincare</p>
           </div>
           <button className={styles.closeBtn} onClick={onClose}>

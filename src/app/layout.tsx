@@ -19,6 +19,8 @@ export const metadata: Metadata = {
   description: "Glow naturally with authentic Japanese Sakura skincare. Shop Laikou Sakura sets, serums, and creams in Bangladesh.",
 };
 
+import ThemeWrapper from "@/components/ThemeWrapper";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -28,13 +30,15 @@ export default function RootLayout({
     <html lang="en">
       <body className={poppins.variable}>
         <Providers>
-          <CartSidebar />
-          <Navbar />
-          <main className="main-content">
-            {children}
-          </main>
-          <MobileBottomBar />
-          <Footer />
+          <ThemeWrapper>
+            <CartSidebar />
+            <Navbar />
+            <main className="main-content">
+              {children}
+            </main>
+            <MobileBottomBar />
+            <Footer />
+          </ThemeWrapper>
         </Providers>
       </body>
     </html>

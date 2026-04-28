@@ -24,12 +24,12 @@ export async function seedDatabase() {
   const count = await Product.countDocuments();
   if (count === 0) {
     const defaultProducts = [
-      { name: "Laikou Japan Sakura 5pcs Skincare Set", description: "Complete 5pcs set for glowing skin.", price: 1250, image: "/images/sakura-set.png", stock: 50, category: "Sets" },
-      { name: "Japan Sakura Sunscreen", description: "SPF 50 protection with Sakura extract.", price: 450, image: "/images/sakura-sunscreen.png", stock: 100, category: "Sunscreen" },
-      { name: "Japan Sakura Essence Cream", description: "Deeply moisturizing essence cream.", price: 550, image: "/images/sakura-cream.png", stock: 80, category: "Creams" },
-      { name: "Japan Sakura Eye Cream", description: "Reduces dark circles and puffiness.", price: 350, image: "/images/sakura-eye-cream.png", stock: 120, category: "Creams" },
-      { name: "Japan Sakura Serum", description: "Brightening and anti-aging serum.", price: 400, image: "/images/sakura-serum.png", stock: 90, category: "Serums" },
-      { name: "Japan Sakura Facewash", description: "Gentle daily cleanser.", price: 300, image: "/images/sakura-facewash.png", stock: 150, category: "Cleansers" },
+      { name: "Laikou Japan Sakura 5pcs Skincare Set", slug: "laikou-japan-sakura-5pcs-skincare-set", description: "Complete 5pcs set for glowing skin.", price: 1250, image: "/images/sakura-set.png", stock: 50, category: "Sets" },
+      { name: "Japan Sakura Sunscreen", slug: "japan-sakura-sunscreen", description: "SPF 50 protection with Sakura extract.", price: 450, image: "/images/sakura-sunscreen.png", stock: 100, category: "Sunscreen" },
+      { name: "Japan Sakura Essence Cream", slug: "japan-sakura-essence-cream", description: "Deeply moisturizing essence cream.", price: 550, image: "/images/sakura-cream.png", stock: 80, category: "Creams" },
+      { name: "Japan Sakura Eye Cream", slug: "japan-sakura-eye-cream", description: "Reduces dark circles and puffiness.", price: 350, image: "/images/sakura-eye-cream.png", stock: 120, category: "Creams" },
+      { name: "Japan Sakura Serum", slug: "japan-sakura-serum", description: "Brightening and anti-aging serum.", price: 400, image: "/images/sakura-serum.png", stock: 90, category: "Serums" },
+      { name: "Japan Sakura Facewash", slug: "japan-sakura-facewash", description: "Gentle daily cleanser.", price: 300, image: "/images/sakura-facewash.png", stock: 150, category: "Cleansers" },
     ];
     await Product.insertMany(defaultProducts);
   }
@@ -47,14 +47,23 @@ export async function getProducts() {
     return null;
   }
 }
-export async function getProductById(id: string) {
+
+export async function getProductBySlug(slug: string) {
   try {
     await dbConnect();
-    const product = await Product.findById(id).lean();
+    // Try by slug first, then by ID as fallback
+    let product = await Product.findOne({ slug }).lean();
+    if (!product && slug.match(/^[0-9a-fA-F]{24}$/)) {
+      product = await Product.findById(slug).lean();
+    }
     if (!product) return null;
     return JSON.parse(JSON.stringify(product));
   } catch (error) {
-    console.error("Failed to fetch product:", error);
+    console.error("Failed to fetch product by slug:", error);
     return null;
   }
+}
+
+export async function getProductById(id: string) {
+  return getProductBySlug(id); // Proxy for compatibility
 }

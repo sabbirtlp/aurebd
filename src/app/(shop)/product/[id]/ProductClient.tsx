@@ -3,10 +3,14 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useCartStore } from "@/store/cartStore";
+import { toast } from "react-toastify";
 import styles from "./product.module.css";
 import ProductCard from '@/features/products/ProductCard';
+import TestimonialSlider from "@/components/shared/TestimonialSlider";
+import { useLanguageStore } from "@/store/languageStore";
 
 export default function ProductClient({ product, relatedProducts }: { product: any, relatedProducts: any[] }) {
+  const { language } = useLanguageStore();
   const [mainImage, setMainImage] = useState(product.image);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("description");
@@ -20,6 +24,7 @@ export default function ProductClient({ product, relatedProducts }: { product: a
       image: product.image,
       quantity: quantity
     });
+    toast.success(`Added ${quantity} ${product.name} to cart`);
   };
 
   const handleBuyNow = () => {
@@ -154,57 +159,30 @@ export default function ProductClient({ product, relatedProducts }: { product: a
 
         {/* REVIEWS SECTION */}
         <section className="section">
-          <div className={styles.sectionHeaderRow}>
-            <h2 className="section-title">Customer Reviews</h2>
-            <div className={styles.sliderControls}>
-              <button className={styles.controlBtn} onClick={() => {
-                const el = document.getElementById('reviews-slider');
-                if (el) el.scrollBy({ left: -350, behavior: 'smooth' });
-              }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
-              </button>
-              <button className={styles.controlBtn} onClick={() => {
-                const el = document.getElementById('reviews-slider');
-                if (el) el.scrollBy({ left: 350, behavior: 'smooth' });
-              }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-              </button>
-            </div>
-          </div>
-
-          <div className={styles.reviewsSliderWrapper} id="reviews-slider">
-            <div className={styles.reviewsSlider}>
-              {[
-                { name: "Tahmid A.", date: "2 days ago", comment: "Amazing product! My skin has never felt so soft.", rating: 5 },
-                { name: "Sadiya J.", date: "1 week ago", comment: "I love the subtle floral scent. Very premium feel.", rating: 5 },
-                { name: "Fahim S.", date: "2 weeks ago", comment: "Fast delivery and authentic product. Highly recommend.", rating: 4 },
-                { name: "Anika R.", date: "3 weeks ago", comment: "The packaging is so luxury. Perfect for gifting.", rating: 5 },
-                { name: "Raisa M.", date: "1 month ago", comment: "Best Japanese skincare in BD. Totally worth it.", rating: 5 }
-              ].map((rev, i) => (
-                <div key={i} className={`${styles.reviewCard} nm-card`}>
-                  <div className={styles.reviewHeader}>
-                    <div className={styles.reviewUser}>
-                      <div className={styles.reviewAvatar}>{rev.name[0]}</div>
-                      <div>
-                        <h4>{rev.name}</h4>
-                        <span>{rev.date}</span>
-                      </div>
-                    </div>
-                    <div className={styles.reviewStars}>{"★".repeat(rev.rating)}</div>
-                  </div>
-                  <p>{rev.comment}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+          <TestimonialSlider 
+            title={language === 'bn' ? 'গ্রাহকদের রিভিউ' : 'Customer Reviews'}
+            items={language === 'bn' ? [
+              { name: "তাহমিদ এ.", location: "ঢাকা", text: "অসাধারণ পণ্য! আমার ত্বক এখন অনেক নরম অনুভূত হয়।", initial: "T" },
+              { name: "সাদিয়া জে.", location: "চট্টগ্রাম", text: "আমি এটার হালকা সুগন্ধি খুব পছন্দ করি। খুব প্রিমিয়াম ফিল দেয়।", initial: "S" },
+              { name: "ফাহিম এস.", location: "সিলেট", text: "দ্রুত ডেলিভারি এবং আসল পণ্য। আমি অবশ্যই এটি রিকমেন্ড করছি।", initial: "F" },
+              { name: "আনিকা আর.", location: "রাজশাহী", text: "প্যাকেজিং খুবই লাক্সারি। কাউকে গিফট করার জন্য একদম উপযুক্ত।", initial: "A" },
+              { name: "রাইসা এম.", location: "ঢাকা", text: "বাংলাদেশে জাপানি স্কিনকেয়ারের জন্য সেরা। দাম অনুযায়ী মান অনেক ভালো।", initial: "R" }
+            ] : [
+              { name: "Tahmid A.", location: "Dhaka", text: "Amazing product! My skin has never felt so soft.", initial: "T" },
+              { name: "Sadiya J.", location: "Chittagong", text: "I love the subtle floral scent. Very premium feel.", initial: "S" },
+              { name: "Fahim S.", location: "Sylhet", text: "Fast delivery and authentic product. Highly recommend.", initial: "F" },
+              { name: "Anika R.", location: "Rajshahi", text: "The packaging is so luxury. Perfect for gifting.", initial: "A" },
+              { name: "Raisa M.", location: "Dhaka", text: "Best Japanese skincare in BD. Totally worth it.", initial: "R" }
+            ]}
+          />
         </section>
 
         {/* RELATED PRODUCTS */}
         <section className="section">
-          <h2 className="section-title">Related Products</h2>
+          <h2 className="section-title">{language === 'bn' ? 'সংশ্লিষ্ট পণ্য' : 'Related Products'}</h2>
           <div className={styles.relatedGrid}>
             {relatedProducts.slice(0, 4).map((rp: any) => (
-              <ProductCard key={rp._id} product={rp} styles={styles} />
+              <ProductCard key={rp._id} product={rp} />
             ))}
           </div>
         </section>

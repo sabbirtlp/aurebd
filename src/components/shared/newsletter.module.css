@@ -7,11 +7,11 @@
   max-width: 750px;
   margin: 0 auto;
   text-align: center;
-  padding: var(--sp-10) var(--sp-8);
+  padding: var(--sp-10) var(--sp-12) var(--sp-6);
   background: var(--bg-color);
   border-radius: 32px;
-  box-shadow: var(--nm-outer-raised);
-  border: 1px solid rgba(255,255,255,0.6);
+  box-shadow: var(--nm-outer-raised-sm);
+  border: 1px solid var(--border);
   position: relative;
   overflow: hidden;
 }
@@ -25,7 +25,8 @@
   transform: translate(-50%, -50%);
   width: 80%;
   height: 80%;
-  background: radial-gradient(circle, rgba(203,163,148,0.1) 0%, transparent 60%);
+  background: var(--surface);
+  backdrop-filter: blur(10px);
   z-index: 0;
   pointer-events: none;
 }

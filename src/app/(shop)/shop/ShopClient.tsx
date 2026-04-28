@@ -1,28 +1,41 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import ProductCard from '@/features/products/ProductCard';
 import styles from "./shop.module.css";
+import { useLanguageStore } from "@/store/languageStore";
 
-const CATEGORIES = ["All", "Skin Essentials", "Radiance Serums", "Hydration Creams", "UV Protection", "Cleansers"];
+const CATEGORIES = [
+  { en: "All", bn: "সব পণ্য" },
+  { en: "Skin Essentials", bn: "স্কিন এসেনশিয়ালস" },
+  { en: "Radiance Serums", bn: "রেডিয়েন্স সিরাম" },
+  { en: "Hydration Creams", bn: "হাইড্রেশন ক্রিম" },
+  { en: "UV Protection", bn: "ইউভি প্রোটেকশন" },
+  { en: "Cleansers", bn: "ক্লিনজার" }
+];
 
 export default function ShopClient({ initialProducts }: { initialProducts: any[] }) {
+  const { t, language } = useLanguageStore();
+  const [mounted, setMounted] = useState(false);
   const [activeCategory, setActiveCategory] = useState("All");
   const [sortBy, setSortBy] = useState("newest");
-  const [priceRange, setPriceRange] = useState(15000); // Max 15k for example
+  const [priceRange, setPriceRange] = useState(15000);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const tr = (key: string) => mounted ? t(key) : key;
 
   const filteredAndSortedProducts = useMemo(() => {
     let result = [...initialProducts];
 
-    // Filter by Category (mock mapping for demo)
     if (activeCategory !== "All") {
-      result = result.filter(p => p.category === activeCategory || activeCategory === "Skin Essentials"); // relaxed filter for demo
+      result = result.filter(p => p.category === activeCategory || activeCategory === "Skin Essentials");
     }
 
-    // Filter by Price
     result = result.filter(p => p.price <= priceRange);
 
-    // Sort
     if (sortBy === "lowToHigh") {
       result.sort((a, b) => a.price - b.price);
     } else if (sortBy === "highToLow") {
@@ -38,8 +51,8 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
         
         {/* SECTION HEADER */}
         <header className={styles.sectionHeader}>
-          <h1>Our Collection</h1>
-          <p>Curated essentials for your radiant, luminous skin.</p>
+          <h1>{language === 'bn' ? 'আমাদের কালেকশন' : 'Our Collection'}</h1>
+          <p>{language === 'bn' ? 'আপনার ত্বকের জন্য নির্বাচিত সেরা প্রসাধনী।' : 'Curated essentials for your radiant, luminous skin.'}</p>
         </header>
 
         {/* SHOP LAYOUT */}
@@ -52,11 +65,11 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
             <div className={styles.categoryGroup}>
               {CATEGORIES.map(cat => (
                 <button 
-                  key={cat}
-                  className={`${styles.categoryPill} ${activeCategory === cat ? styles.active : ""}`}
-                  onClick={() => setActiveCategory(cat)}
+                  key={cat.en}
+                  className={`${styles.categoryPill} ${activeCategory === cat.en ? styles.active : ""}`}
+                  onClick={() => setActiveCategory(cat.en)}
                 >
-                  {cat}
+                  {language === 'bn' ? cat.bn : cat.en}
                 </button>
               ))}
             </div>
@@ -66,7 +79,7 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
               
               {/* Price Slider */}
               <div className={styles.priceSliderContainer}>
-                <span>Price: </span>
+                <span>{language === 'bn' ? 'মূল্য: ' : 'Price: '}</span>
                 <input 
                   type="range" 
                   min="500" 
@@ -77,7 +90,7 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
                   className={styles.priceRange}
                   aria-label="Price range"
                 />
-                <span>Up to ৳{priceRange.toLocaleString()}</span>
+                <span>{language === 'bn' ? `সর্বোচ্চ ৳${priceRange.toLocaleString()}` : `Up to ৳${priceRange.toLocaleString()}`}</span>
               </div>
 
               {/* Sort Dropdown */}
@@ -87,9 +100,9 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
                 onChange={(e) => setSortBy(e.target.value)}
                 aria-label="Sort products"
               >
-                <option value="newest">Sort by: Newest</option>
-                <option value="lowToHigh">Sort by: Price Low-High</option>
-                <option value="highToLow">Sort by: Price High-Low</option>
+                <option value="newest">{language === 'bn' ? 'সর্ট করুন: নতুন' : 'Sort by: Newest'}</option>
+                <option value="lowToHigh">{language === 'bn' ? 'সর্ট করুন: কম থেকে বেশি' : 'Sort by: Price Low-High'}</option>
+                <option value="highToLow">{language === 'bn' ? 'সর্ট করুন: বেশি থেকে কম' : 'Sort by: Price High-Low'}</option>
               </select>
 
             </div>
@@ -103,8 +116,10 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
               ))
             ) : (
               <div className={styles.noResults}>
-                <h3>No products found</h3>
-                <p style={{ color: 'var(--text-light)', marginBottom: 'var(--sp-4)' }}>Try adjusting your filters to discover more.</p>
+                <h3>{language === 'bn' ? 'কোনো পণ্য পাওয়া যায়নি' : 'No products found'}</h3>
+                <p style={{ color: 'var(--text-light)', marginBottom: 'var(--sp-4)' }}>
+                  {language === 'bn' ? 'আপনার ফিল্টার পরিবর্তন করে আবার চেষ্টা করুন।' : 'Try adjusting your filters to discover more.'}
+                </p>
                 <button 
                   className="btn-nm" 
                   onClick={() => {
@@ -112,7 +127,7 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
                     setPriceRange(15000);
                   }}
                 >
-                  Clear Filters
+                  {language === 'bn' ? 'ফিল্টার পরিষ্কার করুন' : 'Clear Filters'}
                 </button>
               </div>
             )}

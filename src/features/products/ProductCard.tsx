@@ -3,8 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCartStore } from "@/store/cartStore";
+import { useWishlistStore } from "@/store/wishlistStore";
+import { useLanguageStore } from "@/store/languageStore";
+import { toast } from "react-toastify";
 import styles from "./productCard.module.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface ProductCardProps {
   product: {
@@ -19,8 +22,10 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const { addItem, toggleCart } = useCartStore();
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const { addItem } = useCartStore();
+  const { addItem: addWishlistItem, removeItem: removeWishlistItem } = useWishlistStore();
+  const isWishlisted = useWishlistStore((state) => state.items.some((i) => i.id === product._id));
+  const { language } = useLanguageStore();
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -33,18 +38,36 @@ export default function ProductCard({ product }: ProductCardProps) {
       image: product.image,
       quantity: 1,
     });
-    toggleCart(true);
+    toast.success(language === 'bn' ? `${product.name} কার্টে যোগ করা হয়েছে` : `Added ${product.name} to cart`);
   };
 
   const handleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsWishlisted(!isWishlisted);
+    
+    if (isWishlisted) {
+      removeWishlistItem(product._id);
+      toast.info(language === 'bn' ? `${product.name} উইশলিস্ট থেকে সরানো হয়েছে` : `${product.name} removed from wishlist`, {
+        icon: "🤍"
+      });
+    } else {
+      addWishlistItem({
+        id: product._id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        category: product.category || "Aurea BD",
+        stock: product.stock,
+      });
+      toast.success(language === 'bn' ? `${product.name} উইশলিস্টে যোগ করা হয়েছে` : `${product.name} added to wishlist`, {
+        icon: "❤️"
+      });
+    }
   };
 
   return (
     <div className={styles.card}>
-      <Link href={`/product/${product._id}`} className={styles.imageWrapper}>
+      <Link href={`/product/${product.slug || product._id}`} className={styles.imageWrapper}>
         <Image 
           src={product.image} 
           alt={product.name} 
@@ -55,7 +78,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         
         {/* Wishlist Button */}
         <button 
-          className={styles.wishlistBtn} 
+          className={`${styles.wishlistBtn} ${isWishlisted ? styles.wishlisted : ""}`} 
           onClick={handleWishlist}
           aria-label="Add to wishlist"
         >
@@ -64,8 +87,8 @@ export default function ProductCard({ product }: ProductCardProps) {
             width="18" 
             height="18" 
             viewBox="0 0 24 24" 
-            fill={isWishlisted ? "var(--accent)" : "none"} 
-            stroke={isWishlisted ? "var(--accent)" : "currentColor"} 
+            fill={isWishlisted ? "currentColor" : "none"} 
+            stroke="currentColor" 
             strokeWidth="2" 
             strokeLinecap="round" 
             strokeLinejoin="round"
@@ -80,13 +103,16 @@ export default function ProductCard({ product }: ProductCardProps) {
           onClick={handleAddToCart}
           disabled={product.stock <= 0}
         >
-          {product.stock > 0 ? "Quick Add" : "Out of Stock"}
+          {product.stock > 0 
+            ? (language === 'bn' ? 'কার্টে যোগ করুন' : 'Quick Add') 
+            : (language === 'bn' ? 'স্টক নেই' : 'Out of Stock')
+          }
         </button>
       </Link>
       
       <div className={styles.info}>
         <div className={styles.brand}>{product.category || "Aurea BD"}</div>
-        <Link href={`/product/${product._id}`} className={styles.name}>
+        <Link href={`/product/${product.slug || product._id}`} className={styles.name}>
           {product.name}
         </Link>
         <div className={styles.priceRow}>

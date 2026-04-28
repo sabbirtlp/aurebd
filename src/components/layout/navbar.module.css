@@ -3,11 +3,16 @@
   top: 0;
   width: 100%;
   z-index: 1000;
-  background: rgba(248, 250, 249, 0.85);
+  background: var(--bg-color);
+  opacity: 0.95;
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: transform;
+  border-bottom: 1px solid rgba(203, 163, 148, 0.15); /* Soft premium border */
+  transition: top 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+}
+
+.header.scrolled {
+  top: -36px; /* Shift the sticky anchor point up so the topBar hides perfectly above the screen */
+  box-shadow: var(--nm-outer-raised-sm); /* Add a beautiful neumorphic drop shadow when scrolling */
 }
 
 .topBar {
@@ -18,16 +23,10 @@
   font-size: 0.8rem;
   font-weight: 500;
   letter-spacing: 1px;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
   height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.scrolled .topBar {
-  transform: translateY(-100%);
-  opacity: 0;
 }
 
 .navMain {
@@ -35,12 +34,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   background: inherit;
-}
-
-.scrolled .navMain {
-  transform: translateY(-36px);
 }
 
 .logoWrapper {
@@ -172,6 +166,118 @@
   gap: var(--sp-4);
 }
 
+.langToggle,
+.themeToggle {
+  background: var(--bg-color);
+  border: 1px solid rgba(203, 163, 148, 0.2);
+  border-radius: 99px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 50px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.langToggle:hover,
+.themeToggle:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--nm-outer-raised-sm);
+  border-color: var(--primary);
+}
+
+.langToggle:active,
+.themeToggle:active {
+  box-shadow: var(--nm-inner-pressed-sm);
+  transform: translateY(0);
+}
+
+/* --- Premium Neumorphic Hamburger Menu --- */
+.menuBtn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 44px;
+  height: 44px;
+  background: var(--bg-color);
+  border: 1px solid rgba(203, 163, 148, 0.2);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: var(--nm-outer-raised-sm);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1001;
+  position: relative;
+  padding: 0;
+  margin-left: 8px;
+}
+
+.menuBtn:hover {
+  box-shadow: var(--nm-outer-raised);
+  transform: scale(1.05);
+  border-color: rgba(203, 163, 148, 0.5);
+}
+
+.menuBtn:active {
+  box-shadow: var(--nm-inner-pressed-sm);
+  transform: scale(0.95);
+}
+
+.hamburgerLine {
+  position: absolute;
+  width: 20px;
+  height: 2px;
+  background-color: var(--primary);
+  border-radius: 2px;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.hamburgerLine:nth-child(1) {
+  transform: translateY(-6px);
+}
+
+.hamburgerLine:nth-child(2) {
+  width: 12px;
+  transform: translateY(0) translateX(4px);
+}
+
+.hamburgerLine:nth-child(3) {
+  transform: translateY(6px);
+}
+
+.menuBtn:hover .hamburgerLine:nth-child(2) {
+  width: 20px;
+  transform: translateY(0) translateX(0);
+}
+
+/* Open State */
+.menuBtn.menuOpen {
+  box-shadow: var(--nm-inner-pressed-sm);
+  background: var(--bg-color);
+}
+
+.menuBtn.menuOpen .hamburgerLine {
+  background-color: var(--accent);
+}
+
+.menuBtn.menuOpen .hamburgerLine:nth-child(1) {
+  transform: translateY(0) rotate(45deg);
+}
+
+.menuBtn.menuOpen .hamburgerLine:nth-child(2) {
+  opacity: 0;
+  transform: translateX(10px);
+}
+
+.menuBtn.menuOpen .hamburgerLine:nth-child(3) {
+  transform: translateY(0) rotate(-45deg);
+}
+
 @media (max-width: 992px) {
   .desktopNav, .searchForm, .desktopActions {
     display: none;
@@ -182,12 +288,5 @@
   .logoWrapper img {
     width: 100px !important;
     height: auto !important;
-  }
-  .menuBtn {
-    display: block;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-dark);
   }
 }

@@ -1,0 +1,151 @@
+.legalPage {
+  padding: var(--sp-12) 0;
+  min-height: 80vh;
+  background-color: var(--bg-color);
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.card {
+  background: var(--bg-color);
+  border-radius: 32px;
+  padding: var(--sp-10);
+  box-shadow: var(--nm-outer-raised);
+  border: 1px solid var(--border);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: var(--sp-10);
+  padding-bottom: var(--sp-8);
+  border-bottom: 1px solid rgba(203, 163, 148, 0.2);
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  color: var(--primary);
+  margin-bottom: var(--sp-2);
+}
+
+.lastUpdated {
+  color: var(--text-light);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.content {
+  color: var(--text-dark);
+  line-height: 1.8;
+}
+
+.content section {
+  margin-bottom: var(--sp-8);
+}
+
+.content h2 {
+  font-size: 1.5rem;
+  color: var(--primary);
+  margin-bottom: var(--sp-4);
+  font-weight: 600;
+}
+
+.content p {
+  margin-bottom: var(--sp-4);
+  font-size: 1.05rem;
+}
+
+.content ul {
+  list-style-type: disc;
+  margin-left: var(--sp-6);
+  margin-bottom: var(--sp-4);
+}
+
+.content li {
+  margin-bottom: var(--sp-2);
+  font-size: 1.05rem;
+}
+
+.content strong {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .legalPage {
+    padding: var(--sp-6) 0;
+  }
+  
+  .card {
+    padding: var(--sp-6);
+    border-radius: 24px;
+  }
+  
+  .header h1 {
+    font-size: 2rem;
+  }
+  
+  .content h2 {
+    font-size: 1.3rem;
+  }
+  
+  .content p, .content li {
+    font-size: 1rem;
+  }
+}
+
+/* --- FAQ Specific Styles --- */
+.faqList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.faqItem {
+  background: var(--bg-color);
+  border-radius: 16px;
+  box-shadow: var(--nm-outer-raised-sm);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: box-shadow 0.3s ease;
+}
+
+.faqItem:hover {
+  box-shadow: var(--nm-outer-raised);
+}
+
+.faqQuestion {
+  padding: var(--sp-4) var(--sp-5);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.faqQuestion::-webkit-details-marker {
+  display: none;
+}
+
+.faqQuestion::after {
+  content: '+';
+  font-size: 1.5rem;
+  font-weight: 400;
+  transition: transform 0.3s ease;
+}
+
+details[open] .faqQuestion::after {
+  transform: rotate(45deg);
+}
+
+.faqAnswer {
+  padding: 0 var(--sp-5) var(--sp-5) var(--sp-5);
+  color: var(--text-dark);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
