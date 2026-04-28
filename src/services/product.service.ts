@@ -40,10 +40,18 @@ export async function seedDatabase() {
 export async function getProducts() {
   try {
     await dbConnect();
-    const products = await Product.find({}).lean();
+    let products = await Product.find({}).lean();
+    
+    // Auto-seed if database is empty (common on first Vercel deploy)
+    if (products.length === 0) {
+      console.log("No products found, seeding database...");
+      await seedDatabase();
+      products = await Product.find({}).lean();
+    }
+    
     return JSON.parse(JSON.stringify(products));
   } catch (error) {
-    console.error("Failed to fetch products or connect to DB:", error);
+    console.error("CRITICAL: Failed to fetch products or connect to DB:", error);
     return null;
   }
 }
