@@ -17,6 +17,7 @@ interface ProductCardProps {
     image: string;
     stock: number;
     category?: string;
+  slug?: string;
   };
   styles?: any; // kept for backwards compatibility but unused
 }
