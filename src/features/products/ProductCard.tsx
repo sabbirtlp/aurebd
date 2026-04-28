@@ -48,7 +48,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     if (isWishlisted) {
       removeWishlistItem(product._id);
       toast.info(language === 'bn' ? `${product.name} উইশলিস্ট থেকে সরানো হয়েছে` : `${product.name} removed from wishlist`, {
-        icon: "🤍"
+        icon: <span>🤍</span>
       });
     } else {
       addWishlistItem({
@@ -60,7 +60,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         stock: product.stock,
       });
       toast.success(language === 'bn' ? `${product.name} উইশলিস্টে যোগ করা হয়েছে` : `${product.name} added to wishlist`, {
-        icon: "❤️"
+        icon: <span>❤️</span>
       });
     }
   };
