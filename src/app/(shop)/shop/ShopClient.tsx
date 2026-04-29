@@ -20,6 +20,9 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
   const [activeCategory, setActiveCategory] = useState("All");
   const [sortBy, setSortBy] = useState("newest");
   const [priceRange, setPriceRange] = useState(15000);
+  const searchParams = useSearchParams();
+  const [currentPage, setCurrentPage] = useState(Number(searchParams.get('page')) || 1);
+  const itemsPerPage = 6;
 
   useEffect(() => {
     setMounted(true);
@@ -44,6 +47,28 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
 
     return result;
   }, [activeCategory, sortBy, priceRange, initialProducts]);
+
+  const totalPages = Math.ceil(filteredAndSortedProducts.length / itemsPerPage);
+  const currentProducts = filteredAndSortedProducts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Sync with URL params
+  useEffect(() => {
+    const page = Number(searchParams.get('page')) || 1;
+    setCurrentPage(page);
+  }, [searchParams]);
+
+  // Reset to page 1 when filters change (except price)
+  useEffect(() => {
+    if (currentPage !== 1) {
+      setCurrentPage(1);
+      const params = new URLSearchParams(window.location.search);
+      params.set('page', '1');
+      window.history.pushState({}, '', `${window.location.pathname}?${params.toString()}`);
+    }
+  }, [activeCategory, sortBy]);
 
   return (
     <div className={`animate-fade-in ${styles.shopPage}`}>
@@ -110,8 +135,8 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
 
           {/* PRODUCT GRID */}
           <div className={styles.productGrid}>
-            {filteredAndSortedProducts.length > 0 ? (
-              filteredAndSortedProducts.map((product) => (
+            {currentProducts.length > 0 ? (
+              currentProducts.map((product) => (
                 <ProductCard key={product._id} product={product} />
               ))
             ) : (
@@ -134,11 +159,41 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
           </div>
 
           {/* PAGINATION */}
-          {filteredAndSortedProducts.length > 0 && (
+          {totalPages > 1 && (
             <div className={styles.pagination}>
-              <button className={`${styles.pageBtn} ${styles.active}`}>1</button>
-              <button className={styles.pageBtn}>2</button>
-              <button className={styles.pageBtn} aria-label="Next page">&gt;</button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                <button
+                  key={pageNum}
+                  className={`${styles.pageBtn} ${currentPage === pageNum ? styles.active : ""}`}
+                  onClick={() => {
+                    const params = new URLSearchParams(window.location.search);
+                    params.set('page', pageNum.toString());
+                    window.history.pushState({}, '', `${window.location.pathname}?${params.toString()}`);
+                    setCurrentPage(pageNum);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                >
+                  {pageNum}
+                </button>
+              ))}
+
+              <button 
+                className={styles.pageBtn} 
+                onClick={() => {
+                  if (currentPage < totalPages) {
+                    const nextPage = currentPage + 1;
+                    const params = new URLSearchParams(window.location.search);
+                    params.set('page', nextPage.toString());
+                    window.history.pushState({}, '', `${window.location.pathname}?${params.toString()}`);
+                    setCurrentPage(nextPage);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
+                }}
+                disabled={currentPage === totalPages}
+                aria-label="Next page"
+              >
+                &gt;
+              </button>
             </div>
           )}
 
