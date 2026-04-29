@@ -59,6 +59,8 @@
 }
 
 html, body {
+  width: 100vw;
+  max-width: 100vw;
   min-height: 100vh;
   background-color: var(--bg-color);
   color: var(--text-dark);
@@ -90,9 +92,11 @@ ul {
 }
 
 .container {
+  width: 100%;
   max-width: var(--container-max);
   margin: 0 auto;
-  padding: 0 var(--sp-3);
+  padding: 0 var(--sp-4);
+  box-sizing: border-box;
 }
 
 .section {
@@ -202,6 +206,8 @@ ul {
 
 .main-content {
   min-height: calc(100vh - 80px);
+  overflow-x: hidden;
+  width: 100%;
 }
 
 @media (max-width: 992px) {

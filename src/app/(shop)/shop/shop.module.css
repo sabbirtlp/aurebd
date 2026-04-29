@@ -2,6 +2,7 @@
   background-color: var(--bg-color);
   min-height: 100vh;
   padding-bottom: var(--sp-12);
+  overflow: hidden;
   /* Very subtle noise/grain texture */
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
 }
@@ -15,12 +16,14 @@
 
 .sectionHeader h1 {
   font-size: 3.5rem;
-  font-weight: 300; /* Refined luxury typography */
+  font-weight: 300;
   color: var(--text-dark);
   letter-spacing: -0.01em;
   margin-bottom: var(--sp-2);
   position: relative;
   display: inline-block;
+  max-width: 100%;
+  word-wrap: break-word;
 }
 
 /* Subtle glow behind text */
@@ -62,6 +65,9 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: var(--sp-4);
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .categoryGroup {
@@ -171,6 +177,12 @@
   grid-template-columns: repeat(4, 1fr);
   gap: var(--sp-5);
   margin-top: var(--sp-2);
+  width: 100%;
+  max-width: 100%;
+}
+
+.productGrid > * {
+  min-width: 0;
 }
 
 .noResults {
@@ -246,29 +258,36 @@
 
 @media (max-width: 600px) {
   .productGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--sp-3);
   }
   .sectionHeader h1 {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
+    line-height: 1.2;
+    padding: 0 var(--sp-2);
   }
   .categoryGroup {
     flex-wrap: nowrap;
     overflow-x: auto;
-    padding: 8px var(--sp-4);
-    margin: 0 calc(var(--sp-4) * -1);
+    padding: 8px 4px;
+    margin: 0;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    width: 100%;
   }
   .categoryGroup::-webkit-scrollbar {
     display: none;
   }
   .categoryPill {
     flex-shrink: 0;
+    padding: 8px 16px;
+    font-size: 0.85rem;
   }
   .filterControls {
     flex-direction: column;
     align-items: stretch;
-    gap: var(--sp-3);
+    gap: var(--sp-4);
+    width: 100%;
   }
   .priceSliderContainer {
     justify-content: space-between;

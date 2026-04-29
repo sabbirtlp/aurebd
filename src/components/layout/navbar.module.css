@@ -19,14 +19,17 @@
   background: var(--primary);
   color: white;
   text-align: center;
-  padding: var(--sp-1) 0;
-  font-size: 0.8rem;
+  padding: var(--sp-1) var(--sp-4);
+  font-size: 0.75rem;
   font-weight: 500;
-  letter-spacing: 1px;
-  height: 36px;
+  letter-spacing: 0.5px;
+  min-height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .navMain {
@@ -340,6 +343,12 @@
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 1000;
   pointer-events: none;
+}
+
+@media (max-width: 992px) {
+  .megaMenu {
+    display: none !important;
+  }
 }
 
 @media (max-width: 1100px) {
