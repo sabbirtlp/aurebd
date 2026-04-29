@@ -64,7 +64,45 @@ export default function Navbar() {
 
           <nav className={styles.desktopNav}>
             <Link href="/" className={styles.navLink}>{tr('nav.home')}</Link>
-            <Link href="/shop" className={styles.navLink}>{tr('nav.shop')}</Link>
+            
+            <div className={styles.navItem}>
+              <Link href="/shop" className={styles.navLink}>{tr('nav.shop')}</Link>
+              <div className={styles.megaMenu}>
+                <div className={styles.megaCol}>
+                  <h3 className={styles.megaTitle}>{language === 'bn' ? 'ক্যাটাগরি' : 'Categories'}</h3>
+                  <ul className={styles.megaList}>
+                    <li><Link href="/shop?category=Radiance%20Serums" className={styles.megaLink}>{tr('cat.serums')}</Link></li>
+                    <li><Link href="/shop?category=Hydration%20Creams" className={styles.megaLink}>{tr('cat.creams')}</Link></li>
+                    <li><Link href="/shop?category=UV%20Protection" className={styles.megaLink}>{tr('cat.uv')}</Link></li>
+                    <li><Link href="/shop?category=Skin%20Essentials" className={styles.megaLink}>{tr('cat.essentials')}</Link></li>
+                    <li><Link href="/shop?category=Cleansers" className={styles.megaLink}>{language === 'bn' ? 'ক্লিনজার' : 'Cleansers'}</Link></li>
+                  </ul>
+                </div>
+                
+                <div className={styles.megaCol}>
+                  <h3 className={styles.megaTitle}>{language === 'bn' ? 'কালেকশন' : 'Collections'}</h3>
+                  <ul className={styles.megaList}>
+                    <li><Link href="/shop" className={styles.megaLink}>{language === 'bn' ? 'নতুন পণ্য' : 'New Arrivals'}</Link></li>
+                    <li><Link href="/shop" className={styles.megaLink}>{language === 'bn' ? 'সেরা বিক্রয়' : 'Best Sellers'}</Link></li>
+                    <li><Link href="/shop" className={styles.megaLink}>{language === 'bn' ? 'গিফট সেট' : 'Gift Sets'}</Link></li>
+                    <li><Link href="/shop" className={styles.megaLink}>{language === 'bn' ? 'অফারসমূহ' : 'Special Offers'}</Link></li>
+                  </ul>
+                </div>
+
+                <div className={styles.megaFeatured}>
+                  <div className={styles.featuredImg}>
+                    <Image src="/images/sakura-set.png" alt="Featured" fill style={{ objectFit: "cover" }} />
+                  </div>
+                  <div className={styles.featuredInfo}>
+                    <span className={styles.featuredBadge}>{language === 'bn' ? 'সুপার ডিল' : 'Super Deal'}</span>
+                    <h4>Sakura 5pcs Skincare Set</h4>
+                    <p>{language === 'bn' ? 'সম্পূর্ণ সাকুরা স্কিনকেয়ার সেট এখন বিশেষ মূল্যে।' : 'The ultimate Sakura ritual for a radiant glow.'}</p>
+                    <Link href="/shop" className={styles.featuredBtn}>{language === 'bn' ? 'এখনই কিনুন' : 'Shop Now'}</Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <Link href="/about" className={styles.navLink}>{tr('nav.about')}</Link>
             <Link href="/contact" className={styles.navLink}>{tr('nav.contact')}</Link>
           </nav>
