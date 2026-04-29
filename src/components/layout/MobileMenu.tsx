@@ -42,26 +42,22 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         <div className={styles.header}>
           <div className={styles.logoWrapper}>
             <Image src="/images/logo-v2.png" alt="Aurea BD" width={180} height={60} style={{ width: "auto", height: "32px", objectFit: "contain" }} />
-            <p className={styles.tagline}>{language === 'bn' ? 'প্রিমিয়াম জাপানিজ স্কিনকেয়ার' : 'Premium Japanese Skincare'}</p>
           </div>
-          <button className={styles.closeBtn} onClick={onClose}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-          </button>
+          
+          <div className={styles.headerActions}>
+            <button className={styles.headerBtn} onClick={toggleTheme} aria-label="Toggle Theme">
+              {mounted ? (theme === 'light' ? '🌙' : '☀️') : '🌙'}
+            </button>
+            <button className={styles.headerBtn} onClick={toggleLanguage} aria-label="Switch Language">
+              {mounted ? (language === 'bn' ? 'EN' : 'BN') : 'BN'}
+            </button>
+            <button className={styles.closeBtn} onClick={onClose} aria-label="Close Menu">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
         </div>
 
         <div className={styles.content}>
-          {/* THEME & LANG SWITCHERS */}
-          <div className={styles.switchers}>
-            <button className={styles.switchBtn} onClick={toggleTheme}>
-              <span className={styles.icon}>{mounted ? (theme === 'light' ? '🌙' : '☀️') : '🌙'}</span>
-              {mounted ? (theme === 'light' ? (language === 'bn' ? 'ডার্ক মোড' : 'Dark Mode') : (language === 'bn' ? 'লাইট মোড' : 'Light Mode')) : 'Theme'}
-            </button>
-            <button className={styles.switchBtn} onClick={toggleLanguage}>
-              <span className={styles.icon}>🌐</span>
-              {mounted ? (language === 'bn' ? 'English' : 'বাংলা') : 'Language'}
-            </button>
-          </div>
-
           {/* NAVIGATION LINKS */}
           <nav className={styles.nav}>
             <Link href="/" className={styles.navLink} onClick={onClose}>
