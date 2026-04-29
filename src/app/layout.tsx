@@ -18,6 +18,10 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Aurea BD | Premium Japanese Skincare",
   description: "Glow naturally with authentic Japanese Sakura skincare. Shop Laikou Sakura sets, serums, and creams in Bangladesh.",
+  icons: {
+    icon: "/icon.png",
+    apple: "/apple-icon.png",
+  }
 };
 
 import ThemeWrapper from "@/components/ThemeWrapper";
