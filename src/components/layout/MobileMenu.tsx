@@ -6,6 +6,7 @@ import Image from "next/image";
 import styles from "./mobileMenu.module.css";
 
 import { useLanguageStore } from "@/store/languageStore";
+import { useThemeStore } from "@/store/themeStore";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -13,8 +14,8 @@ interface MobileMenuProps {
 }
 
 export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
-  const [activeAccordion, setActiveAccordion] = useState<string | null>(null);
-  const { t, language } = useLanguageStore();
+  const { t, language, setLanguage } = useLanguageStore();
+  const { theme, toggleTheme } = useThemeStore();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -28,8 +29,8 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
   const tr = (key: string) => mounted ? t(key) : key;
 
-  const toggleAccordion = (name: string) => {
-    setActiveAccordion(activeAccordion === name ? null : name);
+  const toggleLanguage = () => {
+    setLanguage(language === 'bn' ? 'en' : 'bn');
   };
 
   if (!isOpen) return null;
@@ -49,6 +50,18 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         </div>
 
         <div className={styles.content}>
+          {/* THEME & LANG SWITCHERS */}
+          <div className={styles.switchers}>
+            <button className={styles.switchBtn} onClick={toggleTheme}>
+              <span className={styles.icon}>{mounted ? (theme === 'light' ? '🌙' : '☀️') : '🌙'}</span>
+              {mounted ? (theme === 'light' ? (language === 'bn' ? 'ডার্ক মোড' : 'Dark Mode') : (language === 'bn' ? 'লাইট মোড' : 'Light Mode')) : 'Theme'}
+            </button>
+            <button className={styles.switchBtn} onClick={toggleLanguage}>
+              <span className={styles.icon}>🌐</span>
+              {mounted ? (language === 'bn' ? 'English' : 'বাংলা') : 'Language'}
+            </button>
+          </div>
+
           {/* NAVIGATION LINKS */}
           <nav className={styles.nav}>
             <Link href="/" className={styles.navLink} onClick={onClose}>
