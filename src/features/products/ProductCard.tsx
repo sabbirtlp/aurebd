@@ -97,20 +97,20 @@ export default function ProductCard({ product }: ProductCardProps) {
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
           </svg>
         </button>
-
-        {/* Quick Add Button */}
-        <button 
-          className={styles.quickAddBtn} 
-          onClick={handleAddToCart}
-          disabled={product.stock <= 0}
-        >
-          {product.stock > 0 
-            ? (language === 'bn' ? 'কার্টে যোগ করুন' : 'Quick Add') 
-            : (language === 'bn' ? 'স্টক নেই' : 'Out of Stock')
-          }
-        </button>
       </Link>
       
+      {/* Quick Add Button - Now always visible below image */}
+      <button 
+        className={styles.quickAddBtn} 
+        onClick={handleAddToCart}
+        disabled={product.stock <= 0}
+      >
+        {product.stock > 0 
+          ? (language === 'bn' ? 'কার্টে যোগ করুন' : 'Quick Add') 
+          : (language === 'bn' ? 'স্টক নেই' : 'Out of Stock')
+        }
+      </button>
+
       <div className={styles.info}>
         <div className={styles.brand}>{product.category || "Aurea BD"}</div>
         <Link href={`/product/${product.slug || product._id}`} className={styles.name}>
