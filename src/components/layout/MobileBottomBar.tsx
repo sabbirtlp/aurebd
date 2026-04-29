@@ -74,14 +74,6 @@ export default function MobileBottomBar() {
                       type: "spring", stiffness: 350, damping: 30, mass: 1
                     }}
                   />
-                  <motion.div 
-                    layoutId="active-indicator"
-                    className={styles.activeIndicator}
-                    initial={false}
-                    transition={{
-                      type: "spring", stiffness: 400, damping: 25, mass: 0.5
-                    }}
-                  />
                 </>
               )}
             </motion.div>

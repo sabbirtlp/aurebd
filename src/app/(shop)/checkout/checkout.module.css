@@ -1,5 +1,10 @@
 .checkoutPage {
-  padding: var(--sp-12) 0;
+  padding: var(--sp-12) 0 var(--sp-12);
+  overflow-x: hidden;
+}
+
+@media (max-width: 992px) {
+  .checkoutPage { padding: var(--sp-8) 0 120px; }
 }
 
 .grid {
@@ -9,13 +14,28 @@
   align-items: start;
 }
 
+.grid > * {
+  min-width: 0;
+}
+
+@media (max-width: 992px) {
+  .grid { 
+    grid-template-columns: 1fr; 
+    gap: var(--sp-6); 
+  }
+}
+
 .sectionCard {
   background: var(--bg-color);
   padding: var(--sp-8);
   border-radius: 24px;
   box-shadow: var(--nm-outer-raised-sm);
   margin-bottom: var(--sp-6);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .sectionCard { padding: var(--sp-6) var(--sp-4); }
 }
 
 .sectionTitle {
@@ -25,10 +45,18 @@
   font-weight: 300;
 }
 
+@media (max-width: 768px) {
+  .sectionTitle { font-size: 1.5rem; margin-bottom: var(--sp-4); }
+}
+
 .inputGroup {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--sp-4);
+}
+
+@media (max-width: 768px) {
+  .inputGroup { grid-template-columns: 1fr; gap: var(--sp-3); }
 }
 
 .inputField {
@@ -39,7 +67,7 @@
 
 .inputField label {
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-dark);
 }
 
@@ -104,10 +132,29 @@
 .rightSide {
   position: sticky;
   top: 120px;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+@media (max-width: 992px) {
+  .rightSide { position: static; order: 2; }
+  .leftSide { order: 1; }
 }
 
 .summaryCard {
   padding: var(--sp-6);
+  background: var(--bg-color);
+  border-radius: 24px;
+  box-shadow: var(--nm-outer-raised-sm);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .summaryCard { padding: var(--sp-4); }
+  .summaryTitle { font-size: 1.5rem; margin-bottom: var(--sp-4); }
 }
 
 .summaryTitle {
@@ -128,6 +175,10 @@
   display: flex;
   align-items: center;
   gap: var(--sp-3);
+}
+
+.summaryItem .itemImage {
+  flex-shrink: 0;
 }
 
 .itemImage {
@@ -164,8 +215,11 @@
   font-weight: 500;
   margin: 0;
   color: var(--text-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 180px;
 }
-
 .itemInfo p {
   font-size: 0.85rem;
   margin: 0;
@@ -175,10 +229,12 @@
 .itemTotal {
   font-weight: 600;
   color: var(--text-dark);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .calculation {
-  border-top: 1px solid rgba(255, 255, 255, 0.4);
+  border-top: 1px solid var(--border);
   padding-top: var(--sp-4);
   margin-bottom: var(--sp-6);
 }
@@ -194,10 +250,14 @@
 .totalRow {
   margin-top: var(--sp-4);
   padding-top: var(--sp-4);
-  border-top: 1px solid rgba(255, 255, 255, 0.4);
+  border-top: 1px solid var(--border);
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--text-dark);
+}
+
+@media (max-width: 768px) {
+  .totalRow { font-size: 1.2rem; }
 }
 
 .paymentSection {
@@ -214,6 +274,10 @@
 .paymentOptions {
   display: flex;
   gap: var(--sp-3);
+}
+
+@media (max-width: 768px) {
+  .paymentOptions { flex-direction: column; }
 }
 
 .paymentBtn {
@@ -236,11 +300,46 @@
   box-shadow: var(--nm-inner-pressed-sm);
 }
 
-@media (max-width: 992px) {
-  .grid { grid-template-columns: 1fr; }
-  .rightSide { position: static; }
+/* --- Dark Mode Enhancements --- */
+:global([data-theme='dark']) .sectionCard,
+:global([data-theme='dark']) .summaryCard {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(145deg, #1a1a1a, #121212);
 }
 
-@media (max-width: 576px) {
-  .inputGroup { grid-template-columns: 1fr; }
+:global([data-theme='dark']) .nmInput {
+  background: #0d0d0d;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+:global([data-theme='dark']) .nmInput::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+:global([data-theme='dark']) .inputField label {
+  color: var(--text-dark);
+  opacity: 0.9;
+}
+
+:global([data-theme='dark']) .deliveryOption {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+:global([data-theme='dark']) .paymentBtn {
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+:global([data-theme='dark']) .paymentBtn.active {
+  background: rgba(203, 163, 148, 0.15);
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+
+/* Neumorphic inset for delivery options */
+.nmInset {
+  background: var(--bg-color);
+  box-shadow: var(--nm-inner-pressed-sm);
+  border: 1px solid var(--border);
 }

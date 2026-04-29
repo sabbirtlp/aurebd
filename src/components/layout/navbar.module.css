@@ -278,15 +278,37 @@
   transform: translateY(0) rotate(-45deg);
 }
 
+.mobileActions {
+  display: none;
+}
+
 @media (max-width: 992px) {
   .desktopNav, .searchForm, .desktopActions {
     display: none;
+  }
+  .mobileActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 4px;
+  }
+  .actions {
+    gap: 8px;
+  }
+  .menuBtn {
+    margin-left: 0;
+  }
+  .langToggle,
+  .themeToggle {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    min-width: 40px;
   }
   .navMain {
     height: 70px;
   }
   .logoWrapper img {
-    width: 100px !important;
+    width: 90px !important;
     height: auto !important;
   }
 }

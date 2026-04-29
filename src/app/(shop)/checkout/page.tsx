@@ -12,8 +12,8 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <div className="section container text-center animate-fade-in" style={{ padding: "10rem 0", textAlign: "center" }}>
-        <h2 style={{ fontSize: "2.5rem", marginBottom: "var(--sp-4)" }}>Your cart is empty</h2>
+      <div className="section container text-center animate-fade-in" style={{ padding: "clamp(4rem, 10vw, 10rem) 0", textAlign: "center" }}>
+        <h2 style={{ fontSize: "clamp(1.5rem, 4vw, 2.5rem)", marginBottom: "var(--sp-4)" }}>Your cart is empty</h2>
         <p style={{ marginBottom: "var(--sp-6)" }}>Please add some products before checking out.</p>
         <Link href="/shop" className="btn-nm btn-nm-primary">Return to Shop</Link>
       </div>
@@ -86,7 +86,7 @@ export default function CheckoutPage() {
 
         {/* RIGHT SIDE - SUMMARY */}
         <div className={styles.rightSide}>
-          <div className={`${styles.summaryCard} nm-card`}>
+          <div className={styles.summaryCard}>
             <h2 className={styles.summaryTitle}>Order Summary</h2>
             <div className={styles.itemList}>
               {items.map((item) => (

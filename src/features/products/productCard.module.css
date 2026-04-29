@@ -169,3 +169,30 @@
 .ratingStar {
   color: var(--accent);
 }
+@media (max-width: 992px) {
+  .card {
+    padding: 12px;
+  }
+  .quickAddBtn {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    width: 100%;
+    transform: translateY(0);
+    opacity: 1;
+    margin-top: 12px;
+    padding: 10px 0;
+    font-size: 0.75rem;
+    background: var(--bg-color);
+    box-shadow: var(--nm-outer-raised-sm);
+  }
+  .image {
+    padding: 16px;
+  }
+  .name {
+    font-size: 0.95rem;
+  }
+  .price {
+    font-size: 1rem;
+  }
+}

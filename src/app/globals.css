@@ -65,6 +65,7 @@ html, body {
   font-family: var(--font-poppins), sans-serif;
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 h1, h2, h3, h4 {

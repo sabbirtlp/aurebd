@@ -6,7 +6,18 @@
   z-index: 3000;
   display: flex;
   justify-content: flex-start;
-  animation: fadeIn 0.4s ease;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.overlay.closed {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .menu {
@@ -32,34 +43,6 @@
   align-items: center;
   border-bottom: 1px solid var(--border);
   background: var(--bg-color);
-}
-
-.headerActions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.headerBtn {
-  background: var(--bg-color);
-  border: 1px solid rgba(203, 163, 148, 0.2);
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: var(--nm-outer-raised-sm);
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--primary);
-  transition: all 0.3s ease;
-}
-
-.headerBtn:active {
-  box-shadow: var(--nm-inner-pressed-sm);
-  transform: scale(0.9);
 }
 
 .closeBtn {

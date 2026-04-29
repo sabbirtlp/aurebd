@@ -462,36 +462,40 @@
 }
 
 @media (max-width: 992px) {
-  .heroSection { min-height: auto; padding: var(--sp-12) 0; }
+  .heroSection { min-height: auto; padding: var(--sp-6) 0; }
   .heroContainer { flex-direction: column; text-align: center; }
   .heroContent { 
     align-items: center; 
-    padding: var(--sp-8) 0; 
+    padding: var(--sp-4) 0; 
     max-width: 100%;
     order: 2;
   }
-  .heroSubtitle { max-width: 100%; }
-  .heroActions { justify-content: center; width: 100%; }
-  .heroTrust { justify-content: center; width: 100%; }
+  .heroSubtitle { max-width: 100%; margin-bottom: var(--sp-6); }
+  .heroActions { justify-content: center; width: 100%; margin-bottom: var(--sp-8); }
+  .heroTrust { justify-content: center; width: 100%; padding-top: var(--sp-4); }
   
   .heroImageContainer { 
     width: 100%; 
-    padding: var(--sp-4); 
+    padding: var(--sp-2); 
     justify-content: center;
     order: 1;
   }
-  .heroImageCircle { width: 70%; max-width: 400px; }
+  .heroImageCircle { width: 70%; max-width: 350px; }
   
-  .productGrid, .categoryGrid { grid-template-columns: repeat(2, 1fr); }
-  .trustGrid { grid-template-columns: repeat(2, 1fr); }
+  .productGrid, .categoryGrid { grid-template-columns: repeat(2, 1fr); gap: var(--sp-3); }
+  .trustGrid { grid-template-columns: repeat(2, 1fr); gap: var(--sp-3); }
   
   .promoBanner { flex-direction: column; text-align: center; }
-  .promoImageContainer { height: 300px; width: 100%; justify-content: center; }
+  .promoImageContainer { height: 250px; width: 100%; justify-content: center; }
+  
+  .categorySection, .featuredSection, .promoSection {
+    padding: var(--sp-8) 0;
+  }
 }
 
 @media (max-width: 768px) {
-  .heroTitle { font-size: 3rem; }
-  .heroTrust { flex-wrap: wrap; gap: var(--sp-4); }
+  .heroTitle { font-size: 3rem; line-height: 1.1; }
+  .heroTrust { flex-wrap: wrap; gap: var(--sp-3); }
   .sectionTitle { font-size: 2.2rem; }
   .promoContent { padding: var(--sp-6) var(--sp-4); }
   .promoTitle { font-size: 2rem; }
@@ -500,21 +504,26 @@
 
 @media (max-width: 576px) {
   .heroTitle { font-size: 2.4rem; }
-  .heroSubtitle { font-size: 1rem; line-height: 1.6; }
+  .heroSubtitle { font-size: 1rem; line-height: 1.5; }
   .sectionTitle { font-size: 1.8rem; }
   .heroActions {
     flex-direction: column;
     width: 100%;
-    gap: var(--sp-3);
+    gap: var(--sp-2);
   }
   .btnPrimary, .btnSecondary {
     width: 100%;
-    padding: 14px 28px;
+    padding: 12px 24px;
+    font-size: 0.95rem;
   }
-  .heroImageCircle { width: 90%; }
-  .productGrid, .categoryGrid { grid-template-columns: 1fr; }
-  .trustGrid { grid-template-columns: 1fr; }
+  .heroImageCircle { width: 85%; }
+  .productGrid, .categoryGrid { grid-template-columns: 1fr; gap: var(--sp-4); }
+  .trustGrid { grid-template-columns: 1fr; gap: var(--sp-3); }
   .promoContent { padding: var(--sp-5) var(--sp-3); }
-  .floatingCard { padding: 10px 16px; border-radius: 12px; }
+  .promoTitle { font-size: 1.8rem; }
+  .floatingCard { padding: 8px 12px; border-radius: 12px; }
   .heroTrust { flex-direction: column; align-items: center; gap: var(--sp-2); }
+  .categorySection, .featuredSection, .promoSection {
+    padding: var(--sp-6) 0;
+  }
 }

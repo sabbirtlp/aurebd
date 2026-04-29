@@ -42,7 +42,6 @@ export default function Navbar() {
 
   return (
     <>
-      <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
       <header className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}>
         <div className={styles.topBar}>
           {tr('topbar.shipping')}
@@ -56,17 +55,17 @@ export default function Navbar() {
                 alt="Aurea BD" 
                 width={600} 
                 height={200} 
-                style={{ width: "auto", height: "64px", objectFit: "contain" }} 
+                style={{ width: "auto", height: "64px", objectFit: "contain", maxWidth: "120px" }} 
                 priority 
               />
             </Link>
           </div>
 
           <nav className={styles.desktopNav}>
-            <Link href="/" className={styles.navLink}>{tr('nav.home')}</Link>
+            <Link href="/" className={styles.navLink}><span suppressHydrationWarning>{tr('nav.home')}</span></Link>
             
             <div className={styles.navItem}>
-              <Link href="/shop" className={styles.navLink}>{tr('nav.shop')}</Link>
+              <Link href="/shop" className={styles.navLink}><span suppressHydrationWarning>{tr('nav.shop')}</span></Link>
               <div className={styles.megaMenu}>
                 <div className={styles.megaCol}>
                   <h3 className={styles.megaTitle}>{language === 'bn' ? 'ক্যাটাগরি' : 'Categories'}</h3>
@@ -103,8 +102,8 @@ export default function Navbar() {
               </div>
             </div>
 
-            <Link href="/about" className={styles.navLink}>{tr('nav.about')}</Link>
-            <Link href="/contact" className={styles.navLink}>{tr('nav.contact')}</Link>
+            <Link href="/about" className={styles.navLink}><span suppressHydrationWarning>{tr('nav.about')}</span></Link>
+            <Link href="/contact" className={styles.navLink}><span suppressHydrationWarning>{tr('nav.contact')}</span></Link>
           </nav>
 
           <div className={styles.actions}>
@@ -116,7 +115,9 @@ export default function Navbar() {
                 onClick={toggleTheme}
                 aria-label="Toggle Theme"
               >
-                {mounted ? (theme === 'light' ? '🌙' : '☀️') : '🌙'}
+                <span suppressHydrationWarning>
+                  {mounted ? (theme === 'light' ? '🌙' : '☀️') : '🌙'}
+                </span>
               </button>
 
               <button 
@@ -124,7 +125,9 @@ export default function Navbar() {
                 onClick={toggleLanguage}
                 aria-label="Switch Language"
               >
-                {mounted ? (language === 'bn' ? 'EN' : 'বাংলা') : 'BN'}
+                <span suppressHydrationWarning>
+                  {mounted ? (language === 'bn' ? 'EN' : 'বাংলা') : 'BN'}
+                </span>
               </button>
 
               {session ? (
@@ -149,6 +152,28 @@ export default function Navbar() {
               </button>
             </div>
 
+            <div className={styles.mobileActions}>
+              <button 
+                className={`${styles.themeToggle} nm-card`} 
+                onClick={toggleTheme}
+                aria-label="Toggle Theme"
+              >
+                <span suppressHydrationWarning>
+                  {mounted ? (theme === 'light' ? '🌙' : '☀️') : '🌙'}
+                </span>
+              </button>
+
+              <button 
+                className={`${styles.langToggle} nm-card`} 
+                onClick={toggleLanguage}
+                aria-label="Switch Language"
+              >
+                <span suppressHydrationWarning>
+                  {mounted ? (language === 'bn' ? 'EN' : 'বাংলা') : 'BN'}
+                </span>
+              </button>
+            </div>
+
             <button 
               className={`${styles.menuBtn} ${isMobileMenuOpen ? styles.menuOpen : ""}`} 
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -161,6 +186,7 @@ export default function Navbar() {
           </div>
         </div>
       </header>
+      <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
     </>
   );
 }

@@ -66,16 +66,6 @@
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.activeIndicator {
-  position: absolute;
-  bottom: -10px;
-  width: 6px;
-  height: 6px;
-  background: var(--primary);
-  border-radius: 50%;
-  box-shadow: 0 0 12px var(--primary);
-}
-
 @keyframes popIn {
   0% { transform: scale(0); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
@@ -116,3 +106,24 @@
   }
 }
 
+/* --- Dark Mode Overrides --- */
+:global([data-theme='dark']) .bottomBar {
+  background: rgba(18, 18, 18, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.4);
+}
+
+:global([data-theme='dark']) .activePill {
+  background: linear-gradient(145deg, #222222, #121212);
+  box-shadow: 6px 6px 12px #080808, -6px -6px 12px #1d1d1d;
+}
+
+:global([data-theme='dark']) .navItem {
+  color: var(--text-light);
+  opacity: 0.6;
+}
+
+:global([data-theme='dark']) .navItem.active {
+  color: var(--primary);
+  opacity: 1;
+}

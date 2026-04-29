@@ -4,10 +4,12 @@ import { useCartStore } from "@/store/cartStore";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./cart.module.css";
+import { useLanguageStore } from "@/store/languageStore";
 import { useEffect } from "react";
 
 export default function CartSidebar() {
   const { items, isOpen, toggleCart, removeItem, updateQuantity, getTotal } = useCartStore();
+  const { language, t } = useLanguageStore();
 
   // Prevent scroll when cart is open
   useEffect(() => {
@@ -18,13 +20,15 @@ export default function CartSidebar() {
     }
   }, [isOpen]);
 
-  if (!isOpen) return null;
-
   return (
-    <div className={styles.overlay} onClick={() => toggleCart(false)}>
+    <div 
+      className={`${styles.overlay} ${isOpen ? styles.open : styles.closed}`} 
+      onClick={() => toggleCart(false)}
+      style={{ zIndex: 10000 }} // Ensure it's above EVERYTHING
+    >
       <div className={styles.sidebar} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <h2>Your Cart</h2>
+          <h2 suppressHydrationWarning>{language === 'bn' ? 'আপনার কার্ট' : 'Your Cart'}</h2>
           <button className={styles.closeBtn} onClick={() => toggleCart(false)}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
@@ -34,8 +38,10 @@ export default function CartSidebar() {
           {items.length === 0 ? (
             <div className={styles.emptyCart}>
               <div className={styles.emptyIcon}>🛍️</div>
-              <p>Your cart is empty</p>
-              <button className="btn-nm" onClick={() => toggleCart(false)}>Start Shopping</button>
+              <p suppressHydrationWarning>{language === 'bn' ? 'আপনার কার্ট খালি' : 'Your cart is empty'}</p>
+              <button className="btn-nm" onClick={() => toggleCart(false)}>
+                <span suppressHydrationWarning>{language === 'bn' ? 'কেনাকাটা শুরু করুন' : 'Start Shopping'}</span>
+              </button>
             </div>
           ) : (
             items.map((item) => (
@@ -45,7 +51,7 @@ export default function CartSidebar() {
                 </div>
                 <div className={styles.itemDetails}>
                   <h3>{item.name}</h3>
-                  <p className={styles.itemPrice}>৳ {item.price}</p>
+                  <p className={styles.itemPrice} suppressHydrationWarning>৳ {item.price.toLocaleString()}</p>
                   <div className={styles.quantityControls}>
                     <button className={styles.qBtn} onClick={() => updateQuantity(item.id, item.quantity - 1)}>−</button>
                     <span>{item.quantity}</span>
@@ -63,19 +69,28 @@ export default function CartSidebar() {
         {items.length > 0 && (
           <div className={styles.footer}>
             <div className={styles.subtotal}>
-              <span>Subtotal</span>
-              <span>৳ {getTotal()}</span>
+              <span suppressHydrationWarning>{language === 'bn' ? 'সাবটোটাল' : 'Subtotal'}</span>
+              <span suppressHydrationWarning>৳ {getTotal().toLocaleString()}</span>
             </div>
             <div className={styles.total}>
-              <span>Total</span>
-              <span>৳ {getTotal()}</span>
+              <span suppressHydrationWarning>{language === 'bn' ? 'মোট' : 'Total'}</span>
+              <span suppressHydrationWarning>৳ {getTotal().toLocaleString()}</span>
             </div>
             <div className={styles.actions}>
-              <button className="btn-nm" style={{ width: "100%", justifyContent: "center" }} onClick={() => toggleCart(false)}>
-                Continue Shopping
+              <button 
+                className="btn-nm" 
+                style={{ width: "100%", justifyContent: "center", height: "56px" }} 
+                onClick={() => toggleCart(false)}
+              >
+                <span suppressHydrationWarning>{language === 'bn' ? 'আরও কেনিকাটা করুন' : 'Continue Shopping'}</span>
               </button>
-              <Link href="/checkout" className="btn-nm btn-nm-primary" style={{ width: "100%", justifyContent: "center" }} onClick={() => toggleCart(false)}>
-                Checkout
+              <Link 
+                href="/checkout" 
+                className="btn-nm btn-nm-primary" 
+                style={{ width: "100%", justifyContent: "center", height: "56px", fontSize: "1.1rem" }} 
+                onClick={() => toggleCart(false)}
+              >
+                <span suppressHydrationWarning>{language === 'bn' ? 'চেকআউট করুন' : 'Checkout'}</span>
               </Link>
             </div>
           </div>
