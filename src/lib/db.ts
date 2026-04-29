@@ -1,13 +1,12 @@
 import mongoose from 'mongoose';
 
-let MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = process.env.MONGODB_URI;
 
-if (!MONGODB_URI) {
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('Please define the MONGODB_URI environment variable inside the Vercel Dashboard');
-  }
-  MONGODB_URI = "mongodb://localhost:27017/aureabd";
+if (!MONGODB_URI && process.env.NODE_ENV === 'production') {
+  throw new Error('Please define the MONGODB_URI environment variable inside the Vercel Dashboard');
 }
+
+const MONGODB_CONN_URI = MONGODB_URI || "mongodb://localhost:27017/aureabd";
 
 /**
  * Global is used here to maintain a cached connection across hot reloads
@@ -30,7 +29,7 @@ async function dbConnect() {
       bufferCommands: false,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+    cached.promise = mongoose.connect(MONGODB_CONN_URI, opts).then((mongoose) => {
       return mongoose;
     });
   }
