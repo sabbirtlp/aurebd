@@ -90,12 +90,3 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ message: error.message || "Error updating profile" }, { status: 500 });
   }
 }
-
-// Increase limit for profile photo (base64)
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '10mb',
-    },
-  },
-};
