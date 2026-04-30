@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLanguageStore } from "@/store/languageStore";
 import styles from "./testimonialSlider.module.css";
 
@@ -52,7 +52,7 @@ export default function TestimonialSlider({ items, title }: TestimonialSliderPro
   const displayItems = items || (dbTestimonials.length > 0 ? dbTestimonials : formattedStatic);
   const displayTitle = title || (language === 'bn' ? 'গ্রাহকদের কথা' : 'What Our Clients Say');
 
-  const fetchTestimonials = useMemo(() => async () => {
+  const fetchTestimonials = useCallback(async () => {
     try {
       const res = await fetch(`/api/testimonials?lang=${language}`);
       const data = await res.json();
