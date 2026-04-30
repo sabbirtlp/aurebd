@@ -7,13 +7,23 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import styles from "./admin.module.css";
 
-const navItems = [
-  { href: "/admin", label: "Dashboard", icon: "📊" },
-  { href: "/admin/products", label: "Products", icon: "🛍️" },
-  { href: "/admin/orders", label: "Orders", icon: "📦" },
-  { href: "/admin/testimonials", label: "Testimonials", icon: "💬" },
-  { href: "/admin/pages", label: "Pages (CMS)", icon: "📝" },
-  { href: "/admin/customers", label: "Customers", icon: "👥" },
+const navGroups = [
+  {
+    title: "Store Management",
+    items: [
+      { href: "/admin", label: "Dashboard", icon: "📊" },
+      { href: "/admin/products", label: "Products", icon: "🛍️" },
+      { href: "/admin/orders", label: "Orders", icon: "📦" },
+      { href: "/admin/customers", label: "Customers", icon: "👥" },
+    ]
+  },
+  {
+    title: "Content Management",
+    items: [
+      { href: "/admin/pages", label: "Pages (CMS)", icon: "📝" },
+      { href: "/admin/testimonials", label: "Testimonials", icon: "💬" },
+    ]
+  }
 ];
 
 export default function AdminSidebar({ userName }: { userName: string }) {
@@ -61,15 +71,20 @@ export default function AdminSidebar({ userName }: { userName: string }) {
         </div>
 
         <nav className={styles.sidebarNav}>
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`${styles.navItem} ${isActive(item.href) ? styles.navItemActive : ""}`}
-            >
-              <span>{item.icon}</span>
-              <span>{item.label}</span>
-            </Link>
+          {navGroups.map((group) => (
+            <div key={group.title} className={styles.navGroup}>
+              <div className={styles.navGroupTitle}>{group.title}</div>
+              {group.items.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`${styles.navItem} ${isActive(item.href) ? styles.navItemActive : ""}`}
+                >
+                  <span style={{ fontSize: "1.1rem" }}>{item.icon}</span>
+                  <span>{item.label}</span>
+                </Link>
+              ))}
+            </div>
           ))}
         </nav>
 
