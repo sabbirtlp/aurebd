@@ -6,9 +6,10 @@ import { motion } from "framer-motion";
 import styles from "./page.module.css";
 import ProductCard from '@/features/products/ProductCard';
 import TestimonialSlider from '@/components/shared/TestimonialSlider';
-import Newsletter from '@/components/shared/Newsletter';
 import { useLanguageStore } from "@/store/languageStore";
 import { useState, useEffect } from "react";
+import Newsletter from '@/components/shared/Newsletter';
+import Editable from "@/components/cms/Editable";
 
 export default function HomeClient({ products }: { products: any[] }) {
   const { t, language } = useLanguageStore();
@@ -51,7 +52,7 @@ export default function HomeClient({ products }: { products: any[] }) {
               className={styles.heroBadge}
             >
               <span className={styles.badgeDot}></span>
-              {language === 'bn' ? 'নতুন কালেকশন ২০২৬' : 'New Collection 2026'}
+              <Editable page="home" section="hero" field="badge" defaultText={language === 'bn' ? 'নতুন কালেকশন ২০২৬' : 'New Collection 2026'} />
             </motion.div>
 
             <motion.h1 
@@ -60,8 +61,8 @@ export default function HomeClient({ products }: { products: any[] }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              {tr('hero.title')} <br />
-              <span className={styles.italicText}>{tr('hero.title_span')}</span>
+              <Editable page="home" section="hero" field="title" defaultText={tr('hero.title')} /> <br />
+              <span className={styles.italicText}><Editable page="home" section="hero" field="title_span" defaultText={tr('hero.title_span')} /></span>
             </motion.h1>
 
             <motion.p 
@@ -70,7 +71,7 @@ export default function HomeClient({ products }: { products: any[] }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              {tr('hero.subtitle')}
+              <Editable page="home" section="hero" field="subtitle" defaultText={tr('hero.subtitle')} multiline />
             </motion.p>
 
             <motion.div 

@@ -5,6 +5,9 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect, useState } from "react";
 
+import { EditableProvider } from "@/context/EditableContext";
+import AdminEditToolbar from "@/components/cms/AdminEditToolbar";
+
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
@@ -14,8 +17,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <SessionProvider>
-      {children}
-      {mounted && <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />}
+      <EditableProvider>
+        {children}
+        {mounted && <AdminEditToolbar />}
+        {mounted && <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />}
+      </EditableProvider>
     </SessionProvider>
   );
 }
