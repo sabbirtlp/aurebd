@@ -5,10 +5,46 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "./checkout.module.css";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 export default function CheckoutPage() {
-  const { items, getTotal } = useCartStore();
+  const { items, getTotal, clearCart } = useCartStore();
   const [paymentMethod, setPaymentMethod] = useState("cod");
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  // Form State
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    address: "",
+    city: "",
+    zip: ""
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handlePlaceOrder = async () => {
+    // Basic Validation
+    if (!formData.fullName || !formData.phone || !formData.address) {
+      toast.error("Please fill in all required fields (Name, Phone, Address)");
+      return;
+    }
+
+    setLoading(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      toast.success("Order placed successfully! Redirecting...");
+      clearCart();
+      setLoading(false);
+      router.push("/");
+    }, 2000);
+  };
 
   if (items.length === 0) {
     return (
@@ -29,16 +65,39 @@ export default function CheckoutPage() {
             <h2 className={styles.sectionTitle}>Contact Information</h2>
             <div className={styles.inputGroup}>
               <div className={styles.inputField}>
-                <label>Full Name</label>
-                <input type="text" placeholder="Enter your full name" className={styles.nmInput} />
+                <label>Full Name *</label>
+                <input 
+                  type="text" 
+                  name="fullName"
+                  placeholder="Enter your full name" 
+                  className={styles.nmInput} 
+                  value={formData.fullName}
+                  onChange={handleInputChange}
+                  required
+                />
               </div>
               <div className={styles.inputField}>
                 <label>Email Address</label>
-                <input type="email" placeholder="email@example.com" className={styles.nmInput} />
+                <input 
+                  type="email" 
+                  name="email"
+                  placeholder="email@example.com" 
+                  className={styles.nmInput} 
+                  value={formData.email}
+                  onChange={handleInputChange}
+                />
               </div>
               <div className={styles.inputField}>
-                <label>Phone Number</label>
-                <input type="tel" placeholder="+880" className={styles.nmInput} />
+                <label>Phone Number *</label>
+                <input 
+                  type="tel" 
+                  name="phone"
+                  placeholder="+880" 
+                  className={styles.nmInput} 
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  required
+                />
               </div>
             </div>
           </div>
@@ -47,16 +106,38 @@ export default function CheckoutPage() {
             <h2 className={styles.sectionTitle}>Shipping Address</h2>
             <div className={styles.inputGroup}>
               <div className={`${styles.inputField} ${styles.inputFullWidth}`}>
-                <label>Street Address</label>
-                <input type="text" placeholder="House number and street name" className={styles.nmInput} />
+                <label>Street Address *</label>
+                <input 
+                  type="text" 
+                  name="address"
+                  placeholder="House number and street name" 
+                  className={styles.nmInput} 
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  required
+                />
               </div>
               <div className={styles.inputField}>
                 <label>City</label>
-                <input type="text" placeholder="City" className={styles.nmInput} />
+                <input 
+                  type="text" 
+                  name="city"
+                  placeholder="City" 
+                  className={styles.nmInput} 
+                  value={formData.city}
+                  onChange={handleInputChange}
+                />
               </div>
               <div className={styles.inputField}>
                 <label>Postal Code</label>
-                <input type="text" placeholder="1234" className={styles.nmInput} />
+                <input 
+                  type="text" 
+                  name="zip"
+                  placeholder="1234" 
+                  className={styles.nmInput} 
+                  value={formData.zip}
+                  onChange={handleInputChange}
+                />
               </div>
             </div>
           </div>
@@ -137,8 +218,13 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <button className="btn-nm btn-nm-primary pulse" style={{ width: "100%", marginTop: "var(--sp-6)", justifyContent: "center" }}>
-              Place Order
+            <button 
+              className={`btn-nm btn-nm-primary ${loading ? '' : 'pulse'}`} 
+              style={{ width: "100%", marginTop: "var(--sp-6)", justifyContent: "center" }}
+              onClick={handlePlaceOrder}
+              disabled={loading}
+            >
+              {loading ? 'Processing...' : 'Place Order'}
             </button>
           </div>
         </div>
