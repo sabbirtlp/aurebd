@@ -6,6 +6,7 @@ import Image from "next/image";
 import styles from "./mobileMenu.module.css";
 
 import { useLanguageStore } from "@/store/languageStore";
+import { useSession } from "next-auth/react";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -13,6 +14,7 @@ interface MobileMenuProps {
 }
 
 export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
+  const { data: session } = useSession();
   const { t, language } = useLanguageStore();
   const [mounted, setMounted] = useState(false);
 
@@ -63,8 +65,9 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
           {/* USER ACTIONS */}
           <div className={styles.userSection}>
-            <Link href="/profile" className={styles.userLink} onClick={onClose}>
-              <span className={styles.icon}>👤</span> <span suppressHydrationWarning>{tr('nav.login')}</span>
+            <Link href={session ? "/profile" : "/login"} className={styles.userLink} onClick={onClose}>
+              <span className={styles.icon}>{session ? "✨" : "🔑"}</span> 
+              <span suppressHydrationWarning>{session ? (language === 'bn' ? 'আমার প্রোফাইল' : 'My Dashboard') : tr('nav.login')}</span>
             </Link>
             <Link href="/wishlist" className={styles.userLink} onClick={onClose}>
               <span className={styles.icon}>💖</span> <span suppressHydrationWarning>{tr('nav.wishlist')}</span>

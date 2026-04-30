@@ -130,13 +130,31 @@ export default function Navbar() {
                 </span>
               </button>
 
-              {session ? (
-                <Link href="/profile" className={styles.iconBtn} aria-label={tr('nav.login')}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+              {mounted && session ? (
+                <Link href="/profile" className={styles.profileBtn} aria-label="Profile">
+                  <div className={styles.navAvatar}>
+                    {session.user?.image ? (
+                      <Image 
+                        src={session.user.image} 
+                        alt="Profile" 
+                        width={32} 
+                        height={32} 
+                        className={styles.avatarImg}
+                      />
+                    ) : (
+                      <span className={styles.avatarInitial}>
+                        {(session.user?.name || 'U').charAt(0)}
+                      </span>
+                    )}
+                  </div>
                 </Link>
               ) : (
                 <Link href="/login" className={styles.iconBtn} aria-label={tr('nav.login')}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                    <polyline points="10 17 15 12 10 7" />
+                    <line x1="15" y1="12" x2="3" y2="12" />
+                  </svg>
                 </Link>
               )}
 
