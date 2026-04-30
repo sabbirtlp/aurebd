@@ -5,7 +5,6 @@ import Providers from "@/components/Providers";
 import CartSidebar from '@/features/cart/CartSidebar';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import PageTransition from '@/components/layout/PageTransition';
 
 import MobileBottomBar from '@/components/layout/MobileBottomBar';
 
@@ -36,7 +35,6 @@ export default function RootLayout({
       <body className={poppins.variable}>
         <Providers>
           <ThemeWrapper>
-            <PageTransition />
             <CartSidebar />
             <Navbar />
             <main className="main-content">
