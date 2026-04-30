@@ -13,18 +13,22 @@ export default function ContactPage() {
           {/* CONTACT FORM */}
           <div className={`${styles.formCard} nm-card`}>
             <h2 className={styles.cardTitle}>Send us a Message</h2>
-            <form className={styles.form}>
+            <form className={styles.form} action="https://formsubmit.co/official.aureabd@gmail.com" method="POST">
+              <input type="hidden" name="_captcha" value="false" />
+              {/* Note: Change _next URL to your deployed domain if you want it to redirect back automatically */}
+              <input type="hidden" name="_next" value="https://aurea-bd.vercel.app/contact" />
+              
               <div className={styles.inputField}>
                 <label>Your Name</label>
-                <input type="text" placeholder="Full Name" className={styles.nmInput} />
+                <input type="text" name="name" placeholder="Full Name" className={styles.nmInput} required />
               </div>
               <div className={styles.inputField}>
                 <label>Email Address</label>
-                <input type="email" placeholder="email@example.com" className={styles.nmInput} />
+                <input type="email" name="email" placeholder="email@example.com" className={styles.nmInput} required />
               </div>
               <div className={styles.inputField}>
                 <label>Message</label>
-                <textarea placeholder="How can we help you?" rows={6} className={styles.nmInput}></textarea>
+                <textarea name="message" placeholder="How can we help you?" rows={6} className={styles.nmInput} required></textarea>
               </div>
               <button type="submit" className="btn-nm btn-nm-primary" style={{ width: "100%", justifyContent: "center" }}>
                 Send Message
@@ -46,7 +50,7 @@ export default function ContactPage() {
                 <span className={styles.infoIcon}>✉️</span>
                 <div>
                   <h4>Email</h4>
-                  <p>hello@aureabd.com</p>
+                  <p>official.aureabd@gmail.com</p>
                 </div>
               </div>
               <div className={styles.infoItem}>
