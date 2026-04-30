@@ -15,6 +15,7 @@ export default function ContactPage() {
             <h2 className={styles.cardTitle}>Send us a Message</h2>
             <form className={styles.form} action="https://formsubmit.co/official.aureabd@gmail.com" method="POST">
               <input type="hidden" name="_captcha" value="false" />
+              <input type="hidden" name="_subject" value="Aureabd Contact Form - New Message!" />
               {/* Note: Change _next URL to your deployed domain if you want it to redirect back automatically */}
               <input type="hidden" name="_next" value="https://aurea-bd.vercel.app/contact" />
               
