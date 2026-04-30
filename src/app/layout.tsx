@@ -2,11 +2,7 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/Providers";
-import CartSidebar from '@/features/cart/CartSidebar';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
-
-import MobileBottomBar from '@/components/layout/MobileBottomBar';
+import ShopLayoutWrapper from '@/components/layout/ShopLayoutWrapper';
 
 const poppins = Poppins({ 
   subsets: ["latin"], 
@@ -35,13 +31,9 @@ export default function RootLayout({
       <body className={poppins.variable}>
         <Providers>
           <ThemeWrapper>
-            <CartSidebar />
-            <Navbar />
-            <main className="main-content">
+            <ShopLayoutWrapper>
               {children}
-            </main>
-            <MobileBottomBar />
-            <Footer />
+            </ShopLayoutWrapper>
           </ThemeWrapper>
         </Providers>
       </body>
