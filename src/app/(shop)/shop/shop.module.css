@@ -244,6 +244,8 @@
     max-width: 100%;
   }
 }
+
+@media (max-width: 992px) {
   .filterBar {
     flex-direction: column;
     align-items: stretch;
