@@ -33,17 +33,28 @@ interface TestimonialSliderProps {
 }
 
 export default function TestimonialSlider({ items, title }: TestimonialSliderProps) {
-  const { language, t } = useLanguageStore();
+  const { language } = useLanguageStore();
   const [current, setCurrent] = useState(0);
   const [visibleCount, setVisibleCount] = useState(3);
   const [mounted, setMounted] = useState(false);
+  const [dbTestimonials, setDbTestimonials] = useState<any[]>([]);
 
-  const defaultItems = language === 'bn' ? testimonialsBn : testimonialsEn;
-  const displayItems = items || defaultItems;
+  const staticItems = language === 'bn' ? testimonialsBn : testimonialsEn;
+  // Map static items to the database format
+  const formattedStatic = staticItems.map(s => ({
+    name: s.name,
+    content: s.text,
+    role: s.location,
+    rating: 5,
+    initial: s.initial
+  }));
+
+  const displayItems = items || (dbTestimonials.length > 0 ? dbTestimonials : formattedStatic);
   const displayTitle = title || (language === 'bn' ? 'গ্রাহকদের কথা' : 'What Our Clients Say');
 
   useEffect(() => {
     setMounted(true);
+    fetchTestimonials();
     const handleResize = () => {
       if (window.innerWidth <= 768) setVisibleCount(1);
       else if (window.innerWidth <= 1024) setVisibleCount(2);
@@ -52,16 +63,31 @@ export default function TestimonialSlider({ items, title }: TestimonialSliderPro
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [language]);
+
+  const fetchTestimonials = async () => {
+    try {
+      const res = await fetch(`/api/testimonials?lang=${language}`);
+      const data = await res.json();
+      if (data.testimonials && data.testimonials.length > 0) {
+        setDbTestimonials(data.testimonials);
+      }
+    } catch (err) {
+      console.error("Failed to fetch testimonials");
+    }
+  };
 
   const maxIndex = Math.max(0, displayItems.length - visibleCount);
 
   useEffect(() => {
+    if (displayItems.length === 0) return;
     const timer = setInterval(() => {
       setCurrent((prev) => (prev >= maxIndex ? 0 : prev + 1));
     }, 5000);
     return () => clearInterval(timer);
   }, [maxIndex, displayItems.length]);
+
+  if (!mounted) return null;
 
   return (
     <div className={styles.sliderContainer}>
@@ -75,28 +101,32 @@ export default function TestimonialSlider({ items, title }: TestimonialSliderPro
           >
             <div className={`${styles.card} nm-card`}>
               <div className={styles.avatarRow}>
-                <div className={styles.avatar}>{t.initial}</div>
+                <div className={styles.avatar}>{t.initial || t.name.charAt(0)}</div>
                 <div className={styles.authorInfo}>
                   <h4>{t.name}</h4>
-                  <span>{t.location}</span>
+                  <span>{t.role || t.location}</span>
                 </div>
-                <div className={styles.stars}>★★★★★</div>
+                <div className={styles.stars}>
+                  {"★".repeat(t.rating || 5)}{"☆".repeat(5 - (t.rating || 5))}
+                </div>
               </div>
-              <p className={styles.text}>&quot;{t.text}&quot;</p>
+              <p className={styles.text}>&quot;{t.content || t.text}&quot;</p>
             </div>
           </div>
         ))}
       </div>
-      <div className={styles.dots}>
-        {Array.from({ length: maxIndex + 1 }).map((_, i) => (
-          <button 
-            key={i} 
-            className={`${styles.dot} ${current === i ? styles.activeDot : ""}`}
-            onClick={() => setCurrent(i)}
-            aria-label={`Go to slide ${i + 1}`}
-          />
-        ))}
-      </div>
+      {maxIndex > 0 && (
+        <div className={styles.dots}>
+          {Array.from({ length: maxIndex + 1 }).map((_, i) => (
+            <button 
+              key={i} 
+              className={`${styles.dot} ${current === i ? styles.activeDot : ""}`}
+              onClick={() => setCurrent(i)}
+              aria-label={`Go to slide ${i + 1}`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
