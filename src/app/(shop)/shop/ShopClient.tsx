@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import ProductCard from '@/features/products/ProductCard';
 import styles from "./shop.module.css";
 import { useLanguageStore } from "@/store/languageStore";
