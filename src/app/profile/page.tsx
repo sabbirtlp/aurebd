@@ -2,84 +2,165 @@
 
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { Package, Clock, CheckCircle2, Wallet, ArrowRight, Loader2 } from "lucide-react";
 import styles from "./profile.module.css";
 
-// Mock data for initial UI
-const stats = [
-  { label: "Total Orders", value: "12", color: "#f0fdf4" },
-  { label: "Pending", value: "02", color: "#fffbeb" },
-  { label: "Completed", value: "10", color: "#f0fdf4" },
-  { label: "Total Spent", value: "৳ 14,500", color: "#f8fafc" },
-];
+interface Order {
+  id: string;
+  _id: string;
+  date: string;
+  status: string;
+  total: string;
+}
 
-const recentOrders = [
-  { id: "#ORD-9921", date: "Oct 24, 2023", status: "Delivered", total: "৳ 2,450" },
-  { id: "#ORD-9845", date: "Oct 20, 2023", status: "Processing", total: "৳ 1,200" },
-  { id: "#ORD-9712", date: "Oct 15, 2023", status: "Delivered", total: "৳ 4,100" },
-];
+interface Stat {
+  label: string;
+  value: string;
+}
 
 export default function DashboardPage() {
   const { data: session } = useSession();
+  const [stats, setStats] = useState<Stat[]>([]);
+  const [recentOrders, setRecentOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const res = await fetch("/api/profile/stats");
+        if (res.ok) {
+          const data = await res.json();
+          setStats(data.stats);
+          setRecentOrders(data.recentOrders);
+        }
+      } catch (err) {
+        console.error("Failed to fetch profile stats");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchStats();
+  }, []);
+
+  const getStatIcon = (label: string) => {
+    switch (label) {
+      case "Total Orders": return <Package size={20} />;
+      case "Pending": return <Clock size={20} />;
+      case "Completed": return <CheckCircle2 size={20} />;
+      case "Total Spent": return <Wallet size={20} />;
+      default: return null;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <Loader2 className="animate-spin" size={40} color="var(--primary)" />
+        <p>Polishing your dashboard...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="animate-fade-in">
-      <div className={styles.dashboardHeader}>
-        <h1>Welcome back, {session?.user?.name}!</h1>
-        <p>Here&apos;s what&apos;s happening with your account today.</p>
-      </div>
+    <div className={styles.dashboardWrapper}>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={styles.dashboardHeader}
+      >
+        <h1 className={styles.welcomeTitle}>
+          Welcome back, <span className={styles.highlight}>{session?.user?.name?.split(' ')[0]}</span>!
+        </h1>
+        <p className={styles.welcomeSubtitle}>Here&apos;s a quick overview of your account activity.</p>
+      </motion.div>
 
-      {/* STATS */}
+      {/* STATS GRID */}
       <div className={styles.statsGrid}>
         {stats.map((stat, i) => (
-          <div key={i} className={styles.statCard}>
-            <span className={styles.statLabel}>{stat.label}</span>
-            <span className={styles.statValue}>{stat.value}</span>
-          </div>
+          <motion.div 
+            key={i} 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: i * 0.1 }}
+            className={styles.statCard}
+          >
+            <div className={styles.statIconWrapper}>
+              {getStatIcon(stat.label)}
+            </div>
+            <div className={styles.statContent}>
+              <span className={styles.statLabel}>{stat.label}</span>
+              <span className={styles.statValue}>{stat.value}</span>
+            </div>
+          </motion.div>
         ))}
       </div>
 
       {/* RECENT ORDERS */}
-      <div className={styles.card}>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className={styles.card}
+      >
         <div className={styles.cardHeader}>
-          <h3>Recent Orders</h3>
-          <Link href="/profile/orders" className={styles.viewAll}>View All</Link>
+          <div className={styles.cardTitleGroup}>
+            <h3>Recent Orders</h3>
+            <p>Your latest transactions</p>
+          </div>
+          <Link href="/profile/orders" className={styles.viewAllBtn}>
+            View All <ArrowRight size={16} />
+          </Link>
         </div>
+        
         <div className={styles.tableContainer}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Total</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentOrders.map((order) => (
-                <tr key={order.id}>
-                  <td><strong>{order.id}</strong></td>
-                  <td>{order.date}</td>
-                  <td>
-                    <span className={`${styles.status} ${
-                      order.status === "Delivered" ? styles.statusDelivered : 
-                      order.status === "Processing" ? styles.statusProcessing : 
-                      styles.statusPending
-                    }`}>
-                      {order.status}
-                    </span>
-                  </td>
-                  <td>{order.total}</td>
-                  <td>
-                    <Link href={`/profile/orders/${order.id}`} className={styles.viewAll}>Details</Link>
-                  </td>
+          {recentOrders.length > 0 ? (
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Total</th>
+                  <th>Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {recentOrders.map((order, i) => (
+                  <motion.tr 
+                    key={order.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.5 + (i * 0.05) }}
+                  >
+                    <td><span className={styles.orderId}>{order.id}</span></td>
+                    <td className={styles.dateCell}>{order.date}</td>
+                    <td>
+                      <span className={`${styles.statusBadge} ${styles[order.status.toLowerCase()]}`}>
+                        <span className={styles.statusDot} />
+                        {order.status}
+                      </span>
+                    </td>
+                    <td className={styles.priceCell}>{order.total}</td>
+                    <td>
+                      <Link href={`/profile/orders/${order._id}`} className={styles.detailsLink}>
+                        Details
+                      </Link>
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className={styles.emptyState}>
+              <Package size={48} />
+              <p>You haven&apos;t placed any orders yet.</p>
+              <Link href="/shop" className={styles.shopNowBtn}>Start Shopping</Link>
+            </div>
+          )}
         </div>
-      </div>
-
+      </motion.div>
     </div>
   );
 }

@@ -255,3 +255,62 @@
   height: 500px;
   background: var(--secondary);
 }
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: var(--sp-6) 0;
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--border);
+}
+
+.divider:not(:empty)::before {
+  margin-right: .5em;
+}
+
+.divider:not(:empty)::after {
+  margin-left: .5em;
+}
+
+.googleBtn {
+  width: 100%;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: var(--bg-color);
+  color: var(--text-dark);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--nm-outer-raised-sm);
+}
+
+.googleBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--nm-outer-raised);
+  background: var(--bg-color);
+}
+
+.googleBtn:active {
+  transform: translateY(0);
+  box-shadow: var(--nm-inner-pressed);
+}
+
+.googleIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -26,7 +26,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/auth/login");
+      router.push("/login");
     }
   }, [status, router]);
 
@@ -44,21 +44,26 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
           <aside className={styles.sidebar}>
             <div className={styles.userBrief}>
               <div className={styles.avatar} style={{ overflow: "hidden", position: "relative" }}>
-                {!hasHydrated ? (
-                  <div className="animate-pulse bg-slate-100 w-full h-full" />
-                ) : profileImage ? (
+                {profileImage ? (
                   <Image 
                     src={profileImage} 
                     alt="Profile" 
                     fill 
                     style={{ objectFit: "cover" }} 
                   />
+                ) : session.user?.image ? (
+                  <Image 
+                    src={session.user.image} 
+                    alt="Profile" 
+                    fill 
+                    style={{ objectFit: "cover" }} 
+                  />
                 ) : (
-                  userName.charAt(0)
+                  (session.user?.name || userName).charAt(0)
                 )}
               </div>
               <div className={styles.userInfo}>
-                <h4>{hasHydrated ? userName : "Loading..."}</h4>
+                <h4>{session.user?.name || (hasHydrated ? userName : "Loading...")}</h4>
                 <p>{session.user?.email}</p>
               </div>
             </div>
