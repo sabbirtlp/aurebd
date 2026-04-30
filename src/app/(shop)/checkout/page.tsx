@@ -39,10 +39,25 @@ export default function CheckoutPage() {
     
     // Simulate API call
     setTimeout(() => {
+      // Save order details for the success page PDF generation
+      const orderId = `AUBD-${Math.floor(Math.random() * 1000000)}`;
+      const orderData = {
+        id: orderId,
+        date: new Date().toISOString(),
+        customer: formData,
+        items: items,
+        subtotal: getTotal(),
+        shipping: 60,
+        total: getTotal() + 60,
+        paymentMethod
+      };
+      
+      localStorage.setItem('lastOrder', JSON.stringify(orderData));
+      
       toast.success("Order placed successfully! Redirecting...");
       clearCart();
       setLoading(false);
-      router.push("/");
+      router.push(`/checkout/success?order_id=${orderId}`);
     }, 2000);
   };
 
