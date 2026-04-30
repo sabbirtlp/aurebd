@@ -34,9 +34,9 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         {/* HEADER */}
         <div className={styles.header}>
           <div className={styles.logoWrapper}>
-            <Image src="/images/logo-v3.png" alt="Aurea BD" width={180} height={60} style={{ width: "auto", height: "32px", objectFit: "contain" }} />
+            <Image src="/images/logo-v2.png" alt="Aurea BD" width={180} height={60} style={{ width: "auto", height: "32px", objectFit: "contain" }} />
           </div>
-          
+
           <button className={styles.closeBtn} onClick={onClose} aria-label="Close Menu">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
@@ -48,7 +48,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             <Link href="/" className={styles.navLink} onClick={onClose}>
               <span className={styles.icon}>🏠</span> <span suppressHydrationWarning>{tr('nav.home')}</span>
             </Link>
-            
+
             <Link href="/shop" className={styles.navLink} onClick={onClose}>
               <span className={styles.icon}>🛍️</span> <span suppressHydrationWarning>{tr('nav.shop')}</span>
             </Link>
