@@ -178,14 +178,16 @@ export default function ProductClient({ product, relatedProducts }: { product: a
         </section>
 
         {/* RELATED PRODUCTS */}
-        <section className="section">
-          <h2 className="section-title">{language === 'bn' ? 'সংশ্লিষ্ট পণ্য' : 'Related Products'}</h2>
-          <div className={styles.relatedGrid}>
-            {relatedProducts.slice(0, 4).map((rp: any) => (
-              <ProductCard key={rp._id} product={rp} />
-            ))}
-          </div>
-        </section>
+        {relatedProducts && relatedProducts.length > 0 && (
+          <section className="section">
+            <h2 className="section-title">{language === 'bn' ? 'সংশ্লিষ্ট পণ্য' : 'Related Products'}</h2>
+            <div className={styles.relatedGrid}>
+              {relatedProducts.slice(0, 4).map((rp: any) => (
+                <ProductCard key={rp._id} product={rp} />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
 
       {/* MOBILE STICKY BAR */}
