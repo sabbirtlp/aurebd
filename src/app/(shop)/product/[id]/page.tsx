@@ -11,9 +11,16 @@ export default async function ProductPage({ params }: { params: { id: string } }
   }
 
   // Filter out current product and get 4 related ones from same category
-  const relatedProducts = allProducts
+  let relatedProducts = allProducts
     .filter((p: any) => p._id !== product._id && p.category === product.category)
     .slice(0, 4);
+
+  // Fallback: If no products in the same category, just show any other products
+  if (relatedProducts.length === 0) {
+    relatedProducts = allProducts
+      .filter((p: any) => p._id !== product._id)
+      .slice(0, 4);
+  }
 
   return <ProductClient product={product} relatedProducts={relatedProducts} />;
 }
