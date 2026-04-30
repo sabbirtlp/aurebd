@@ -25,6 +25,12 @@ function PageTransitionInner() {
     // Listen for route changes via link clicks
     const handleClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
+      
+      // Ignore clicks on buttons, inputs, and selects (like wishlist, add to cart)
+      if (target.closest("button") || target.closest("input") || target.closest("select") || target.closest("textarea")) {
+        return;
+      }
+
       const anchor = target.closest("a");
       if (!anchor) return;
 
