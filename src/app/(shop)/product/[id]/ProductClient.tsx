@@ -190,16 +190,6 @@ export default function ProductClient({ product, relatedProducts }: { product: a
         )}
       </div>
 
-      {/* MOBILE STICKY BAR */}
-      <div className={styles.mobileStickyBar}>
-        <div className={styles.stickyInfo}>
-          <p>৳ {product.price}</p>
-          <span className={styles.itemTitle}>{product.name}</span>
-        </div>
-        <button className="btn-nm btn-nm-primary" onClick={handleAddToCart}>
-          Add to Cart
-        </button>
-      </div>
     </main>
   );
 }
