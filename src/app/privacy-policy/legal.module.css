@@ -96,6 +96,35 @@
   }
 }
 
+@media (max-width: 576px) {
+  .legalPage {
+    padding: var(--sp-4) 0;
+  }
+  
+  .card {
+    padding: var(--sp-4);
+    border-radius: 16px;
+  }
+  
+  .header h1 {
+    font-size: 1.6rem;
+  }
+  
+  .faqItem {
+    border-radius: 12px;
+  }
+  
+  .faqQuestion {
+    padding: var(--sp-3);
+    font-size: 0.95rem;
+  }
+  
+  .faqAnswer {
+    padding: 0 var(--sp-3) var(--sp-3) var(--sp-3);
+    font-size: 0.9rem;
+  }
+}
+
 /* --- FAQ Specific Styles --- */
 .faqList {
   display: flex;
@@ -126,6 +155,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: var(--sp-3);
+  word-break: break-word;
 }
 
 .faqQuestion::-webkit-details-marker {
