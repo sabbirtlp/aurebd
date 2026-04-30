@@ -28,7 +28,6 @@ export default function AdminEditToolbar() {
           borderRadius: "50%",
           background: isEditMode ? "var(--primary)" : "var(--bg-color)",
           color: isEditMode ? "white" : "var(--primary)",
-          border: "none",
           boxShadow: "var(--nm-outer-raised)",
           cursor: "pointer",
           display: "flex",
