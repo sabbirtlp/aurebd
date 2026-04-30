@@ -4,7 +4,9 @@
 }
 
 @media (max-width: 992px) {
-  .checkoutPage { padding: var(--sp-8) 0 120px; }
+  .checkoutPage { 
+    padding: var(--sp-6) 0 140px; 
+  }
 }
 
 .grid {
@@ -56,7 +58,20 @@
 }
 
 @media (max-width: 768px) {
-  .inputGroup { grid-template-columns: 1fr; gap: var(--sp-3); }
+  .inputGroup { 
+    grid-template-columns: 1fr; 
+    gap: var(--sp-4); 
+  }
+}
+
+.inputFullWidth {
+  grid-column: span 2;
+}
+
+@media (max-width: 768px) {
+  .inputFullWidth {
+    grid-column: span 1;
+  }
 }
 
 .inputField {
@@ -215,10 +230,7 @@
   font-weight: 500;
   margin: 0;
   color: var(--text-dark);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 180px;
+  line-height: 1.3;
 }
 .itemInfo p {
   font-size: 0.85rem;

@@ -46,7 +46,7 @@ export default function CheckoutPage() {
           <div className={styles.sectionCard}>
             <h2 className={styles.sectionTitle}>Shipping Address</h2>
             <div className={styles.inputGroup}>
-              <div className={styles.inputField} style={{ gridColumn: "span 2" }}>
+              <div className={`${styles.inputField} ${styles.inputFullWidth}`}>
                 <label>Street Address</label>
                 <input type="text" placeholder="House number and street name" className={styles.nmInput} />
               </div>
