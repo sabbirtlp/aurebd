@@ -4,6 +4,8 @@ import { useState } from "react";
 import styles from "./contact.module.css";
 import { toast } from "react-toastify";
 
+import Editable from "@/components/cms/Editable";
+
 export default function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -41,14 +43,14 @@ export default function ContactPage() {
     <main className="animate-fade-in">
       <section className="section container">
         <div className={styles.header}>
-          <h1>Get in Touch</h1>
-          <p>Have questions about our products or your order? We&apos;re here to help.</p>
+          <h1><Editable page="contact" section="hero" field="title" defaultText="Get in Touch" /></h1>
+          <p><Editable page="contact" section="hero" field="subtitle" defaultText="Have questions about our products or your order? We're here to help." /></p>
         </div>
 
         <div className={styles.contactGrid}>
           {/* CONTACT FORM */}
           <div className={`${styles.formCard} nm-card`}>
-            <h2 className={styles.cardTitle}>Send us a Message</h2>
+            <h2 className={styles.cardTitle}><Editable page="contact" section="form" field="title" defaultText="Send us a Message" /></h2>
             {success ? (
               <div style={{ textAlign: "center", padding: "3rem 1rem", color: "var(--text-dark)" }} className="animate-fade-in">
                 <div style={{ width: "80px", height: "80px", background: "var(--bg-color)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1.5rem", boxShadow: "var(--nm-outer-raised-sm)", color: "var(--primary)" }}>
@@ -94,27 +96,27 @@ export default function ContactPage() {
                 <span className={styles.infoIcon}>📞</span>
                 <div>
                   <h4>Phone</h4>
-                  <p>+880 1XXX-XXXXXX</p>
+                  <p><Editable page="contact" section="info" field="phone" defaultText="+880 1XXX-XXXXXX" /></p>
                 </div>
               </div>
               <div className={styles.infoItem}>
                 <span className={styles.infoIcon}>✉️</span>
                 <div>
                   <h4>Email</h4>
-                  <p>official.aureabd@gmail.com</p>
+                  <p><Editable page="contact" section="info" field="email" defaultText="official.aureabd@gmail.com" /></p>
                 </div>
               </div>
               <div className={styles.infoItem}>
                 <span className={styles.infoIcon}>📍</span>
                 <div>
                   <h4>Address</h4>
-                  <p>Dhaka, Bangladesh</p>
+                  <p><Editable page="contact" section="info" field="address" defaultText="Dhaka, Bangladesh" /></p>
                 </div>
               </div>
             </div>
 
             <div className={`${styles.socialCard} nm-card`}>
-              <h4>Follow Our Glow</h4>
+              <h4><Editable page="contact" section="social" field="title" defaultText="Follow Our Glow" /></h4>
               <div className={styles.socialIcons}>
                 <button className={styles.socialBtn}>FB</button>
                 <button className={styles.socialBtn}>IG</button>

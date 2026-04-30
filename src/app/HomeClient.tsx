@@ -141,13 +141,26 @@ export default function HomeClient({ products }: { products: any[] }) {
       <section className={styles.trustStrip}>
         <div className="container">
           <div className={styles.trustGrid}>
-            {trustItems.map((item, i) => (
-              <div key={i} className={styles.trustCard}>
-                <div className={styles.trustIcon}>{item.icon}</div>
-                <h3 className={styles.trustTitle}>{item.title}</h3>
-                <p className={styles.trustDesc}>{item.desc}</p>
-              </div>
-            ))}
+            <div className={styles.trustCard}>
+              <div className={styles.trustIcon}>✨</div>
+              <h3 className={styles.trustTitle}><Editable page="home" section="trust" field="pure_title" defaultText={tr('trust.pure_title')} /></h3>
+              <p className={styles.trustDesc}><Editable page="home" section="trust" field="pure_desc" defaultText={tr('trust.pure_desc')} /></p>
+            </div>
+            <div className={styles.trustCard}>
+              <div className={styles.trustIcon}>💧</div>
+              <h3 className={styles.trustTitle}><Editable page="home" section="trust" field="hydration_title" defaultText={tr('trust.hydration_title')} /></h3>
+              <p className={styles.trustDesc}><Editable page="home" section="trust" field="hydration_desc" defaultText={tr('trust.hydration_desc')} /></p>
+            </div>
+            <div className={styles.trustCard}>
+              <div className={styles.trustIcon}>🌿</div>
+              <h3 className={styles.trustTitle}><Editable page="home" section="trust" field="cruelty_title" defaultText={tr('trust.cruelty_title')} /></h3>
+              <p className={styles.trustDesc}><Editable page="home" section="trust" field="cruelty_desc" defaultText={tr('trust.cruelty_desc')} /></p>
+            </div>
+            <div className={styles.trustCard}>
+              <div className={styles.trustIcon}>📦</div>
+              <h3 className={styles.trustTitle}><Editable page="home" section="trust" field="shipping_title" defaultText={tr('trust.shipping_title')} /></h3>
+              <p className={styles.trustDesc}><Editable page="home" section="trust" field="shipping_desc" defaultText={tr('trust.shipping_desc')} /></p>
+            </div>
           </div>
         </div>
       </section>
@@ -156,18 +169,34 @@ export default function HomeClient({ products }: { products: any[] }) {
       <section className={styles.categorySection}>
         <div className="container">
           <header className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>{tr('cat.title')}</h2>
-            <p className={styles.sectionSubtitle}>{tr('cat.subtitle')}</p>
+            <h2 className={styles.sectionTitle}><Editable page="home" section="categories" field="title" defaultText={tr('cat.title')} /></h2>
+            <p className={styles.sectionSubtitle}><Editable page="home" section="categories" field="subtitle" defaultText={tr('cat.subtitle')} /></p>
           </header>
           <div className={styles.categoryGrid}>
-            {categories.map((cat, i) => (
-              <Link href={`/shop?category=${encodeURIComponent(cat.raw)}`} key={i} className={styles.categoryCard}>
-                <div className={styles.categoryImgWrapper}>
-                  <Image src={cat.img} alt={cat.name} fill className={styles.categoryImg} />
-                </div>
-                <h3 className={styles.categoryName}>{cat.name}</h3>
-              </Link>
-            ))}
+            <Link href="/shop?category=Radiance%20Serums" className={styles.categoryCard}>
+              <div className={styles.categoryImgWrapper}>
+                <Image src="/images/sakura-serum.png" alt="Serums" fill className={styles.categoryImg} />
+              </div>
+              <h3 className={styles.categoryName}><Editable page="home" section="categories" field="serums" defaultText={tr('cat.serums')} /></h3>
+            </Link>
+            <Link href="/shop?category=Hydration%20Creams" className={styles.categoryCard}>
+              <div className={styles.categoryImgWrapper}>
+                <Image src="/images/sakura-cream.png" alt="Creams" fill className={styles.categoryImg} />
+              </div>
+              <h3 className={styles.categoryName}><Editable page="home" section="categories" field="creams" defaultText={tr('cat.creams')} /></h3>
+            </Link>
+            <Link href="/shop?category=UV%20Protection" className={styles.categoryCard}>
+              <div className={styles.categoryImgWrapper}>
+                <Image src="/images/sakura-sunscreen.png" alt="UV" fill className={styles.categoryImg} />
+              </div>
+              <h3 className={styles.categoryName}><Editable page="home" section="categories" field="uv" defaultText={tr('cat.uv')} /></h3>
+            </Link>
+            <Link href="/shop?category=Skin%20Essentials" className={styles.categoryCard}>
+              <div className={styles.categoryImgWrapper}>
+                <Image src="/images/sakura-set.png" alt="Essentials" fill className={styles.categoryImg} />
+              </div>
+              <h3 className={styles.categoryName}><Editable page="home" section="categories" field="essentials" defaultText={tr('cat.essentials')} /></h3>
+            </Link>
           </div>
         </div>
       </section>
@@ -176,8 +205,8 @@ export default function HomeClient({ products }: { products: any[] }) {
       <section className={styles.featuredSection}>
         <div className="container">
           <header className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>{tr('prod.new_arrivals')}</h2>
-            <p className={styles.sectionSubtitle}>{tr('prod.new_subtitle')}</p>
+            <h2 className={styles.sectionTitle}><Editable page="home" section="new_arrivals" field="title" defaultText={tr('prod.new_arrivals')} /></h2>
+            <p className={styles.sectionSubtitle}><Editable page="home" section="new_arrivals" field="subtitle" defaultText={tr('prod.new_subtitle')} /></p>
           </header>
           <div className={styles.productGrid}>
             {products.slice(0, 4).map((product: any) => (
@@ -185,7 +214,7 @@ export default function HomeClient({ products }: { products: any[] }) {
             ))}
           </div>
           <div style={{ textAlign: "center", marginTop: "var(--sp-8)" }}>
-            <Link href="/shop" className={styles.btnSecondary}>{tr('prod.view_all')}</Link>
+            <Link href="/shop" className={styles.btnSecondary}><Editable page="home" section="new_arrivals" field="view_all" defaultText={tr('prod.view_all')} /></Link>
           </div>
         </div>
       </section>
@@ -195,12 +224,12 @@ export default function HomeClient({ products }: { products: any[] }) {
         <div className="container">
           <div className={styles.promoBanner}>
             <div className={styles.promoContent}>
-              <span className={styles.promoTag}>{tr('promo.tag')}</span>
-              <h2 className={styles.promoTitle}>{tr('promo.title')}</h2>
+              <span className={styles.promoTag}><Editable page="home" section="promo" field="tag" defaultText={tr('promo.tag')} /></span>
+              <h2 className={styles.promoTitle}><Editable page="home" section="promo" field="title" defaultText={tr('promo.title')} /></h2>
               <p style={{ color: "var(--text-light)", marginBottom: "var(--sp-5)", fontSize: "1.1rem", maxWidth: "450px" }}>
-                {tr('promo.desc')}
+                <Editable page="home" section="promo" field="desc" defaultText={tr('promo.desc')} multiline />
               </p>
-              <Link href="/shop" className={styles.btnPrimary}>{tr('promo.cta')}</Link>
+              <Link href="/shop" className={styles.btnPrimary}><Editable page="home" section="promo" field="cta" defaultText={tr('promo.cta')} /></Link>
             </div>
             <div className={styles.promoImageContainer}>
               <Image src="/images/sakura-set.png" alt="Promo Product" fill className={styles.promoImage} />
@@ -213,8 +242,8 @@ export default function HomeClient({ products }: { products: any[] }) {
       <section className={styles.featuredSection} style={{ background: "transparent" }}>
         <div className="container">
           <header className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>{tr('prod.best_sellers')}</h2>
-            <p className={styles.sectionSubtitle}>{tr('prod.best_subtitle')}</p>
+            <h2 className={styles.sectionTitle}><Editable page="home" section="best_sellers" field="title" defaultText={tr('prod.best_sellers')} /></h2>
+            <p className={styles.sectionSubtitle}><Editable page="home" section="best_sellers" field="subtitle" defaultText={tr('prod.best_subtitle')} /></p>
           </header>
           <div className={styles.productGrid}>
             {products.slice(4, 8).map((product: any) => (
