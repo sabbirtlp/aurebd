@@ -7,7 +7,9 @@ import styles from "./success.module.css";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
-export default function CheckoutSuccessPage() {
+import { Suspense } from "react";
+
+function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
   const [orderData, setOrderData] = useState<any>(null);
   const [mounted, setMounted] = useState(false);
@@ -140,5 +142,13 @@ export default function CheckoutSuccessPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function CheckoutSuccessPage() {
+  return (
+    <Suspense fallback={<div style={{ textAlign: 'center', padding: '5rem' }}>Loading order details...</div>}>
+      <CheckoutSuccessContent />
+    </Suspense>
   );
 }
