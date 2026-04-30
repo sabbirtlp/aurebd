@@ -177,6 +177,7 @@ export default function AdminPagesClient({ initialContent }: { initialContent: a
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [activeLang, setActiveLang] = useState<"en" | "bn">("en");
+  const [selectedPage, setSelectedPage] = useState("home");
 
   const getKey = (page: string, section: string, key: string) => {
     return `${page}__${section}__${key}__${activeLang}`;
@@ -220,6 +221,8 @@ export default function AdminPagesClient({ initialContent }: { initialContent: a
     }
   };
 
+  const filteredPages = PAGE_SECTIONS.filter(p => p.page === selectedPage);
+
   return (
     <>
       <div className={styles.pageHeader}>
@@ -229,20 +232,22 @@ export default function AdminPagesClient({ initialContent }: { initialContent: a
         </div>
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
           {/* Language Toggle */}
-          <button
-            className={activeLang === "en" ? styles.btnPrimary : styles.btnSecondary}
-            onClick={() => setActiveLang("en")}
-            style={{ fontSize: "0.8rem", padding: "0.4rem 0.9rem" }}
-          >
-            🇬🇧 English
-          </button>
-          <button
-            className={activeLang === "bn" ? styles.btnPrimary : styles.btnSecondary}
-            onClick={() => setActiveLang("bn")}
-            style={{ fontSize: "0.8rem", padding: "0.4rem 0.9rem" }}
-          >
-            🇧🇩 বাংলা
-          </button>
+          <div style={{ display: "flex", gap: "4px", background: "#f0f0f0", padding: "4px", borderRadius: "8px", marginRight: "1rem" }}>
+            <button
+              className={activeLang === "en" ? styles.btnPrimary : ""}
+              onClick={() => setActiveLang("en")}
+              style={{ fontSize: "0.75rem", padding: "0.3rem 0.6rem", border: "none", borderRadius: "6px", cursor: "pointer", background: activeLang === "en" ? "var(--primary)" : "transparent", color: activeLang === "en" ? "white" : "#666" }}
+            >
+              EN
+            </button>
+            <button
+              className={activeLang === "bn" ? styles.btnPrimary : ""}
+              onClick={() => setActiveLang("bn")}
+              style={{ fontSize: "0.75rem", padding: "0.3rem 0.6rem", border: "none", borderRadius: "6px", cursor: "pointer", background: activeLang === "bn" ? "var(--primary)" : "transparent", color: activeLang === "bn" ? "white" : "#666" }}
+            >
+              BN
+            </button>
+          </div>
 
           <button className={styles.btnPrimary} onClick={handleSave} disabled={saving}>
             {saving ? "Saving..." : saved ? "✓ Saved!" : "💾 Save All Changes"}
@@ -250,7 +255,31 @@ export default function AdminPagesClient({ initialContent }: { initialContent: a
         </div>
       </div>
 
-      {PAGE_SECTIONS.map((pageGroup) => (
+      {/* Page Tabs */}
+      <div style={{ display: "flex", gap: "10px", marginBottom: "2rem", borderBottom: "1px solid #eee", paddingBottom: "10px", overflowX: "auto" }}>
+        {PAGE_SECTIONS.map(p => (
+          <button
+            key={p.page}
+            onClick={() => setSelectedPage(p.page)}
+            style={{
+              padding: "8px 16px",
+              borderRadius: "8px",
+              border: "1px solid",
+              borderColor: selectedPage === p.page ? "var(--primary)" : "#ddd",
+              background: selectedPage === p.page ? "var(--primary)" : "white",
+              color: selectedPage === p.page ? "white" : "#666",
+              cursor: "pointer",
+              fontWeight: 600,
+              whiteSpace: "nowrap",
+              transition: "all 0.2s"
+            }}
+          >
+            {p.label}
+          </button>
+        ))}
+      </div>
+
+      {filteredPages.map((pageGroup) => (
         <div key={pageGroup.page} style={{ marginBottom: "1.5rem" }}>
           <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#1a1a2e", marginBottom: "0.75rem" }}>
             {pageGroup.label}
