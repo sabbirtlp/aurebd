@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, MouseEvent } from "react";
 import Image from "next/image";
 import { useCartStore } from "@/store/cartStore";
 import { toast } from "react-toastify";
@@ -14,6 +14,8 @@ export default function ProductClient({ product, relatedProducts }: { product: a
   const [mainImage, setMainImage] = useState(product.image);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("description");
+  const [zoomStyle, setZoomStyle] = useState({ transformOrigin: 'center center', transform: 'scale(1)' });
+  const [isHovering, setIsHovering] = useState(false);
   const { addItem } = useCartStore();
 
   const handleAddToCart = () => {
@@ -32,6 +34,26 @@ export default function ProductClient({ product, relatedProducts }: { product: a
     window.location.href = "/checkout";
   };
 
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    // Only apply zoom on desktop/larger screens
+    if (window.innerWidth <= 992) return;
+    
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    
+    setIsHovering(true);
+    setZoomStyle({
+      transformOrigin: `${x}% ${y}%`,
+      transform: 'scale(2.2)'
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovering(false);
+    setZoomStyle({ transformOrigin: 'center center', transform: 'scale(1)' });
+  };
+
   const thumbnails = [product.image, "/images/sakura-cream.png", "/images/sakura-serum.png"];
 
   return (
@@ -41,8 +63,23 @@ export default function ProductClient({ product, relatedProducts }: { product: a
         <section className={styles.heroGrid}>
           {/* GALLERY */}
           <div className={styles.gallery}>
-            <div className={styles.mainImageWrapper}>
-              <Image src={mainImage} alt={product.name} fill style={{ objectFit: "contain" }} priority />
+            <div 
+              className={`${styles.mainImageWrapper} ${isHovering ? styles.zoomed : ''}`}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+            >
+              <Image 
+                src={mainImage} 
+                alt={product.name} 
+                fill 
+                className={styles.mainImage}
+                style={{ 
+                  objectFit: "contain", 
+                  transformOrigin: zoomStyle.transformOrigin,
+                  transform: zoomStyle.transform 
+                }} 
+                priority 
+              />
             </div>
             <div className={styles.thumbnails}>
               {thumbnails.map((img, i) => (
