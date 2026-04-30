@@ -45,7 +45,7 @@ export default function AdminSidebar({ userName }: { userName: string }) {
       {/* Mobile Header */}
       <div className={styles.mobileHeader}>
         <Link href="/admin">
-          <Image src="/images/logo-v2.png" alt="Aurea BD Logo" width={120} height={40} style={{ objectFit: "contain" }} />
+          <Image src="/images/logo-v3.png" alt="Aurea BD Logo" width={120} height={40} style={{ objectFit: "contain" }} />
         </Link>
         <button className={styles.mobileMenuBtn} onClick={() => setIsOpen(true)}>
           <Menu size={28} />
@@ -62,7 +62,7 @@ export default function AdminSidebar({ userName }: { userName: string }) {
         <div className={styles.sidebarLogo}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
             <Link href="/">
-              <Image src="/images/logo-v2.png" alt="Aurea BD Logo" width={160} height={50} style={{ objectFit: "contain" }} />
+              <Image src="/images/logo-v3.png" alt="Aurea BD Logo" width={160} height={50} style={{ objectFit: "contain" }} />
             </Link>
             <button className={styles.closeSidebarBtn} onClick={() => setIsOpen(false)}>
               <X size={24} />

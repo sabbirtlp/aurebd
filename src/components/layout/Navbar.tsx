@@ -17,7 +17,7 @@ export default function Navbar() {
   const { items: cartItems, toggleCart } = useCartStore();
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
   const router = useRouter();
-  
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { language, setLanguage, t } = useLanguageStore();
@@ -46,24 +46,24 @@ export default function Navbar() {
         <div className={styles.topBar}>
           <span className={styles.topBarContent}>{tr('topbar.shipping')}</span>
         </div>
-        
+
         <div className={`container ${styles.navMain}`}>
           <div className={styles.logoWrapper}>
             <Link href="/">
-              <Image 
-                src="/images/logo-v2.png" 
-                alt="Aurea BD" 
-                width={600} 
-                height={200} 
-                style={{ width: "auto", height: "64px", objectFit: "contain", maxWidth: "120px" }} 
-                priority 
+              <Image
+                src="/images/logo-v2.png"
+                alt="Aurea BD"
+                width={600}
+                height={200}
+                style={{ width: "auto", height: "64px", objectFit: "contain", maxWidth: "120px" }}
+                priority
               />
             </Link>
           </div>
 
           <nav className={styles.desktopNav}>
             <Link href="/" className={styles.navLink}><span suppressHydrationWarning>{tr('nav.home')}</span></Link>
-            
+
             <div className={styles.navItem}>
               <Link href="/shop" className={styles.navLink}><span suppressHydrationWarning>{tr('nav.shop')}</span></Link>
               <div className={styles.megaMenu}>
@@ -77,7 +77,7 @@ export default function Navbar() {
                     <li><Link href="/shop?category=Cleansers" className={styles.megaLink}>{language === 'bn' ? 'ক্লিনজার' : 'Cleansers'}</Link></li>
                   </ul>
                 </div>
-                
+
                 <div className={styles.megaCol}>
                   <h3 className={styles.megaTitle}>{language === 'bn' ? 'কালেকশন' : 'Collections'}</h3>
                   <ul className={styles.megaList}>
@@ -110,8 +110,8 @@ export default function Navbar() {
             <div className={styles.desktopActions}>
               <HeaderSearch />
 
-              <button 
-                className={`${styles.themeToggle} nm-card`} 
+              <button
+                className={`${styles.themeToggle} nm-card`}
                 onClick={toggleTheme}
                 aria-label="Toggle Theme"
               >
@@ -120,8 +120,8 @@ export default function Navbar() {
                 </span>
               </button>
 
-              <button 
-                className={`${styles.langToggle} nm-card`} 
+              <button
+                className={`${styles.langToggle} nm-card`}
                 onClick={toggleLanguage}
                 aria-label="Switch Language"
               >
@@ -132,11 +132,11 @@ export default function Navbar() {
 
               {session ? (
                 <Link href="/profile" className={styles.iconBtn} aria-label={tr('nav.login')}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
                 </Link>
               ) : (
                 <Link href="/auth/login" className={styles.iconBtn} aria-label={tr('nav.login')}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
                 </Link>
               )}
 
@@ -146,15 +146,15 @@ export default function Navbar() {
 
               <button className={styles.iconBtn} onClick={() => toggleCart(true)} aria-label={tr('nav.cart')}>
                 <div className={styles.cartWrapper}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
                   {cartCount > 0 && <span className={styles.cartBadge}>{cartCount}</span>}
                 </div>
               </button>
             </div>
 
             <div className={styles.mobileActions}>
-              <button 
-                className={`${styles.themeToggle} nm-card`} 
+              <button
+                className={`${styles.themeToggle} nm-card`}
                 onClick={toggleTheme}
                 aria-label="Toggle Theme"
               >
@@ -163,8 +163,8 @@ export default function Navbar() {
                 </span>
               </button>
 
-              <button 
-                className={`${styles.langToggle} nm-card`} 
+              <button
+                className={`${styles.langToggle} nm-card`}
                 onClick={toggleLanguage}
                 aria-label="Switch Language"
               >
@@ -174,8 +174,8 @@ export default function Navbar() {
               </button>
             </div>
 
-            <button 
-              className={`${styles.menuBtn} ${isMobileMenuOpen ? styles.menuOpen : ""}`} 
+            <button
+              className={`${styles.menuBtn} ${isMobileMenuOpen ? styles.menuOpen : ""}`}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Toggle menu"
             >

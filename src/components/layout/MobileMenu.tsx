@@ -34,7 +34,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         {/* HEADER */}
         <div className={styles.header}>
           <div className={styles.logoWrapper}>
-            <Image src="/images/logo-v2.png" alt="Aurea BD" width={180} height={60} style={{ width: "auto", height: "32px", objectFit: "contain" }} />
+            <Image src="/images/logo-v3.png" alt="Aurea BD" width={180} height={60} style={{ width: "auto", height: "32px", objectFit: "contain" }} />
           </div>
           
           <button className={styles.closeBtn} onClick={onClose} aria-label="Close Menu">

@@ -28,20 +28,20 @@ export default function Footer() {
       <div className={styles.footerContainer}>
         <div className={styles.footerContent}>
           <div className={styles.footerGrid}>
-            
+
             {/* BRAND COLUMN */}
             <div className={styles.brandCol}>
-              <Image 
-                src="/images/logo-v2.png" 
-                alt="Aurea BD" 
-                width={600} 
-                height={200} 
-                style={{ width: "auto", height: "64px", objectFit: "contain" }} 
+              <Image
+                src="/images/logo-v2.png"
+                alt="Aurea BD"
+                width={600}
+                height={200}
+                style={{ width: "auto", height: "64px", objectFit: "contain" }}
               />
               <p className={styles.brandDesc}>
                 {tr('footer.description')}
               </p>
-              
+
               <div className={styles.socialIcons}>
                 <button className={styles.socialBtn} aria-label="Facebook">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
@@ -82,10 +82,10 @@ export default function Footer() {
               <h4>{tr('footer.stay_connected')}</h4>
               <p>{tr('footer.newsletter_text')}</p>
               <form className={styles.newsletterForm} onSubmit={handleSubscribe}>
-                <input 
-                  type="email" 
-                  placeholder={language === 'bn' ? 'ইমেল অ্যাড্রেস' : 'Email address'} 
-                  required 
+                <input
+                  type="email"
+                  placeholder={language === 'bn' ? 'ইমেল অ্যাড্রেস' : 'Email address'}
+                  required
                   className={styles.input}
                 />
                 <button type="submit" className={styles.button}>{tr('footer.subscribe')}</button>
@@ -101,7 +101,7 @@ export default function Footer() {
               <Link href="/terms-of-service">{tr('footer.terms')}</Link>
             </div>
           </div>
-          
+
         </div>
       </div>
     </footer>
