@@ -1,13 +1,14 @@
 .header {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
   width: 100%;
   z-index: 1000;
   background: var(--bg-color);
-  opacity: 0.95;
+  opacity: 0.98;
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(203, 163, 148, 0.15); /* Soft premium border */
-  transition: top 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+  border-bottom: 1px solid rgba(203, 163, 148, 0.15);
+  transition: all 0.3s ease;
 }
 
 .header.scrolled {
