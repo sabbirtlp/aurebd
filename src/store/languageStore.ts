@@ -174,12 +174,12 @@ export const translations: Record<Language, Record<string, string>> = {
 export const useLanguageStore = create<LanguageState>()(
   persist(
     (set, get) => ({
-      language: 'bn', // Set Bangla as default
+      language: 'en', // Set English as default
       setLanguage: (lang) => set({ language: lang }),
       t: (key) => {
         const lang = get().language;
-        // Primary: current language. Secondary: bangla. Tertiary: key.
-        return translations[lang][key] || translations['bn'][key] || key;
+        // Primary: current language. Secondary: english. Tertiary: key.
+        return translations[lang][key] || translations['en'][key] || key;
       },
     }),
     {
