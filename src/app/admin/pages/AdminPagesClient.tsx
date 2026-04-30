@@ -20,6 +20,41 @@ const PAGE_SECTIONS = [
         ],
       },
       {
+        section: "trust",
+        label: "Trust Badges",
+        fields: [
+          { key: "pure_title", label: "Purity Title", type: "text" },
+          { key: "pure_desc", label: "Purity Description", type: "textarea" },
+          { key: "hydration_title", label: "Hydration Title", type: "text" },
+          { key: "hydration_desc", label: "Hydration Description", type: "textarea" },
+          { key: "cruelty_title", label: "Cruelty Free Title", type: "text" },
+          { key: "cruelty_desc", label: "Cruelty Free Description", type: "textarea" },
+          { key: "shipping_title", label: "Shipping Title", type: "text" },
+          { key: "shipping_desc", label: "Shipping Description", type: "textarea" },
+        ],
+      },
+      {
+        section: "categories",
+        label: "Category Strip",
+        fields: [
+          { key: "title", label: "Section Title", type: "text" },
+          { key: "subtitle", label: "Section Subtitle", type: "text" },
+          { key: "serums", label: "Serums Label", type: "text" },
+          { key: "creams", label: "Creams Label", type: "text" },
+          { key: "uv", label: "UV Label", type: "text" },
+          { key: "essentials", label: "Essentials Label", type: "text" },
+        ],
+      },
+      {
+        section: "new_arrivals",
+        label: "New Arrivals Section",
+        fields: [
+          { key: "title", label: "Title", type: "text" },
+          { key: "subtitle", label: "Subtitle", type: "text" },
+          { key: "view_all", label: "Button Text", type: "text" },
+        ],
+      },
+      {
         section: "promo",
         label: "Promotional Banner",
         fields: [
@@ -27,6 +62,14 @@ const PAGE_SECTIONS = [
           { key: "title", label: "Promo Title", type: "text", placeholder: "e.g. Sakura 5pcs Skincare Set" },
           { key: "desc", label: "Description", type: "textarea", placeholder: "Promo description..." },
           { key: "cta", label: "Button Text", type: "text", placeholder: "e.g. Shop Now" },
+        ],
+      },
+      {
+        section: "best_sellers",
+        label: "Best Sellers Section",
+        fields: [
+          { key: "title", label: "Title", type: "text" },
+          { key: "subtitle", label: "Subtitle", type: "text" },
         ],
       },
     ],
@@ -52,6 +95,21 @@ const PAGE_SECTIONS = [
           { key: "paragraph2", label: "Paragraph 2", type: "textarea", placeholder: "Second paragraph..." },
         ],
       },
+      {
+        section: "values",
+        label: "Core Values",
+        fields: [
+          { key: "title", label: "Values Section Title", type: "text" },
+          { key: "v1_title", label: "Value 1 Title", type: "text" },
+          { key: "v1_desc", label: "Value 1 Desc", type: "textarea" },
+          { key: "v2_title", label: "Value 2 Title", type: "text" },
+          { key: "v2_desc", label: "Value 2 Desc", type: "textarea" },
+          { key: "v3_title", label: "Value 3 Title", type: "text" },
+          { key: "v3_desc", label: "Value 3 Desc", type: "textarea" },
+          { key: "v4_title", label: "Value 4 Title", type: "text" },
+          { key: "v4_desc", label: "Value 4 Desc", type: "textarea" },
+        ],
+      },
     ],
   },
   {
@@ -59,12 +117,34 @@ const PAGE_SECTIONS = [
     label: "📞 Contact Page",
     sections: [
       {
+        section: "hero",
+        label: "Contact Hero",
+        fields: [
+          { key: "title", label: "Title", type: "text" },
+          { key: "subtitle", label: "Subtitle", type: "text" },
+        ],
+      },
+      {
+        section: "form",
+        label: "Contact Form",
+        fields: [
+          { key: "title", label: "Form Title", type: "text" },
+        ],
+      },
+      {
         section: "info",
         label: "Contact Information",
         fields: [
           { key: "phone", label: "Phone Number", type: "text", placeholder: "+880 1XXX-XXXXXX" },
           { key: "email", label: "Email Address", type: "text", placeholder: "official.aureabd@gmail.com" },
           { key: "address", label: "Address", type: "text", placeholder: "Dhaka, Bangladesh" },
+        ],
+      },
+      {
+        section: "social",
+        label: "Social Section",
+        fields: [
+          { key: "title", label: "Social Title", type: "text" },
         ],
       },
     ],
