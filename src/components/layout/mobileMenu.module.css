@@ -161,11 +161,13 @@
   border-radius: 12px;
   color: var(--text-dark);
   transition: all 0.3s ease;
+  border: 1px solid transparent;
 }
 
 .userLink:hover {
-  background: white;
+  background: var(--bg-color);
   box-shadow: var(--nm-outer-raised-sm);
+  border-color: rgba(203, 163, 148, 0.2);
 }
 
 .ctaWrapper {
@@ -215,5 +217,27 @@
   to { transform: translateX(0); }
 }
 
-/* --- Switchers --- */
-/* Removed old switcher styles since they are now in the header */
+/* --- Dark Mode Enhancements --- */
+:global([data-theme='dark']) .menu {
+  background: linear-gradient(145deg, #161616, #121212);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+:global([data-theme='dark']) .header {
+  background: transparent;
+}
+
+:global([data-theme='dark']) .userSection {
+  background: #111;
+  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5), inset -2px -2px 5px rgba(255,255,255,0.02);
+}
+
+:global([data-theme='dark']) .userLink:hover {
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: none;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:global([data-theme='dark']) .navLink:hover {
+  background: rgba(203, 163, 148, 0.1);
+}
