@@ -44,7 +44,7 @@ export default function Navbar() {
     <>
       <header className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}>
         <div className={styles.topBar}>
-          {tr('topbar.shipping')}
+          <span className={styles.topBarContent}>{tr('topbar.shipping')}</span>
         </div>
         
         <div className={`container ${styles.navMain}`}>
