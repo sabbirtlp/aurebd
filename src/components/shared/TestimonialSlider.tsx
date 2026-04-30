@@ -52,6 +52,18 @@ export default function TestimonialSlider({ items, title }: TestimonialSliderPro
   const displayItems = items || (dbTestimonials.length > 0 ? dbTestimonials : formattedStatic);
   const displayTitle = title || (language === 'bn' ? 'গ্রাহকদের কথা' : 'What Our Clients Say');
 
+  const fetchTestimonials = useMemo(() => async () => {
+    try {
+      const res = await fetch(`/api/testimonials?lang=${language}`);
+      const data = await res.json();
+      if (data.testimonials && data.testimonials.length > 0) {
+        setDbTestimonials(data.testimonials);
+      }
+    } catch (err) {
+      console.error("Failed to fetch testimonials");
+    }
+  }, [language]);
+
   useEffect(() => {
     setMounted(true);
     fetchTestimonials();
@@ -63,19 +75,7 @@ export default function TestimonialSlider({ items, title }: TestimonialSliderPro
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [language]);
-
-  const fetchTestimonials = async () => {
-    try {
-      const res = await fetch(`/api/testimonials?lang=${language}`);
-      const data = await res.json();
-      if (data.testimonials && data.testimonials.length > 0) {
-        setDbTestimonials(data.testimonials);
-      }
-    } catch (err) {
-      console.error("Failed to fetch testimonials");
-    }
-  };
+  }, [language, fetchTestimonials]);
 
   const maxIndex = Math.max(0, displayItems.length - visibleCount);
 

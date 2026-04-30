@@ -69,7 +69,7 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
       params.set('page', '1');
       window.history.pushState({}, '', `${window.location.pathname}?${params.toString()}`);
     }
-  }, [activeCategory, sortBy]);
+  }, [activeCategory, sortBy, currentPage]);
 
   return (
     <div className={`animate-fade-in ${styles.shopPage}`}>

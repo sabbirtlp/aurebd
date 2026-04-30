@@ -72,7 +72,8 @@ export const authOptions: NextAuthOptions = {
       }
       
       // 3. Persistent token check (returning user)
-      if (!token.id || (token.id.length !== 24 && !token.role)) {
+      const tokenId = token.id as string | undefined;
+      if (!tokenId || (tokenId.length !== 24 && !token.role)) {
         await dbConnect();
         const dbUser = await User.findOne({ email: token.email });
         if (dbUser) {
