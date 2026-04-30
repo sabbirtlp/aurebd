@@ -30,7 +30,7 @@ export async function POST(req: Request) {
 
     await dbConnect();
     const body = await req.json();
-    const { name, description, price, image, stock, category } = body;
+    const { name, description, price, image, gallery, stock, category } = body;
 
     // Auto-generate slug from name
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -41,6 +41,7 @@ export async function POST(req: Request) {
       description,
       price: Number(price),
       image,
+      gallery: gallery || [],
       stock: Number(stock),
       category,
     });

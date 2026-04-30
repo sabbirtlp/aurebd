@@ -33,13 +33,13 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
     await dbConnect();
     const body = await req.json();
-    const { name, description, price, image, stock, category } = body;
+    const { name, description, price, image, gallery, stock, category } = body;
 
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
     const product = await Product.findByIdAndUpdate(
       params.id,
-      { name, slug, description, price: Number(price), image, stock: Number(stock), category },
+      { name, slug, description, price: Number(price), image, gallery: gallery || [], stock: Number(stock), category },
       { new: true }
     );
 

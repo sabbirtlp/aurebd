@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "../../admin.module.css";
+import ImageUpload from "@/components/admin/ImageUpload";
 
 const CATEGORIES = ["Sets", "Serums", "Creams", "Sunscreen", "Cleansers", "Radiance Serums", "Hydration Creams", "UV Protection", "Skin Essentials"];
 
@@ -16,6 +17,7 @@ export default function NewProductPage() {
     description: "",
     price: "",
     image: "",
+    gallery: [] as string[],
     stock: "",
     category: CATEGORIES[0],
   });
@@ -113,21 +115,21 @@ export default function NewProductPage() {
             </div>
 
             <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
-              <label className={styles.formLabel}>Image URL</label>
-              <input
-                type="text"
-                name="image"
-                value={form.image}
-                onChange={handleChange}
-                className={styles.formInput}
-                placeholder="e.g. /images/product-name.png"
-                required
+              <ImageUpload 
+                label="Primary Product Image"
+                images={form.image ? [form.image] : []}
+                onChange={(images) => setForm({ ...form, image: images[0] || "" })}
+                maxImages={1}
               />
-              {form.image && (
-                <div className={styles.imagePreview} style={{ marginTop: "0.75rem" }}>
-                  <Image src={form.image} alt="Preview" fill style={{ objectFit: "contain", padding: "10px" }} />
-                </div>
-              )}
+            </div>
+
+            <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
+              <ImageUpload 
+                label="Product Image Gallery"
+                images={form.gallery}
+                onChange={(images) => setForm({ ...form, gallery: images })}
+                maxImages={4}
+              />
             </div>
 
             <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
