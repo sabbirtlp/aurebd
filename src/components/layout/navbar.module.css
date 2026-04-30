@@ -11,8 +11,10 @@
 }
 
 .header.scrolled {
-  top: -36px; /* Shift the sticky anchor point up so the topBar hides perfectly above the screen */
+  top: 0;
   box-shadow: var(--nm-outer-raised-sm); /* Add a beautiful neumorphic drop shadow when scrolling */
+  background: var(--bg-color);
+  opacity: 1;
 }
 
 .topBar {
