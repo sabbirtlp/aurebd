@@ -3,8 +3,28 @@
 import { useState } from "react";
 import styles from "../admin.module.css";
 
+// Define types for CMS sections
+interface Field {
+  key: string;
+  label: string;
+  type: string;
+  placeholder?: string;
+}
+
+interface Section {
+  section: string;
+  label: string;
+  fields: Field[];
+}
+
+interface PageGroup {
+  page: string;
+  label: string;
+  sections: Section[];
+}
+
 // Define all editable sections of the website
-const PAGE_SECTIONS = [
+const PAGE_SECTIONS: PageGroup[] = [
   {
     page: "home",
     label: "🏠 Home Page",
