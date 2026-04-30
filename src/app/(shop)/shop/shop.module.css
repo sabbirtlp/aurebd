@@ -289,11 +289,18 @@
     width: 100%;
   }
   .priceSliderContainer {
-    justify-content: space-between;
-    padding: 12px 20px;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-4);
+    border-radius: 20px;
   }
   .priceRange {
-    flex: 1;
-    margin: 0 var(--sp-2);
+    width: 100% !important;
+    margin: var(--sp-2) 0 !important;
+  }
+  .priceSliderContainer span {
+    font-size: 0.85rem;
+    font-weight: 500;
   }
 }
