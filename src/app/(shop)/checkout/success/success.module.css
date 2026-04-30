@@ -136,11 +136,37 @@
 }
 
 @media (max-width: 600px) {
+  .successPage {
+    padding: var(--sp-6) var(--sp-4);
+  }
   .actions {
     flex-direction: column-reverse;
   }
   .successCard {
-    padding: var(--sp-8) var(--sp-6);
+    padding: var(--sp-6) var(--sp-4);
+  }
+  .title {
+    font-size: 1.6rem;
+  }
+  .subtitle {
+    margin-bottom: var(--sp-6);
+    font-size: 0.9rem;
+  }
+  .orderBox {
+    padding: var(--sp-4);
+    margin-bottom: var(--sp-6);
+  }
+  .iconWrapper {
+    width: 64px;
+    height: 64px;
+    margin-bottom: var(--sp-4);
+  }
+  .iconWrapper svg {
+    width: 32px;
+    height: 32px;
+  }
+  .orderRow {
+    font-size: 0.85rem;
   }
 }
 
