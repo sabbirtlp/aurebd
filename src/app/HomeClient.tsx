@@ -51,47 +51,27 @@ export default function HomeClient({ products }: { products: any[] }) {
         
         <div className={`container ${styles.heroContainer}`}>
           <div className={styles.heroContent}>
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className={styles.heroBadge}
-            >
+            <div className={styles.heroBadge}>
               <span className={styles.badgeDot}></span>
               <Editable page="home" section="hero" field="badge" defaultText={language === 'bn' ? 'নতুন কালেকশন ২০২৬' : 'New Collection 2026'} />
-            </motion.div>
+            </div>
 
-            <motion.h1 
-              className={styles.heroTitle}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
+            <h1 className={`${styles.heroTitle} ${styles.animateFadeIn}`}>
               <Editable page="home" section="hero" field="title" defaultText={tr('hero.title')} /> <br />
               <span className={styles.italicText}><Editable page="home" section="hero" field="title_span" defaultText={tr('hero.title_span')} /></span>
-            </motion.h1>
+            </h1>
 
-            <motion.p 
-              className={styles.heroSubtitle}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-            >
+            <p className={`${styles.heroSubtitle} ${styles.animateFadeIn}`}>
               <Editable page="home" section="hero" field="subtitle" defaultText={tr('hero.subtitle')} multiline />
-            </motion.p>
+            </p>
 
-            <motion.div 
-              className={styles.heroActions}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-            >
+            <div className={`${styles.heroActions} ${styles.animateFadeIn}`}>
               <Link href="/shop" className={styles.btnPrimary}>
                 {tr('hero.shop_now')}
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
               </Link>
               <Link href="/about" className={styles.btnSecondary}>{tr('hero.our_story')}</Link>
-            </motion.div>
+            </div>
 
             {/* Trust Badges in Hero */}
             <motion.div 
@@ -111,12 +91,7 @@ export default function HomeClient({ products }: { products: any[] }) {
             </motion.div>
           </div>
 
-          <motion.div 
-            className={styles.heroImageContainer}
-            initial={{ opacity: 0, scale: 0.9, rotate: -5 }}
-            animate={{ opacity: 1, scale: 1, rotate: 0 }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
-          >
+          <div className={`${styles.heroImageContainer} ${styles.heroImageAnimate}`}>
             <div className={styles.heroImageCircle}>
               <EditableImage 
                 page="home"

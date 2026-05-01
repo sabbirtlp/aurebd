@@ -37,6 +37,11 @@ export async function seedDatabase() {
   return { success: true };
 }
 
+export async function getFeaturedProducts() {
+  await dbConnect();
+  return await Product.find({}).select("name slug price image category").limit(8).lean();
+}
+
 export async function getProducts() {
   try {
     await dbConnect();
