@@ -1,31 +1,13 @@
 .aboutHero {
   position: relative;
-  height: 60vh;
-  min-height: 500px;
-  max-height: 800px;
+  height: 55vh;
+  min-height: 450px;
+  max-height: 700px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: var(--bg-color);
-}
-
-.heroImage {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  transition: transform 10s ease;
-}
-
-.aboutHero:hover .heroImage {
-  transform: scale(1.05);
-}
-
-.heroImageOverlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, rgba(var(--bg-color-rgb), 0.3) 0%, var(--bg-color) 100%);
-  z-index: 2;
+  background: radial-gradient(circle at top left, var(--surface) 0%, var(--bg-color) 70%);
 }
 
 .heroContent {
@@ -33,13 +15,10 @@
   z-index: 10;
   max-width: 800px;
   text-align: center;
-  padding: var(--sp-10) var(--sp-12);
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  padding: var(--sp-12) var(--sp-8);
   border-radius: 40px;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-color);
+  box-shadow: var(--nm-outer-raised);
   transform: translateY(20px);
   animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -69,21 +48,19 @@
 
 .breadcrumb a:hover {
   color: var(--accent);
-  text-shadow: 0 0 10px rgba(203, 163, 148, 0.5);
 }
 
 .heroContent h1 {
-  font-size: 4.5rem;
+  font-size: 4rem;
   color: var(--text-dark);
   margin-bottom: var(--sp-6);
   letter-spacing: -0.02em;
   font-weight: 300;
   line-height: 1.1;
-  text-shadow: 0 4px 20px rgba(0,0,0,0.05);
 }
 
 .heroContent p {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   color: var(--text-light);
   line-height: 1.8;
   max-width: 90%;
@@ -97,7 +74,7 @@
   grid-template-columns: 1.2fr 1fr;
   gap: var(--sp-16);
   align-items: center;
-  margin: var(--sp-12) 0;
+  margin: var(--sp-16) 0;
 }
 
 .badge {
@@ -108,8 +85,9 @@
   letter-spacing: 3px;
   font-size: 0.85rem;
   margin-bottom: var(--sp-4);
-  padding: 6px 16px;
-  background: rgba(203, 163, 148, 0.1);
+  padding: 8px 20px;
+  background: var(--bg-color);
+  box-shadow: var(--nm-inner-pressed-sm);
   border-radius: 100px;
 }
 
@@ -136,10 +114,8 @@
   position: relative;
   padding: var(--sp-4);
   border-radius: 40px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 100%);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 30px 60px rgba(0,0,0,0.08);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: var(--bg-color);
+  box-shadow: var(--nm-outer-raised);
   aspect-ratio: 4/5;
   overflow: hidden;
   display: flex;
@@ -151,9 +127,11 @@
   position: absolute;
   inset: 0;
   border-radius: 36px;
-  border: 2px dashed rgba(203, 163, 148, 0.3);
+  border: 2px solid transparent;
   margin: 20px;
+  box-shadow: var(--nm-inner-pressed-sm);
   pointer-events: none;
+  z-index: 5;
 }
 
 /* --- VALUES SECTION --- */
@@ -170,38 +148,33 @@
 }
 
 .valueCard {
-  position: relative;
   text-align: center;
   padding: var(--sp-10) var(--sp-6);
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
   border-radius: 32px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.05);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .valueCard:hover {
-  transform: translateY(-15px);
-  box-shadow: 0 30px 60px rgba(203, 163, 148, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-5px);
 }
 
 .valueIcon {
-  font-size: 3.5rem;
+  font-size: 2.5rem;
   margin-bottom: var(--sp-6);
-  display: inline-block;
-  padding: 20px;
-  background: linear-gradient(135deg, rgba(203, 163, 148, 0.1), transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  border: 1px solid rgba(203, 163, 148, 0.2);
   transition: transform 0.4s ease;
 }
 
 .valueCard:hover .valueIcon {
-  transform: scale(1.1) rotate(5deg);
+  transform: scale(1.05);
 }
 
 .valueCard h3 {
@@ -227,12 +200,12 @@
 }
 
 @media (max-width: 992px) {
-  .aboutHero { height: auto; padding: var(--sp-20) 0; }
+  .aboutHero { height: auto; padding: var(--sp-16) 0; }
   .heroContent { 
     max-width: 90%; 
-    padding: var(--sp-8) var(--sp-6); 
+    padding: var(--sp-10) var(--sp-6); 
   }
-  .heroContent h1 { font-size: 3.5rem; }
+  .heroContent h1 { font-size: 3.2rem; }
   
   .storyGrid { 
     grid-template-columns: 1fr; 
@@ -250,7 +223,7 @@
   
   .valuesGrid { 
     grid-template-columns: repeat(2, 1fr); 
-    gap: var(--sp-6);
+    gap: var(--sp-8);
   }
 }
 
@@ -260,11 +233,10 @@
   .storyText h2 { font-size: 2.5rem; }
   
   .valueCard { padding: var(--sp-8) var(--sp-4); }
-  .valueIcon { font-size: 2.5rem; padding: 15px; }
 }
 
 @media (max-width: 576px) {
-  .aboutHero { padding: var(--sp-12) var(--sp-2); }
+  .aboutHero { padding: var(--sp-10) var(--sp-2); }
   .heroContent {
     padding: var(--sp-8) var(--sp-4);
     border-radius: 30px;
@@ -281,7 +253,7 @@
   .valuesSection { margin-top: var(--sp-10); }
   .valuesGrid { 
     grid-template-columns: 1fr; 
-    gap: var(--sp-4);
+    gap: var(--sp-6);
   }
   .valueCard { border-radius: 24px; }
 }
