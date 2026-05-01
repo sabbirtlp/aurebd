@@ -11,7 +11,7 @@ const CATEGORIES = ["Sets", "Serums", "Creams", "Sunscreen", "Cleansers", "Radia
 
 export default function EditProductClient({ product }: { product: any }) {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   const [form, setForm] = useState({
     name: product.name || "",
     description: product.description || "",
@@ -24,6 +24,17 @@ export default function EditProductClient({ product }: { product: any }) {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setIsSaved(false); // Reactivate button on change
+  };
+
+  const handleImageChange = (newImage: string) => {
+    setForm({ ...form, image: newImage });
+    setIsSaved(false);
+  };
+
+  const handleGalleryChange = (newGallery: string[]) => {
+    setForm({ ...form, gallery: newGallery });
+    setIsSaved(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,14 +49,15 @@ export default function EditProductClient({ product }: { product: any }) {
       });
 
       if (res.ok) {
-        router.push("/admin/products");
+        toast.success("Product updated successfully! ✅");
+        setIsSaved(true);
         router.refresh();
       } else {
         const data = await res.json();
-        alert(data.message || "Failed to update product");
+        toast.error(data.message || "Failed to update product");
       }
     } catch (error) {
-      alert("An error occurred");
+      toast.error("An error occurred while saving");
     } finally {
       setLoading(false);
     }
@@ -94,7 +106,7 @@ export default function EditProductClient({ product }: { product: any }) {
               <ImageUpload 
                 label="Primary Product Image"
                 images={form.image ? [form.image] : []}
-                onChange={(images) => setForm({ ...form, image: images[0] || "" })}
+                onChange={(images) => handleImageChange(images[0] || "")}
                 maxImages={1}
               />
             </div>
@@ -103,7 +115,7 @@ export default function EditProductClient({ product }: { product: any }) {
               <ImageUpload 
                 label="Product Image Gallery"
                 images={form.gallery}
-                onChange={(images) => setForm({ ...form, gallery: images })}
+                onChange={handleGalleryChange}
                 maxImages={10}
               />
             </div>
@@ -115,9 +127,14 @@ export default function EditProductClient({ product }: { product: any }) {
           </div>
 
           <div className={styles.formActions}>
-            <Link href="/admin/products" className={styles.btnSecondary}>Cancel</Link>
-            <button type="submit" className={styles.btnPrimary} disabled={loading}>
-              {loading ? "Saving..." : "Save Changes"}
+            <Link href="/admin/products" className={styles.btnSecondary}>Back to List</Link>
+            <button 
+              type="submit" 
+              className={styles.btnPrimary} 
+              disabled={loading || isSaved}
+              style={{ minWidth: "140px" }}
+            >
+              {loading ? "Saving..." : isSaved ? "Saved! ✅" : "Save Changes"}
             </button>
           </div>
         </form>
