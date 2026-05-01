@@ -29,6 +29,7 @@ export default function TopLoadingBar() {
         
         if (targetUrl.pathname !== currentUrl.pathname || targetUrl.search !== currentUrl.search) {
           setLoading(true);
+          window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
         }
       }
     };
