@@ -104,7 +104,7 @@ export default function EditProductClient({ product }: { product: any }) {
                 label="Product Image Gallery"
                 images={form.gallery}
                 onChange={(images) => setForm({ ...form, gallery: images })}
-                maxImages={4}
+                maxImages={10}
               />
             </div>
 

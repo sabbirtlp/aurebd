@@ -43,14 +43,12 @@ export default function ImageUpload({ label, images, onChange, maxImages = 1 }: 
   };
 
   const uploadFiles = async (files: FileList) => {
-    // Check if we would exceed the max images
     const remainingSlots = maxImages - images.length;
     if (remainingSlots <= 0) {
       alert(`You can only upload up to ${maxImages} image(s).`);
       return;
     }
 
-    // Convert FileList to Array and take only the allowed number of files
     const filesToUpload = Array.from(files).slice(0, remainingSlots);
     setIsUploading(true);
 
@@ -58,36 +56,28 @@ export default function ImageUpload({ label, images, onChange, maxImages = 1 }: 
       const newImages = [...images];
       
       for (const file of filesToUpload) {
-        // Validate file type
         if (!file.type.startsWith('image/')) {
           alert('Please upload only image files.');
           continue;
         }
 
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const res = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
+        // Professional Base64 Conversion (Works everywhere, including Vercel)
+        const base64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = error => reject(error);
         });
 
-        if (res.ok) {
-          const data = await res.json();
-          newImages.push(data.url);
-        } else {
-          console.error("Failed to upload image");
-          alert("Failed to upload image");
-        }
+        newImages.push(base64);
       }
       
       onChange(newImages);
     } catch (error) {
       console.error("Upload error:", error);
-      alert("Error uploading image");
+      alert("Error processing image. Try a smaller file.");
     } finally {
       setIsUploading(false);
-      // Reset input
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
