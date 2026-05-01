@@ -1,7 +1,6 @@
 "use client";
-/** Sanitized Build v2.0 */
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "../admin.module.css";
 import { Plus, Edit2, Trash2, Star, Quote, Globe, CheckCircle, X } from "lucide-react";
 import { toast } from "react-toastify";
@@ -94,13 +93,14 @@ export default function AdminTestimonialsClient() {
   };
 
   return (
-    <>
+    <React.Fragment>
       <div className={styles.pageHeader}>
         <div>
           <h2 className={styles.pageTitle}>Testimonials</h2>
           <p className={styles.pageSubtitle}>Manage customer reviews and feedback</p>
         </div>
         <button 
+          type="button"
           className={styles.btnPrimary} 
           onClick={() => { 
             setEditingId(null); 
@@ -133,10 +133,10 @@ export default function AdminTestimonialsClient() {
                   ))}
                 </div>
                 <div style={{ display: "flex", gap: "0.75rem" }}>
-                  <button onClick={() => handleEdit(t)} className={styles.btnEdit} title="Edit" style={{ padding: "0.4rem" }}>
+                  <button type="button" onClick={() => handleEdit(t)} className={styles.btnEdit} title="Edit" style={{ padding: "0.4rem" }}>
                     <Edit2 size={16} />
                   </button>
-                  <button onClick={() => handleDelete(t._id)} className={styles.btnDanger} title="Delete" style={{ padding: "0.4rem" }}>
+                  <button type="button" onClick={() => handleDelete(t._id)} className={styles.btnDanger} title="Delete" style={{ padding: "0.4rem" }}>
                     <Trash2 size={16} />
                   </button>
                 </div>
@@ -209,7 +209,6 @@ export default function AdminTestimonialsClient() {
         </div>
       )}
 
-      {/* Premium Modal */}
       {showModal && (
         <div style={{ 
           position: "fixed", 
@@ -224,6 +223,7 @@ export default function AdminTestimonialsClient() {
         }}>
           <div className={`${styles.panel} animate-scale-in`} style={{ width: "100%", maxWidth: "550px", padding: "2.5rem", position: "relative" }}>
             <button 
+              type="button"
               onClick={() => setShowModal(false)}
               style={{ position: "absolute", top: "1.5rem", right: "1.5rem", background: "none", border: "none", color: "var(--text-light)", cursor: "pointer" }}
             >
@@ -291,6 +291,6 @@ export default function AdminTestimonialsClient() {
           </div>
         </div>
       )}
-    </>
+    </React.Fragment>
   );
 }
