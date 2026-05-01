@@ -1690,9 +1690,9 @@
 
 /* PRINT / INVOICE STYLES */
 @media print {
-  :global(body) {
-    background: white;
-    color: black;
+  .profilePage, .detailsWrapper, .dashboardWrapper {
+    background: white !important;
+    color: black !important;
   }
   
   .sidebar, .backBtn, .invoiceBtn {
