@@ -5,18 +5,8 @@ import styles from "../admin.module.css";
 import { Plus, Edit2, Trash2, Star, Quote, Globe, CheckCircle, X } from "lucide-react";
 import { toast } from "react-toastify";
 
-interface Testimonial {
-  _id: string;
-  name: string;
-  role: string;
-  content: string;
-  rating: number;
-  image: string;
-  language: string;
-}
-
 export default function AdminTestimonialsClient() {
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [testimonials, setTestimonials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -32,7 +22,7 @@ export default function AdminTestimonialsClient() {
     fetchTestimonials();
   }, []);
 
-  const fetchTestimonials = async () => {
+  async function fetchTestimonials() {
     try {
       const res = await fetch("/api/admin/testimonials");
       const data = await res.json();
@@ -42,9 +32,9 @@ export default function AdminTestimonialsClient() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const method = editingId ? "PUT" : "POST";
     const url = editingId ? `/api/admin/testimonials/${editingId}` : "/api/admin/testimonials";
@@ -65,9 +55,9 @@ export default function AdminTestimonialsClient() {
     } catch (err) {
       toast.error("An error occurred");
     }
-  };
+  }
 
-  const handleEdit = (t: Testimonial) => {
+  function handleEdit(t: any) {
     setEditingId(t._id);
     setFormData({
       name: t.name,
@@ -77,9 +67,9 @@ export default function AdminTestimonialsClient() {
       language: t.language
     });
     setShowModal(true);
-  };
+  }
 
-  const handleDelete = async (id: string) => {
+  async function handleDelete(id: string) {
     if (!confirm("Are you sure you want to delete this testimonial?")) return;
     try {
       const res = await fetch(`/api/admin/testimonials/${id}`, { method: "DELETE" });
@@ -90,17 +80,16 @@ export default function AdminTestimonialsClient() {
     } catch (err) {
       toast.error("Failed to delete");
     }
-  };
+  }
 
   return (
-    <div className="admin-testimonials-container">
+    <div className={styles.adminContainerInner}>
       <div className={styles.pageHeader}>
         <div>
           <h2 className={styles.pageTitle}>Testimonials</h2>
           <p className={styles.pageSubtitle}>Manage customer reviews and feedback</p>
         </div>
         <button 
-          type="button"
           className={styles.btnPrimary} 
           onClick={() => { 
             setEditingId(null); 
@@ -119,10 +108,10 @@ export default function AdminTestimonialsClient() {
       ) : (
         <div className={styles.contentGrid} style={{ gridTemplateColumns: "repeat(auto-fill, minmax(400px, 1fr))", gap: "2rem" }}>
           {testimonials.map((t) => (
-            <div key={t._id} className={styles.contentSection + " animate-fade-in"} style={{ marginBottom: 0, display: "flex", flexDirection: "column" }}>
+            <div key={t._id} className={styles.contentSection} style={{ marginBottom: 0, display: "flex", flexDirection: "column" }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.5rem" }}>
                 <div style={{ display: "flex", gap: "2px" }}>
-                  {[0,1,2,3,4].map((i) => (
+                  {[...Array(5)].map((_, i) => (
                     <Star 
                       key={i} 
                       size={16} 
@@ -133,10 +122,10 @@ export default function AdminTestimonialsClient() {
                   ))}
                 </div>
                 <div style={{ display: "flex", gap: "0.75rem" }}>
-                  <button type="button" onClick={() => handleEdit(t)} className={styles.btnEdit} title="Edit" style={{ padding: "0.4rem" }}>
+                  <button onClick={() => handleEdit(t)} className={styles.btnEdit} title="Edit" style={{ padding: "0.4rem" }}>
                     <Edit2 size={16} />
                   </button>
-                  <button type="button" onClick={() => handleDelete(t._id)} className={styles.btnDanger} title="Delete" style={{ padding: "0.4rem" }}>
+                  <button onClick={() => handleDelete(t._id)} className={styles.btnDanger} title="Delete" style={{ padding: "0.4rem" }}>
                     <Trash2 size={16} />
                   </button>
                 </div>
@@ -221,9 +210,8 @@ export default function AdminTestimonialsClient() {
           backdropFilter: "blur(8px)",
           padding: "1rem"
         }}>
-          <div className={styles.panel + " animate-scale-in"} style={{ width: "100%", maxWidth: "550px", padding: "2.5rem", position: "relative" }}>
+          <div className={styles.panel} style={{ width: "100%", maxWidth: "550px", padding: "2.5rem", position: "relative" }}>
             <button 
-              type="button"
               onClick={() => setShowModal(false)}
               style={{ position: "absolute", top: "1.5rem", right: "1.5rem", background: "none", border: "none", color: "var(--text-light)", cursor: "pointer" }}
             >
