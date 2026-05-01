@@ -1,7 +1,10 @@
+export const dynamic = 'force-dynamic';
+
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
 import dbConnect from "@/lib/db";
+
 import Order from "@/models/Order";
 
 export async function GET() {
@@ -47,3 +50,4 @@ export async function GET() {
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }
+

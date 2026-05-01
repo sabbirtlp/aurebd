@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
@@ -83,3 +85,4 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ message: "Error" }, { status: 500 });
   }
 }
+
