@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import styles from "../admin.module.css";
@@ -47,7 +47,7 @@ export default function AdminTestimonialsClient() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const method = editingId ? "PUT" : "POST";
-    const url = editingId ? /api/admin/testimonials/ + editingId : "/api/admin/testimonials";
+    const url = editingId ? `/api/admin/testimonials/${editingId}` : "/api/admin/testimonials";
 
     try {
       const res = await fetch(url, {
@@ -82,7 +82,7 @@ export default function AdminTestimonialsClient() {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this testimonial?")) return;
     try {
-      const res = await fetch("/api/admin/testimonials/" + id, { method: "DELETE" });
+      const res = await fetch(`/api/admin/testimonials/${id}`, { method: "DELETE" });
       if (res.ok) {
         toast.success("Testimonial removed");
         fetchTestimonials();
