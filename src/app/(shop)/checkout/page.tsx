@@ -37,28 +37,48 @@ export default function CheckoutPage() {
 
     setLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      // Save order details for the success page PDF generation
-      const orderId = `AUBD-${Math.floor(Math.random() * 1000000)}`;
-      const orderData = {
-        id: orderId,
-        date: new Date().toISOString(),
-        customer: formData,
-        items: items,
-        subtotal: getTotal(),
-        shipping: 60,
-        total: getTotal() + 60,
-        paymentMethod
-      };
-      
-      localStorage.setItem('lastOrder', JSON.stringify(orderData));
-      
-      toast.success("Order placed successfully! Redirecting...");
-      clearCart();
+    try {
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: items.map(item => ({
+            product: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            image: item.image
+          })),
+          totalAmount: getTotal() + 60, // Including shipping
+          shippingAddress: formData,
+          paymentMethod
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        // Save order details for the success page PDF generation
+        localStorage.setItem('lastOrder', JSON.stringify({
+          ...data.order,
+          customer: formData,
+          subtotal: getTotal(),
+          shipping: 60,
+          total: getTotal() + 60,
+        }));
+        
+        toast.success("Order placed successfully! Redirecting...");
+        clearCart();
+        router.push(`/checkout/success?order_id=${data.order._id}`);
+      } else {
+        toast.error(data.message || "Failed to place order. Please try again.");
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      toast.error("An unexpected error occurred. Please try again.");
+    } finally {
       setLoading(false);
-      router.push(`/checkout/success?order_id=${orderId}`);
-    }, 2000);
+    }
   };
 
   if (items.length === 0) {
