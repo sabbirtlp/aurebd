@@ -54,7 +54,7 @@ export default function ProductClient({ product, relatedProducts }: { product: a
     setZoomStyle({ transformOrigin: 'center center', transform: 'scale(1)' });
   };
 
-  const thumbnails = [product.image, "/images/sakura-cream.png", "/images/sakura-serum.png"];
+  const thumbnails = [product.image, ...(product.gallery || [])];
 
   return (
     <main className={`${styles.productPage} animate-fade-in`}>

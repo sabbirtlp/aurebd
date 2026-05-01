@@ -61,11 +61,34 @@ export default function ImageUpload({ label, images, onChange, maxImages = 1 }: 
           continue;
         }
 
-        // Professional Base64 Conversion (Works everywhere, including Vercel)
+        // Professional Base64 Conversion with Canvas Compression (Works everywhere, including Vercel)
         const base64 = await new Promise<string>((resolve, reject) => {
           const reader = new FileReader();
           reader.readAsDataURL(file);
-          reader.onload = () => resolve(reader.result as string);
+          reader.onload = (event) => {
+            const img = new (window as any).Image();
+            img.src = event.target?.result as string;
+            img.onload = () => {
+              const canvas = document.createElement("canvas");
+              const MAX_WIDTH = 1200;
+              let width = img.width;
+              let height = img.height;
+
+              if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
+              }
+
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext("2d");
+              ctx?.drawImage(img, 0, 0, width, height);
+              
+              // Compress to 70% quality to save space
+              const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
+              resolve(dataUrl);
+            };
+          };
           reader.onerror = error => reject(error);
         });
 
