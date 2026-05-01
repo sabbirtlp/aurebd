@@ -75,3 +75,26 @@ export async function getProductBySlug(slug: string) {
 export async function getProductById(id: string) {
   return getProductBySlug(id); // Proxy for compatibility
 }
+
+export async function getRelatedProducts(productId: string, category: string, limit: number = 4) {
+  try {
+    await dbConnect();
+    // Query only related products directly from MongoDB — no need to fetch ALL products
+    let related = await Product.find({
+      _id: { $ne: productId },
+      category: category
+    }).limit(limit).lean();
+
+    // Fallback: if no same-category products, get any other products
+    if (related.length === 0) {
+      related = await Product.find({
+        _id: { $ne: productId }
+      }).limit(limit).lean();
+    }
+
+    return JSON.parse(JSON.stringify(related));
+  } catch (error) {
+    console.error("Failed to fetch related products:", error);
+    return [];
+  }
+}
