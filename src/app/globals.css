@@ -70,6 +70,8 @@ html, body {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  /* Faster scrolling */
+  text-rendering: optimizeLegibility;
 }
 
 h1, h2, h3, h4 {
@@ -87,6 +89,8 @@ a {
   text-decoration: none;
   color: inherit;
   transition: 0.3s ease;
+  /* Hardware acceleration */
+  backface-visibility: hidden;
 }
 
 ul {
@@ -129,6 +133,9 @@ ul {
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   text-decoration: none;
   font-size: 0.95rem;
+  /* GPU acceleration */
+  will-change: transform, box-shadow;
+  transform: translateZ(0);
 }
 
 .btn-nm:hover {
@@ -157,6 +164,9 @@ ul {
   box-shadow: var(--nm-outer-raised-sm);
   border: 1px solid var(--border);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  /* GPU acceleration */
+  will-change: transform, box-shadow;
+  transform: translateZ(0);
 }
 
 .nm-card:hover {
@@ -179,23 +189,24 @@ ul {
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(20px) translateZ(0); }
+  to { opacity: 1; transform: translateY(0) translateZ(0); }
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-15px); }
+  0%, 100% { transform: translateY(0) translateZ(0); }
+  50% { transform: translateY(-15px) translateZ(0); }
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(21, 128, 61, 0.2); }
-  70% { transform: scale(1.02); box-shadow: 0 0 0 15px rgba(21, 128, 61, 0); }
-  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(21, 128, 61, 0); }
+  0% { transform: scale(1) translateZ(0); box-shadow: 0 0 0 0 rgba(21, 128, 61, 0.2); }
+  70% { transform: scale(1.02) translateZ(0); box-shadow: 0 0 0 15px rgba(21, 128, 61, 0); }
+  100% { transform: scale(1) translateZ(0); box-shadow: 0 0 0 0 rgba(21, 128, 61, 0); }
 }
 
 .animate-fade-in {
   animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
 }
 
 .float {
