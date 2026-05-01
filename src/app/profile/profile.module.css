@@ -1690,7 +1690,7 @@
 
 /* PRINT / INVOICE STYLES */
 @media print {
-  body {
+  :global(body) {
     background: white;
     color: black;
   }
