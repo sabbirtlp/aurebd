@@ -1722,7 +1722,7 @@
     margin-bottom: 20px;
   }
 
-  .cardTitleGroup h3, .cardHeaderPlain h3, h3 {
+  .cardTitleGroup h3, .cardHeaderPlain h3, .card h3 {
     color: black !important;
   }
 
