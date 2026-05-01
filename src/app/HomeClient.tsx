@@ -131,10 +131,10 @@ export default function HomeClient({ products }: { products: any[] }) {
               animate={{ y: [0, -15, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             >
-              <div className={styles.cardIcon}>🌸</div>
+              <div className={styles.cardIcon}><Editable page="home" section="hero" field="card_icon" defaultText="🌸" /></div>
               <div>
-                <p className={styles.cardTitle}>{language === 'bn' ? 'সাকুরা এসেন্স' : 'Sakura Essence'}</p>
-                <p className={styles.cardPrice}>৳ ১২৫০</p>
+                <p className={styles.cardTitle}><Editable page="home" section="hero" field="card_title" defaultText={language === 'bn' ? 'সাকুরা এসেন্স' : 'Sakura Essence'} /></p>
+                <p className={styles.cardPrice}><Editable page="home" section="hero" field="card_price" defaultText="৳ ১২৫০" /></p>
               </div>
             </motion.div>
           </motion.div>
