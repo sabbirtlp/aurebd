@@ -1,4 +1,5 @@
 "use client";
+/** Sanitized Build v2.0 */
 
 import { useState, useEffect } from "react";
 import styles from "../admin.module.css";
