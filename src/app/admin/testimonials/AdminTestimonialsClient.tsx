@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import styles from "../admin.module.css";
@@ -47,7 +47,7 @@ export default function AdminTestimonialsClient() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const method = editingId ? "PUT" : "POST";
-    const url = editingId ? `/api/admin/testimonials/${editingId}` : "/api/admin/testimonials";
+    const url = editingId ? /api/admin/testimonials/ + editingId : "/api/admin/testimonials";
 
     try {
       const res = await fetch(url, {
@@ -82,7 +82,7 @@ export default function AdminTestimonialsClient() {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this testimonial?")) return;
     try {
-      const res = await fetch(`/api/admin/testimonials/${id}`, { method: "DELETE" });
+      const res = await fetch("/api/admin/testimonials/" + id, { method: "DELETE" });
       if (res.ok) {
         toast.success("Testimonial removed");
         fetchTestimonials();
@@ -119,10 +119,10 @@ export default function AdminTestimonialsClient() {
       ) : (
         <div className={styles.contentGrid} style={{ gridTemplateColumns: "repeat(auto-fill, minmax(400px, 1fr))", gap: "2rem" }}>
           {testimonials.map((t) => (
-            <div key={t._id} className={`${styles.contentSection} animate-fade-in`} style={{ marginBottom: 0, display: "flex", flexDirection: "column" }}>
+            <div key={t._id} className={styles.contentSection + " animate-fade-in"} style={{ marginBottom: 0, display: "flex", flexDirection: "column" }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.5rem" }}>
                 <div style={{ display: "flex", gap: "2px" }}>
-                  {[...Array(5)].map((_, i) => (
+                  {[0,1,2,3,4].map((i) => (
                     <Star 
                       key={i} 
                       size={16} 
@@ -221,7 +221,7 @@ export default function AdminTestimonialsClient() {
           backdropFilter: "blur(8px)",
           padding: "1rem"
         }}>
-          <div className={`${styles.panel} animate-scale-in`} style={{ width: "100%", maxWidth: "550px", padding: "2.5rem", position: "relative" }}>
+          <div className={styles.panel + " animate-scale-in"} style={{ width: "100%", maxWidth: "550px", padding: "2.5rem", position: "relative" }}>
             <button 
               type="button"
               onClick={() => setShowModal(false)}
