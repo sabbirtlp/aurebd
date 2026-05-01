@@ -11,6 +11,7 @@ const CATEGORIES = ["Sets", "Serums", "Creams", "Sunscreen", "Cleansers", "Radia
 
 export default function EditProductClient({ product }: { product: any }) {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [form, setForm] = useState({
     name: product.name || "",
