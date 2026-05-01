@@ -11,6 +11,8 @@ import { useThemeStore } from "@/store/themeStore";
 import MobileMenu from "./MobileMenu";
 import HeaderSearch from "./HeaderSearch";
 import styles from "./navbar.module.css";
+import Editable from "@/components/cms/Editable";
+import EditableImage from "@/components/cms/EditableImage";
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -69,35 +71,47 @@ export default function Navbar() {
               <Link href="/shop" className={styles.navLink}><span suppressHydrationWarning>{tr('nav.shop')}</span></Link>
               <div className={styles.megaMenu}>
                 <div className={styles.megaCol}>
-                  <h3 className={styles.megaTitle}>{language === 'bn' ? 'ক্যাটাগরি' : 'Categories'}</h3>
+                  <h3 className={styles.megaTitle}>
+                    <Editable page="navbar" section="mega" field="cat_title" defaultText={language === 'bn' ? 'ক্যাটাগরি' : 'Categories'} />
+                  </h3>
                   <ul className={styles.megaList}>
-                    <li><Link href="/shop?category=Radiance%20Serums" className={styles.megaLink}>{tr('cat.serums')}</Link></li>
-                    <li><Link href="/shop?category=Hydration%20Creams" className={styles.megaLink}>{tr('cat.creams')}</Link></li>
-                    <li><Link href="/shop?category=UV%20Protection" className={styles.megaLink}>{tr('cat.uv')}</Link></li>
-                    <li><Link href="/shop?category=Skin%20Essentials" className={styles.megaLink}>{tr('cat.essentials')}</Link></li>
-                    <li><Link href="/shop?category=Cleansers" className={styles.megaLink}>{language === 'bn' ? 'ক্লিনজার' : 'Cleansers'}</Link></li>
+                    <li><Link href="/shop?category=Radiance%20Serums" className={styles.megaLink}><Editable page="navbar" section="mega" field="cat_1" defaultText={tr('cat.serums')} /></Link></li>
+                    <li><Link href="/shop?category=Hydration%20Creams" className={styles.megaLink}><Editable page="navbar" section="mega" field="cat_2" defaultText={tr('cat.creams')} /></Link></li>
+                    <li><Link href="/shop?category=UV%20Protection" className={styles.megaLink}><Editable page="navbar" section="mega" field="cat_3" defaultText={tr('cat.uv')} /></Link></li>
+                    <li><Link href="/shop?category=Skin%20Essentials" className={styles.megaLink}><Editable page="navbar" section="mega" field="cat_4" defaultText={tr('cat.essentials')} /></Link></li>
+                    <li><Link href="/shop?category=Cleansers" className={styles.megaLink}><Editable page="navbar" section="mega" field="cat_5" defaultText={language === 'bn' ? 'ক্লিনজার' : 'Cleansers'} /></Link></li>
                   </ul>
                 </div>
 
                 <div className={styles.megaCol}>
-                  <h3 className={styles.megaTitle}>{language === 'bn' ? 'কালেকশন' : 'Collections'}</h3>
+                  <h3 className={styles.megaTitle}>
+                    <Editable page="navbar" section="mega" field="col_title" defaultText={language === 'bn' ? 'কালেকশন' : 'Collections'} />
+                  </h3>
                   <ul className={styles.megaList}>
-                    <li><Link href="/shop" className={styles.megaLink}>{language === 'bn' ? 'নতুন পণ্য' : 'New Arrivals'}</Link></li>
-                    <li><Link href="/shop" className={styles.megaLink}>{language === 'bn' ? 'সেরা বিক্রয়' : 'Best Sellers'}</Link></li>
-                    <li><Link href="/shop" className={styles.megaLink}>{language === 'bn' ? 'গিফট সেট' : 'Gift Sets'}</Link></li>
-                    <li><Link href="/shop" className={styles.megaLink}>{language === 'bn' ? 'অফারসমূহ' : 'Special Offers'}</Link></li>
+                    <li><Link href="/shop" className={styles.megaLink}><Editable page="navbar" section="mega" field="col_1" defaultText={language === 'bn' ? 'নতুন পণ্য' : 'New Arrivals'} /></Link></li>
+                    <li><Link href="/shop" className={styles.megaLink}><Editable page="navbar" section="mega" field="col_2" defaultText={language === 'bn' ? 'সেরা বিক্রয়' : 'Best Sellers'} /></Link></li>
+                    <li><Link href="/shop" className={styles.megaLink}><Editable page="navbar" section="mega" field="col_3" defaultText={language === 'bn' ? 'গিফট সেট' : 'Gift Sets'} /></Link></li>
+                    <li><Link href="/shop" className={styles.megaLink}><Editable page="navbar" section="mega" field="col_4" defaultText={language === 'bn' ? 'অফারসমূহ' : 'Special Offers'} /></Link></li>
                   </ul>
                 </div>
 
                 <div className={styles.megaFeatured}>
                   <div className={styles.featuredImg}>
-                    <Image src="/images/sakura-set.webp" alt="Featured" fill style={{ objectFit: "cover" }} sizes="300px" />
+                    <EditableImage page="navbar" section="mega" field="featured_img" defaultSrc="/images/sakura-set.webp" alt="Featured" fill sizes="300px" style={{ objectFit: "cover" }} />
                   </div>
                   <div className={styles.featuredInfo}>
-                    <span className={styles.featuredBadge}>{language === 'bn' ? 'সুপার ডিল' : 'Super Deal'}</span>
-                    <h4>Sakura 5pcs Skincare Set</h4>
-                    <p>{language === 'bn' ? 'সম্পূর্ণ সাকুরা স্কিনকেয়ার সেট এখন বিশেষ মূল্যে।' : 'The ultimate Sakura ritual for a radiant glow.'}</p>
-                    <Link href="/shop" className={styles.featuredBtn}>{language === 'bn' ? 'এখনই কিনুন' : 'Shop Now'}</Link>
+                    <span className={styles.featuredBadge}>
+                      <Editable page="navbar" section="mega" field="featured_badge" defaultText={language === 'bn' ? 'সুপার ডিল' : 'Super Deal'} />
+                    </span>
+                    <h4>
+                      <Editable page="navbar" section="mega" field="featured_title" defaultText="Sakura 5pcs Skincare Set" />
+                    </h4>
+                    <p>
+                      <Editable page="navbar" section="mega" field="featured_desc" defaultText={language === 'bn' ? 'সম্পূর্ণ সাকুরা স্কিনকেয়ার সেট এখন বিশেষ মূল্যে।' : 'The ultimate Sakura ritual for a radiant glow.'} multiline />
+                    </p>
+                    <Link href="/shop" className={styles.featuredBtn}>
+                      <Editable page="navbar" section="mega" field="featured_btn" defaultText={language === 'bn' ? 'এখনই কিনুন' : 'Shop Now'} />
+                    </Link>
                   </div>
                 </div>
               </div>
