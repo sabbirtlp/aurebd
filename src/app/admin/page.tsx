@@ -4,6 +4,7 @@ import Order from "@/models/Order";
 import Product from "@/models/Product";
 import User from "@/models/User";
 import Link from "next/link";
+import RecentOrdersTable from "./RecentOrdersTable";
 
 export default async function AdminDashboard() {
   await dbConnect();
@@ -56,47 +57,7 @@ export default async function AdminDashboard() {
 
       {/* Recent Orders */}
       <div className={styles.chartSection}>
-        <div className={styles.panel}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-            <h3 className={styles.panelTitle} style={{ marginBottom: 0 }}>Recent Orders</h3>
-            <Link href="/admin/orders" className={styles.btnSecondary} style={{ fontSize: "0.8rem", padding: "0.35rem 0.75rem" }}>
-              View All →
-            </Link>
-          </div>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Customer</th>
-                <th>Amount</th>
-                <th>Date</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentOrders.map((order: any) => (
-                <tr key={order._id.toString()}>
-                  <td style={{ fontWeight: 600 }}>#{order._id.toString().slice(-6).toUpperCase()}</td>
-                  <td>{order.shippingAddress?.fullName || "N/A"}</td>
-                  <td>৳ {order.totalAmount}</td>
-                  <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-                  <td>
-                    <span className={`${styles.badge} ${
-                      order.status === 'Delivered' ? styles.badgeSuccess : 
-                      order.status === 'Processing' ? styles.badgeProcessing : 
-                      styles.badgePending
-                    }`}>
-                      {order.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-              {recentOrders.length === 0 && (
-                <tr><td colSpan={5} style={{textAlign: "center", color: "#9ca3af", padding: "2rem"}}>No orders yet</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <RecentOrdersTable initialOrders={recentOrders.map(o => ({...o, _id: o._id.toString()}))} />
       </div>
     </>
   );
