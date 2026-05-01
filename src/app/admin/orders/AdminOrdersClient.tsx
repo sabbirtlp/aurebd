@@ -1,6 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { 
+  User, 
+  Phone, 
+  CreditCard, 
+  Trash2, 
+  Clock, 
+  Truck, 
+  CheckCircle, 
+  ShoppingBag,
+  Calendar
+} from "lucide-react";
 import styles from "../admin.module.css";
 
 export default function AdminOrdersClient({ initialOrders }: { initialOrders: any[] }) {
@@ -64,16 +75,22 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: an
         </div>
       </div>
 
-      {/* Filter Tabs */}
-      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}>
-        {(["All", "Pending", "Processing", "Delivered"] as const).map((status) => (
+      {/* Premium Filter Tabs */}
+      <div className={styles.tabGroup}>
+        {[
+          { id: "All", icon: <ShoppingBag size={16} /> },
+          { id: "Pending", icon: <Clock size={16} /> },
+          { id: "Processing", icon: <Truck size={16} /> },
+          { id: "Delivered", icon: <CheckCircle size={16} /> },
+        ].map((tab) => (
           <button
-            key={status}
-            className={filter === status ? styles.btnPrimary : styles.btnSecondary}
-            onClick={() => setFilter(status)}
-            style={{ fontSize: "0.8rem", padding: "0.4rem 0.9rem" }}
+            key={tab.id}
+            className={`${styles.tabItem} ${filter === tab.id ? styles.tabItemActive : ""}`}
+            onClick={() => setFilter(tab.id)}
           >
-            {status} ({statusCounts[status]})
+            {tab.icon}
+            {tab.id}
+            <span className={styles.tabCount}>{statusCounts[tab.id as keyof typeof statusCounts]}</span>
           </button>
         ))}
       </div>
@@ -89,42 +106,68 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: an
               <th>Payment</th>
               <th>Date</th>
               <th>Status</th>
-              <th>Actions</th>
+              <th style={{ textAlign: "right" }}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {filtered.map((order: any) => (
               <tr key={order._id}>
-                <td style={{ fontWeight: 600 }}>#{order._id.slice(-6).toUpperCase()}</td>
+                <td style={{ fontWeight: 700, fontSize: "0.85rem", color: "var(--primary)" }}>
+                  #{order._id.slice(-6).toUpperCase()}
+                </td>
                 <td>
-                  <div>
-                    <p style={{ fontWeight: 500, margin: 0, fontSize: "0.85rem" }}>{order.shippingAddress?.fullName || "N/A"}</p>
-                    <p style={{ margin: 0, fontSize: "0.75rem", color: "#6b7280" }}>{order.shippingAddress?.phone || ""}</p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "6px", fontWeight: 600, fontSize: "0.85rem" }}>
+                      <User size={14} style={{ opacity: 0.6 }} />
+                      {order.shippingAddress?.fullName || "N/A"}
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.75rem", color: "var(--text-light)" }}>
+                      <Phone size={14} style={{ opacity: 0.6 }} />
+                      {order.shippingAddress?.phone || "N/A"}
+                    </div>
                   </div>
                 </td>
-                <td>{order.items?.length || 0} items</td>
-                <td style={{ fontWeight: 600 }}>৳ {order.totalAmount}</td>
-                <td>{order.paymentMethod || "COD"}</td>
-                <td>{new Date(order.createdAt).toLocaleDateString()}</td>
+                <td>
+                  <span style={{ fontSize: "0.85rem", fontWeight: 500 }}>
+                    {order.items?.length || 0} items
+                  </span>
+                </td>
+                <td style={{ fontWeight: 700, fontSize: "1rem" }}>৳ {order.totalAmount}</td>
+                <td>
+                  <span className={styles.badgePending} style={{ fontSize: "0.65rem", padding: "4px 8px", borderRadius: "6px", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                    <CreditCard size={12} /> {order.paymentMethod?.toUpperCase() || "COD"}
+                  </span>
+                </td>
+                <td>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.8rem", color: "var(--text-light)" }}>
+                    <Calendar size={14} />
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </div>
+                </td>
                 <td>
                   <select
                     value={order.status}
                     onChange={(e) => handleStatusChange(order._id, e.target.value)}
                     className={styles.statusSelect}
                     disabled={updating === order._id}
+                    style={{
+                      color: order.status === "Delivered" ? "#16a34a" : order.status === "Processing" ? "#d97706" : "inherit"
+                    }}
                   >
                     <option value="Pending">Pending</option>
                     <option value="Processing">Processing</option>
                     <option value="Delivered">Delivered</option>
                   </select>
                 </td>
-                <td>
+                <td style={{ textAlign: "right" }}>
                   <button
                     className={styles.btnDanger}
                     onClick={() => handleDelete(order._id)}
                     disabled={updating === order._id}
+                    title="Delete Order"
+                    style={{ padding: "0.5rem" }}
                   >
-                    {updating === order._id ? "..." : "Delete"}
+                    {updating === order._id ? "..." : <Trash2 size={16} />}
                   </button>
                 </td>
               </tr>
