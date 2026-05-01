@@ -25,6 +25,11 @@ export async function POST(req: Request) {
       paymentMethod,
     });
 
+    // Send admin notification (non-blocking)
+    import("@/lib/email").then(({ sendAdminOrderNotification }) => {
+      sendAdminOrderNotification(order).catch(err => console.error("Email notify error:", err));
+    });
+
     // Decrement stock for each product
     for (const item of items) {
       await Product.findByIdAndUpdate(item.product, {
