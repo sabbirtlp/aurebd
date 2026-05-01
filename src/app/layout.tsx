@@ -4,6 +4,7 @@ import "./globals.css";
 import Providers from "@/components/Providers";
 import ShopLayoutWrapper from '@/components/layout/ShopLayoutWrapper';
 import TopLoadingBar from "@/components/layout/TopLoadingBar";
+import { getCMSContent } from "@/services/cms.service";
 
 const poppins = Poppins({ 
   subsets: ["latin"], 
@@ -23,11 +24,13 @@ export const metadata: Metadata = {
 
 import ThemeWrapper from "@/components/ThemeWrapper";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const initialContent = await getCMSContent();
+
   return (
     <html lang="en" data-theme="dark">
       <head>
@@ -49,7 +52,7 @@ export default function RootLayout({
         }} />
       </head>
       <body className={poppins.variable}>
-        <Providers>
+        <Providers initialContent={initialContent}>
           <ThemeWrapper>
             <TopLoadingBar />
             <ShopLayoutWrapper>

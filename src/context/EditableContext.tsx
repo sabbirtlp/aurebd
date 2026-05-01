@@ -14,10 +14,16 @@ interface EditableContextType {
 
 const EditableContext = createContext<EditableContextType | undefined>(undefined);
 
-export function EditableProvider({ children }: { children: React.ReactNode }) {
+export function EditableProvider({ 
+  children, 
+  initialContent = {} 
+}: { 
+  children: React.ReactNode, 
+  initialContent?: Record<string, string> 
+}) {
   const { data: session } = useSession();
   const [isEditMode, setIsEditMode] = useState(false);
-  const [content, setContent] = useState<Record<string, string>>({});
+  const [content, setContent] = useState<Record<string, string>>(initialContent);
   const isAdmin = session?.user?.role === "admin";
 
   // Fetch all CMS content on load
