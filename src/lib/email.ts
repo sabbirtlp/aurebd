@@ -95,15 +95,12 @@ export const sendAdminOrderNotification = async (order: any) => {
     </html>
   `;
 
-  try {
-    await transporter.sendMail({
-      from: `"Aurea BD Notifications" <${process.env.SMTP_USER}>`,
-      to: adminEmail,
-      subject: `🔔 New Order Received - ৳ ${order.totalAmount.toLocaleString()}`,
-      html: html,
-    });
-    console.log("Admin notification email sent successfully");
-  } catch (error) {
-    console.error("Failed to send admin notification email:", error);
-  }
+  // Send the email
+  await transporter.sendMail({
+    from: `"Aurea BD" <${process.env.SMTP_USER}>`,
+    to: adminEmail,
+    subject: `🔔 New Order Received - ৳ ${order.totalAmount.toLocaleString()}`,
+    html: html,
+  });
+  console.log("Admin notification email sent successfully");
 };
