@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/Providers";
 import ShopLayoutWrapper from '@/components/layout/ShopLayoutWrapper';
+import TopLoadingBar from "@/components/layout/TopLoadingBar";
 
 const poppins = Poppins({ 
   subsets: ["latin"], 
@@ -50,6 +51,7 @@ export default function RootLayout({
       <body className={poppins.variable}>
         <Providers>
           <ThemeWrapper>
+            <TopLoadingBar />
             <ShopLayoutWrapper>
               {children}
             </ShopLayoutWrapper>
