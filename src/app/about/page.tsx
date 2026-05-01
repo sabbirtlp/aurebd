@@ -48,7 +48,9 @@ export default function AboutPage() {
       <section className="section container">
         <div className={styles.storyGrid}>
           <div className={styles.storyText}>
-            <span className={styles.badge}>{tr('nav.about')}</span>
+            <span className={styles.badge}>
+              <Editable page="about" section="story" field="badge" defaultText={tr('nav.about')} />
+            </span>
             <h2><Editable page="about" section="story" field="title" defaultText={language === 'bn' ? 'বিজ্ঞান এবং প্রকৃতির মেলবন্ধন' : 'Bridging Science and Nature'} /></h2>
             <p>
               <Editable 
@@ -85,22 +87,30 @@ export default function AboutPage() {
         <h2 className="section-title"><Editable page="about" section="values" field="title" defaultText={language === 'bn' ? 'আমাদের মূল আদর্শ' : 'Our Core Values'} /></h2>
         <div className={styles.valuesGrid}>
           <div className={`${styles.valueCard} nm-card`}>
-            <div className={`${styles.valueIcon} nm-inner-pressed`}>✨</div>
+            <div className={`${styles.valueIcon} nm-inner-pressed`}>
+              <Editable page="about" section="values" field="v1_icon" defaultText="✨" />
+            </div>
             <h3><Editable page="about" section="values" field="v1_title" defaultText={language === 'bn' ? "বিশুদ্ধতা প্রথম" : "Purity First"} /></h3>
             <p><Editable page="about" section="values" field="v1_desc" defaultText={language === 'bn' ? "কোনো ক্ষতিকারক রাসায়নিক নেই, শুধুমাত্র ত্বকের জন্য উপকারী প্রাকৃতিক উপাদান।" : "No harsh chemicals, only skin-loving natural ingredients."} multiline /></p>
           </div>
           <div className={`${styles.valueCard} nm-card`}>
-            <div className={`${styles.valueIcon} nm-inner-pressed`}>🌸</div>
+            <div className={`${styles.valueIcon} nm-inner-pressed`}>
+              <Editable page="about" section="values" field="v2_icon" defaultText="🌸" />
+            </div>
             <h3><Editable page="about" section="values" field="v2_title" defaultText={language === 'bn' ? "নির্ভরযোগ্যতা" : "Authenticity"} /></h3>
             <p><Editable page="about" section="values" field="v2_desc" defaultText={language === 'bn' ? "১০০% খাঁটি জাপানিজ আমদানিকৃত পণ্যের নিশ্চয়তা।" : "100% genuine Japanese imports, guaranteed."} multiline /></p>
           </div>
           <div className={`${styles.valueCard} nm-card`}>
-            <div className={`${styles.valueIcon} nm-inner-pressed`}>🌍</div>
+            <div className={`${styles.valueIcon} nm-inner-pressed`}>
+              <Editable page="about" section="values" field="v3_icon" defaultText="🌍" />
+            </div>
             <h3><Editable page="about" section="values" field="v3_title" defaultText={language === 'bn' ? "পরিবেশ বান্ধব" : "Eco-Conscious"} /></h3>
             <p><Editable page="about" section="values" field="v3_desc" defaultText={language === 'bn' ? "টেকসই উৎস এবং পরিবেশের ক্ষতি না করে এমন প্যাকেজিং।" : "Sustainable sourcing and minimal waste packaging."} multiline /></p>
           </div>
           <div className={`${styles.valueCard} nm-card`}>
-            <div className={`${styles.valueIcon} nm-inner-pressed`}>💝</div>
+            <div className={`${styles.valueIcon} nm-inner-pressed`}>
+              <Editable page="about" section="values" field="v4_icon" defaultText="💝" />
+            </div>
             <h3><Editable page="about" section="values" field="v4_title" defaultText={language === 'bn' ? "স্ব-যত্ন" : "Self-Care"} /></h3>
             <p><Editable page="about" section="values" field="v4_desc" defaultText={language === 'bn' ? "আপনার প্রতিদিনের রূপচর্চাকে একটি আরামদায়ক অভ্যাসে পরিণত করা।" : "Turning your daily routine into a ritual of relaxation."} multiline /></p>
           </div>
