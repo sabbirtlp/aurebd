@@ -127,7 +127,7 @@ export default function HomeClient({ products }: { products: any[] }) {
                 fill 
                 className={styles.heroImage}
                 priority
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 500px"
               />
             </div>
             
