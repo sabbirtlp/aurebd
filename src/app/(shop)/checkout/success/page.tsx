@@ -147,7 +147,7 @@ function CheckoutSuccessContent() {
 
 export default function CheckoutSuccessPage() {
   return (
-    <Suspense fallback={<div style={{ textAlign: 'center', padding: '5rem' }}>Loading order details...</div>}>
+    <Suspense fallback={<div>Loading...</div>}>
       <CheckoutSuccessContent />
     </Suspense>
   );

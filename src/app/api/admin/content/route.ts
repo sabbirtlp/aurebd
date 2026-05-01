@@ -19,8 +19,9 @@ export async function GET() {
 export async function PUT(req: Request) {
   try {
     const session = await getServerSession(authOptions);
+    console.log("PUT Session:", session);
     if (!session || session.user.role !== "admin") {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ message: "Unauthorized", role: session?.user?.role }, { status: 401 });
     }
 
     await dbConnect();
@@ -38,6 +39,7 @@ export async function PUT(req: Request) {
     await SiteContent.bulkWrite(operations);
     return NextResponse.json({ success: true, message: "Content updated" });
   } catch (error) {
-    return NextResponse.json({ message: "Failed to update content" }, { status: 500 });
+    console.error("PUT /api/admin/content Error:", error);
+    return NextResponse.json({ message: "Failed to update content", error: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 }

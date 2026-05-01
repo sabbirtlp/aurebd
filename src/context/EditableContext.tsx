@@ -26,9 +26,11 @@ export function EditableProvider({
   const [content, setContent] = useState<Record<string, string>>(initialContent);
   const isAdmin = session?.user?.role === "admin";
 
-  // Fetch all CMS content on load
+  // Fetch all CMS content on load IF not provided by server
   useEffect(() => {
     async function fetchContent() {
+      if (Object.keys(initialContent).length > 0) return; // Skip if already have data
+      
       try {
         const res = await fetch("/api/admin/content");
         const data = await res.json();
@@ -45,7 +47,7 @@ export function EditableProvider({
       }
     }
     fetchContent();
-  }, []);
+  }, [initialContent]);
 
   const updateContent = async (page: string, section: string, key: string, value: string, language: string) => {
     const compositeKey = `${page}__${section}__${key}__${language}`;
@@ -63,11 +65,16 @@ export function EditableProvider({
         }),
       });
 
-      if (!res.ok) throw new Error("Failed to save");
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        console.error("API Error Response:", errData);
+        throw new Error(errData.message || "Failed to save");
+      }
       toast.success("Content updated!", { autoClose: 1000 });
-    } catch (err) {
+    } catch (err: any) {
+      console.error("Save Error:", err);
       setContent(oldContent);
-      toast.error("Failed to save changes");
+      toast.error(err.message || "Failed to save changes");
     }
   };
 

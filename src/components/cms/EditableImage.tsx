@@ -22,10 +22,20 @@ export default function EditableImage({ page, section, field, defaultSrc, alt, f
   const { language } = useLanguageStore();
 
   const compositeKey = `${page}__${section}__${field}__${language}`;
-  // Fallback to English if not found in current language, then defaultSrc
   const fallbackKey = `${page}__${section}__${field}__en`;
   
-  const src = content[compositeKey] || content[fallbackKey] || defaultSrc;
+  // If the field exists in content and is exactly an empty string, the user wants to hide it.
+  // Otherwise, use the value, or the fallback, or the defaultSrc.
+  let src = defaultSrc;
+  
+  if (content[compositeKey] !== undefined) {
+    src = content[compositeKey];
+  } else if (content[fallbackKey] !== undefined) {
+    src = content[fallbackKey];
+  }
+
+  // If the user explicitly cleared the image, don't render anything
+  if (!src) return null;
 
   return (
     <Image
@@ -35,7 +45,7 @@ export default function EditableImage({ page, section, field, defaultSrc, alt, f
       className={className}
       priority={priority}
       sizes={sizes}
-      {...(!fill ? { width: 500, height: 500 } : {})} // Provide default dimensions if not fill
+      {...(!fill ? { width: 500, height: 500 } : {})} 
       style={!fill ? { width: "100%", height: "auto", ...style } : { ...style }}
     />
   );
