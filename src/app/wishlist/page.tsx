@@ -25,13 +25,24 @@ export default function WishlistPage() {
     toast.success(`Added ${item.name} to cart`);
   };
 
+  useEffect(() => {
+    if (hasHydrated) {
+      window.scrollTo(0, 0);
+    }
+  }, [hasHydrated]);
+
   if (!hasHydrated) {
     return (
       <div className={styles.pageContainer}>
         <div className="container">
           <div className={styles.header}>
             <h1 className={styles.title}>My Wishlist</h1>
-            <p className={styles.subtitle}>Loading your favorite items...</p>
+            <p className={styles.subtitle}>Curating your favorite skincare essentials...</p>
+          </div>
+          <div className={styles.grid}>
+            {[1, 2, 3].map(i => (
+              <div key={i} className={styles.skeletonCard} />
+            ))}
           </div>
         </div>
       </div>

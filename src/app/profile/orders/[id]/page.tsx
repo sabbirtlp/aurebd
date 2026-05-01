@@ -28,11 +28,22 @@ export default function OrderDetailsPage({ params }: { params: { id: string } })
     fetchOrder();
   }, [params.id]);
 
+  useEffect(() => {
+    if (!loading) {
+      window.scrollTo(0, 0);
+    }
+  }, [loading]);
+
   if (loading) {
     return (
-      <div className={styles.loadingContainer}>
-        <Loader2 className="animate-spin" size={40} color="var(--primary)" />
-        <p>Retrieving order details...</p>
+      <div className={styles.detailsWrapper}>
+        <div className={styles.skeletonHeader} />
+        <div className={styles.skeletonSub} />
+        
+        <div className={styles.detailsGrid}>
+          <div className={styles.skeletonCard} style={{ flex: 2 }} />
+          <div className={styles.skeletonCard} style={{ flex: 1 }} />
+        </div>
       </div>
     );
   }

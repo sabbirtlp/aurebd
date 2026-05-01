@@ -1745,3 +1745,72 @@
     display: block;
   }
 }
+
+/* --- SKELETON LOADING --- */
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeletonBase {
+  background: linear-gradient(
+    90deg,
+    var(--border) 25%,
+    rgba(203, 163, 148, 0.1) 50%,
+    var(--border) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.5s infinite ease-in-out;
+  border-radius: 12px;
+}
+
+.skeletonHeader {
+  height: 32px;
+  width: 250px;
+  margin-bottom: 8px;
+  composes: skeletonBase;
+}
+
+.skeletonSub {
+  height: 16px;
+  width: 180px;
+  margin-bottom: 24px;
+  composes: skeletonBase;
+}
+
+.skeletonStats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-6);
+  margin-bottom: var(--sp-8);
+}
+
+.skeletonStatCard {
+  height: 120px;
+  composes: skeletonBase;
+}
+
+.skeletonCard {
+  height: 300px;
+  width: 100%;
+  composes: skeletonBase;
+}
+
+.skeletonLine {
+  height: 20px;
+  width: 100%;
+  composes: skeletonBase;
+}
+
+
+@media (max-width: 1200px) {
+  .skeletonStats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .skeletonStats {
+    grid-template-columns: 1fr;
+  }
+}

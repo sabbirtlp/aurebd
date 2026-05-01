@@ -36,11 +36,18 @@ export default function OrdersPage() {
     fetchOrders();
   }, []);
 
+  useEffect(() => {
+    if (!loading) {
+      window.scrollTo(0, 0);
+    }
+  }, [loading]);
+
   if (loading) {
     return (
-      <div className={styles.loadingContainer}>
-        <Loader2 className="animate-spin" size={40} color="var(--primary)" />
-        <p>Loading your order history...</p>
+      <div className={styles.ordersWrapper}>
+        <div className={styles.skeletonHeader} />
+        <div className={styles.skeletonSub} />
+        <div className={styles.skeletonCard} />
       </div>
     );
   }

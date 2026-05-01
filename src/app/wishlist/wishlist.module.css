@@ -227,3 +227,24 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: linear-gradient(145deg, #1a1a1a, #121212);
 }
+
+/* --- SKELETON LOADING --- */
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeletonCard {
+  height: 400px;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--border) 25%,
+    rgba(203, 163, 148, 0.1) 50%,
+    var(--border) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.5s infinite ease-in-out;
+  border-radius: 20px;
+}
+

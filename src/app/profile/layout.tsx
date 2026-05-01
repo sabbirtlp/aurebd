@@ -31,7 +31,32 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
   }, [status, router]);
 
   if (status === "loading") {
-    return <div className={styles.loading}>Loading Your Profile...</div>;
+    return (
+      <main className={styles.profilePage}>
+        <div className="container">
+          <div className={styles.layoutGrid}>
+            <aside className={styles.sidebar}>
+              <div className={styles.skeletonBase} style={{ width: '100%', height: '120px', marginBottom: '2rem' }} />
+              <div className={styles.sideNav}>
+                {[1, 2, 3, 4, 5].map(i => (
+                  <div key={i} className={styles.skeletonLine} style={{ height: '45px', marginBottom: '10px' }} />
+                ))}
+              </div>
+            </aside>
+            <section className={styles.mainContent}>
+              <div className={styles.skeletonHeader} />
+              <div className={styles.skeletonSub} />
+              <div className={styles.skeletonStats}>
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className={styles.skeletonStatCard} />
+                ))}
+              </div>
+              <div className={styles.skeletonCard} />
+            </section>
+          </div>
+        </div>
+      </main>
+    );
   }
 
   if (!session) return null;

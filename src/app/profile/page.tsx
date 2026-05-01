@@ -44,6 +44,12 @@ export default function DashboardPage() {
     fetchStats();
   }, []);
 
+  useEffect(() => {
+    if (!loading) {
+      window.scrollTo(0, 0);
+    }
+  }, [loading]);
+
   const getStatIcon = (label: string) => {
     switch (label) {
       case "Total Orders": return <Package size={20} />;
@@ -56,9 +62,17 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className={styles.loadingContainer}>
-        <Loader2 className="animate-spin" size={40} color="var(--primary)" />
-        <p>Polishing your dashboard...</p>
+      <div className={styles.dashboardWrapper}>
+        <div className={styles.skeletonHeader} />
+        <div className={styles.skeletonSub} />
+        
+        <div className={styles.skeletonStats}>
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className={styles.skeletonStatCard} />
+          ))}
+        </div>
+        
+        <div className={styles.skeletonCard} />
       </div>
     );
   }

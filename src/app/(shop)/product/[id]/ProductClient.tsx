@@ -18,6 +18,10 @@ export default function ProductClient({ product, relatedProducts }: { product: a
   const [isHovering, setIsHovering] = useState(false);
   const { addItem } = useCartStore();
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [product._id]);
+
   const handleAddToCart = () => {
     addItem({
       id: product._id,

@@ -25,6 +25,12 @@ export default function AddressesPage() {
     fetchAddresses();
   }, []);
 
+  useEffect(() => {
+    if (!loading) {
+      window.scrollTo(0, 0);
+    }
+  }, [loading]);
+
   const fetchAddresses = async () => {
     try {
       const res = await fetch("/api/profile/addresses");
@@ -108,9 +114,14 @@ export default function AddressesPage() {
 
   if (loading) {
     return (
-      <div className={styles.loadingContainer}>
-        <Loader2 className="animate-spin" size={40} color="var(--primary)" />
-        <p>Locating your addresses...</p>
+      <div className={styles.addressesWrapper}>
+        <div className={styles.skeletonHeader} />
+        <div className={styles.skeletonSub} />
+        <div className={styles.skeletonStats}>
+          {[1, 2].map(i => (
+            <div key={i} className={styles.skeletonStatCard} />
+          ))}
+        </div>
       </div>
     );
   }

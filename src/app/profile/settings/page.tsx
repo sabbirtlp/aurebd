@@ -47,6 +47,12 @@ export default function SettingsPage() {
     fetchUserData();
   }, []);
 
+  useEffect(() => {
+    if (!isLoading) {
+      window.scrollTo(0, 0);
+    }
+  }, [isLoading]);
+
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
@@ -99,9 +105,10 @@ export default function SettingsPage() {
 
   if (isLoading) {
     return (
-      <div className={styles.loadingContainer}>
-        <Loader2 className="animate-spin" size={40} color="var(--primary)" />
-        <p>Fetching your settings...</p>
+      <div className={styles.settingsWrapper}>
+        <div className={styles.skeletonHeader} />
+        <div className={styles.skeletonSub} />
+        <div className={styles.skeletonCard} />
       </div>
     );
   }
