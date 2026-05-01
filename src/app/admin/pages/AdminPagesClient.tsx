@@ -1,6 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { 
+  Save, 
+  Home, 
+  BookOpen, 
+  Mail, 
+  Layout, 
+  Globe, 
+  CheckCircle,
+  FileText
+} from "lucide-react";
 import styles from "../admin.module.css";
 
 // Define types for CMS sections
@@ -27,7 +37,7 @@ interface PageGroup {
 const PAGE_SECTIONS: PageGroup[] = [
   {
     page: "home",
-    label: "🏠 Home Page",
+    label: "Home Page",
     sections: [
       {
         section: "hero",
@@ -96,7 +106,7 @@ const PAGE_SECTIONS: PageGroup[] = [
   },
   {
     page: "about",
-    label: "📖 About Page",
+    label: "About Page",
     sections: [
       {
         section: "hero",
@@ -134,7 +144,7 @@ const PAGE_SECTIONS: PageGroup[] = [
   },
   {
     page: "contact",
-    label: "📞 Contact Page",
+    label: "Contact Page",
     sections: [
       {
         section: "hero",
@@ -171,7 +181,7 @@ const PAGE_SECTIONS: PageGroup[] = [
   },
   {
     page: "footer",
-    label: "🦶 Footer",
+    label: "Footer",
     sections: [
       {
         section: "general",
@@ -250,64 +260,65 @@ export default function AdminPagesClient({ initialContent }: { initialContent: a
           <h2 className={styles.pageTitle}>Pages (CMS)</h2>
           <p className={styles.pageSubtitle}>Edit your website content directly</p>
         </div>
-        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-          {/* Language Toggle */}
-          <div style={{ display: "flex", gap: "4px", background: "#f0f0f0", padding: "4px", borderRadius: "8px", marginRight: "1rem" }}>
+        <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+          {/* Professional Language Toggle */}
+          <div className={styles.tabGroup} style={{ marginBottom: 0, padding: "4px" }}>
             <button
-              className={activeLang === "en" ? styles.btnPrimary : ""}
+              type="button"
+              className={`${styles.tabItem} ${activeLang === "en" ? styles.tabItemActive : ""}`}
               onClick={() => setActiveLang("en")}
-              style={{ fontSize: "0.75rem", padding: "0.3rem 0.6rem", border: "none", borderRadius: "6px", cursor: "pointer", background: activeLang === "en" ? "var(--primary)" : "transparent", color: activeLang === "en" ? "white" : "#666" }}
+              style={{ padding: "0.4rem 0.8rem", fontSize: "0.75rem" }}
             >
-              EN
+              <Globe size={14} /> EN
             </button>
             <button
-              className={activeLang === "bn" ? styles.btnPrimary : ""}
+              type="button"
+              className={`${styles.tabItem} ${activeLang === "bn" ? styles.tabItemActive : ""}`}
               onClick={() => setActiveLang("bn")}
-              style={{ fontSize: "0.75rem", padding: "0.3rem 0.6rem", border: "none", borderRadius: "6px", cursor: "pointer", background: activeLang === "bn" ? "var(--primary)" : "transparent", color: activeLang === "bn" ? "white" : "#666" }}
+              style={{ padding: "0.4rem 0.8rem", fontSize: "0.75rem" }}
             >
-              BN
+              <Globe size={14} /> BN
             </button>
           </div>
 
-          <button className={styles.btnPrimary} onClick={handleSave} disabled={saving}>
-            {saving ? "Saving..." : saved ? "✓ Saved!" : "💾 Save All Changes"}
+          <button 
+            type="button"
+            className={styles.btnPrimary} 
+            onClick={handleSave} 
+            disabled={saving}
+            style={{ minWidth: "180px" }}
+          >
+            {saving ? "Saving..." : saved ? <><CheckCircle size={18} /> Saved!</> : <><Save size={18} /> Save All Changes</>}
           </button>
         </div>
       </div>
 
-      {/* Page Tabs */}
-      <div style={{ display: "flex", gap: "10px", marginBottom: "2rem", borderBottom: "1px solid #eee", paddingBottom: "10px", overflowX: "auto" }}>
-        {PAGE_SECTIONS.map(p => (
+      {/* Premium Page Tabs */}
+      <div className={styles.tabGroup} style={{ width: "100%", maxWidth: "none", justifyContent: "flex-start", marginBottom: "2rem" }}>
+        {[
+          { id: "home", label: "Home Page", icon: <Home size={18} /> },
+          { id: "about", label: "About Page", icon: <BookOpen size={18} /> },
+          { id: "contact", label: "Contact Page", icon: <Mail size={18} /> },
+          { id: "footer", label: "Footer", icon: <Layout size={18} /> },
+        ].map((p) => (
           <button
-            key={p.page}
-            onClick={() => setSelectedPage(p.page)}
-            style={{
-              padding: "8px 16px",
-              borderRadius: "8px",
-              border: "1px solid",
-              borderColor: selectedPage === p.page ? "var(--primary)" : "#ddd",
-              background: selectedPage === p.page ? "var(--primary)" : "white",
-              color: selectedPage === p.page ? "white" : "#666",
-              cursor: "pointer",
-              fontWeight: 600,
-              whiteSpace: "nowrap",
-              transition: "all 0.2s"
-            }}
+            key={p.id}
+            type="button"
+            onClick={() => setSelectedPage(p.id)}
+            className={`${styles.tabItem} ${selectedPage === p.id ? styles.tabItemActive : ""}`}
+            style={{ flex: 1, justifyContent: "center" }}
           >
-            {p.label}
+            {p.icon} {p.label}
           </button>
         ))}
       </div>
 
       {filteredPages.map((pageGroup) => (
-        <div key={pageGroup.page} style={{ marginBottom: "1.5rem" }}>
-          <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#1a1a2e", marginBottom: "0.75rem" }}>
-            {pageGroup.label}
-          </h3>
-
+        <div key={pageGroup.page} className="animate-fade-in">
           {pageGroup.sections.map((sec) => (
             <div key={sec.section} className={styles.contentSection}>
               <div className={styles.contentSectionHeader}>
+                <FileText size={18} style={{ color: "var(--primary)" }} />
                 <h3>{sec.label}</h3>
               </div>
               <div className={styles.contentSectionBody}>
@@ -319,7 +330,7 @@ export default function AdminPagesClient({ initialContent }: { initialContent: a
                         value={getValue(pageGroup.page, sec.section, field.key)}
                         onChange={(e) => setValue(pageGroup.page, sec.section, field.key, e.target.value)}
                         className={styles.formInput}
-                        rows={3}
+                        rows={4}
                         placeholder={field.placeholder}
                         style={{ resize: "vertical" }}
                       />
