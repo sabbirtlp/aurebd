@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import styles from "../admin.module.css";
+import styles from "./admin.module.css";
 import Link from "next/link";
 
 export default function RecentOrdersTable({ initialOrders }: { initialOrders: any[] }) {
