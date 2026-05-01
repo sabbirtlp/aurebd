@@ -159,7 +159,7 @@ export default function AdminTestimonialsClient() {
                   background: "var(--bg-color)", 
                   display: "flex", 
                   alignItems: "center", 
-                  justify-content: "center", 
+                  justifyContent: "center", 
                   border: "1px solid var(--border)", 
                   boxShadow: "var(--nm-outer-raised-sm)", 
                   fontWeight: 800, 
@@ -205,7 +205,7 @@ export default function AdminTestimonialsClient() {
           background: "rgba(0,0,0,0.7)", 
           display: "flex", 
           alignItems: "center", 
-          justify-content: "center", 
+          justifyContent: "center", 
           zIndex: 10000, 
           backdropFilter: "blur(8px)",
           padding: "1rem"
