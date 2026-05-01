@@ -12,6 +12,7 @@ import {
   FileText
 } from "lucide-react";
 import styles from "../admin.module.css";
+import ImageUpload from "@/components/admin/ImageUpload";
 
 // Define types for CMS sections
 interface Field {
@@ -47,6 +48,7 @@ const PAGE_SECTIONS: PageGroup[] = [
           { key: "title", label: "Main Title", type: "text", placeholder: "e.g. Discover Your" },
           { key: "title_span", label: "Title Italic Part", type: "text", placeholder: "e.g. Natural Glow" },
           { key: "subtitle", label: "Subtitle", type: "textarea", placeholder: "Hero description text..." },
+          { key: "image", label: "Hero Main Image", type: "image" },
         ],
       },
       {
@@ -70,9 +72,13 @@ const PAGE_SECTIONS: PageGroup[] = [
           { key: "title", label: "Section Title", type: "text" },
           { key: "subtitle", label: "Section Subtitle", type: "text" },
           { key: "serums", label: "Serums Label", type: "text" },
+          { key: "serums_img", label: "Serums Image", type: "image" },
           { key: "creams", label: "Creams Label", type: "text" },
+          { key: "creams_img", label: "Creams Image", type: "image" },
           { key: "uv", label: "UV Label", type: "text" },
+          { key: "uv_img", label: "UV Image", type: "image" },
           { key: "essentials", label: "Essentials Label", type: "text" },
+          { key: "essentials_img", label: "Essentials Image", type: "image" },
         ],
       },
       {
@@ -334,6 +340,15 @@ export default function AdminPagesClient({ initialContent }: { initialContent: a
                         placeholder={field.placeholder}
                         style={{ resize: "vertical" }}
                       />
+                    ) : field.type === "image" ? (
+                      <div style={{ marginTop: "0.5rem" }}>
+                        <ImageUpload
+                          label={""}
+                          images={getValue(pageGroup.page, sec.section, field.key) ? [getValue(pageGroup.page, sec.section, field.key)] : []}
+                          onChange={(images) => setValue(pageGroup.page, sec.section, field.key, images[0] || "")}
+                          maxImages={1}
+                        />
+                      </div>
                     ) : (
                       <input
                         type="text"

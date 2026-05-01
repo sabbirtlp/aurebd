@@ -10,6 +10,7 @@ import { useLanguageStore } from "@/store/languageStore";
 import { useState, useEffect } from "react";
 import Newsletter from '@/components/shared/Newsletter';
 import Editable from "@/components/cms/Editable";
+import EditableImage from "@/components/cms/EditableImage";
 
 export default function HomeClient({ products }: { products: any[] }) {
   const { t, language } = useLanguageStore();
@@ -112,8 +113,11 @@ export default function HomeClient({ products }: { products: any[] }) {
             transition={{ duration: 1.2, ease: "easeOut" }}
           >
             <div className={styles.heroImageCircle}>
-              <Image 
-                src="/images/sakura-set.png" 
+              <EditableImage 
+                page="home"
+                section="hero"
+                field="image"
+                defaultSrc="/images/sakura-set.png" 
                 alt="Premium Skincare Collection" 
                 fill 
                 className={styles.heroImage}
@@ -175,25 +179,25 @@ export default function HomeClient({ products }: { products: any[] }) {
           <div className={styles.categoryGrid}>
             <Link href="/shop?category=Radiance%20Serums" className={styles.categoryCard}>
               <div className={styles.categoryImgWrapper}>
-                <Image src="/images/sakura-serum.png" alt="Serums" fill className={styles.categoryImg} />
+                <EditableImage page="home" section="categories" field="serums_img" defaultSrc="/images/sakura-serum.png" alt="Serums" fill className={styles.categoryImg} />
               </div>
               <h3 className={styles.categoryName}><Editable page="home" section="categories" field="serums" defaultText={tr('cat.serums')} /></h3>
             </Link>
             <Link href="/shop?category=Hydration%20Creams" className={styles.categoryCard}>
               <div className={styles.categoryImgWrapper}>
-                <Image src="/images/sakura-cream.png" alt="Creams" fill className={styles.categoryImg} />
+                <EditableImage page="home" section="categories" field="creams_img" defaultSrc="/images/sakura-cream.png" alt="Creams" fill className={styles.categoryImg} />
               </div>
               <h3 className={styles.categoryName}><Editable page="home" section="categories" field="creams" defaultText={tr('cat.creams')} /></h3>
             </Link>
             <Link href="/shop?category=UV%20Protection" className={styles.categoryCard}>
               <div className={styles.categoryImgWrapper}>
-                <Image src="/images/sakura-sunscreen.png" alt="UV" fill className={styles.categoryImg} />
+                <EditableImage page="home" section="categories" field="uv_img" defaultSrc="/images/sakura-sunscreen.png" alt="UV" fill className={styles.categoryImg} />
               </div>
               <h3 className={styles.categoryName}><Editable page="home" section="categories" field="uv" defaultText={tr('cat.uv')} /></h3>
             </Link>
             <Link href="/shop?category=Skin%20Essentials" className={styles.categoryCard}>
               <div className={styles.categoryImgWrapper}>
-                <Image src="/images/sakura-set.png" alt="Essentials" fill className={styles.categoryImg} />
+                <EditableImage page="home" section="categories" field="essentials_img" defaultSrc="/images/sakura-set.png" alt="Essentials" fill className={styles.categoryImg} />
               </div>
               <h3 className={styles.categoryName}><Editable page="home" section="categories" field="essentials" defaultText={tr('cat.essentials')} /></h3>
             </Link>
