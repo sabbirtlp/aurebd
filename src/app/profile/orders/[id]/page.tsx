@@ -181,7 +181,7 @@ export default function OrderDetailsPage({ params }: { params: { id: string } })
             </div>
           </motion.div>
 
-          <button className={styles.invoiceBtn}>
+          <button className={styles.invoiceBtn} onClick={() => window.print()}>
             <FileText size={18} /> Download Invoice
           </button>
         </div>
