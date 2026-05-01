@@ -305,3 +305,50 @@
     font-weight: 500;
   }
 }
+
+/* --- SKELETON LOADING --- */
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeletonBase {
+  background: linear-gradient(
+    90deg,
+    var(--border) 25%,
+    rgba(203, 163, 148, 0.1) 50%,
+    var(--border) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.5s infinite ease-in-out;
+  border-radius: 20px;
+}
+
+.skeletonHeader {
+  height: 60px;
+  width: 300px;
+  margin: 0 auto 10px;
+  composes: skeletonBase;
+}
+
+.skeletonSub {
+  height: 20px;
+  width: 200px;
+  margin: 0 auto 40px;
+  composes: skeletonBase;
+}
+
+.skeletonFilter {
+  height: 70px;
+  width: 100%;
+  margin-bottom: 30px;
+  composes: skeletonBase;
+  border-radius: 24px;
+}
+
+.skeletonCard {
+  height: 400px;
+  width: 100%;
+  composes: skeletonBase;
+}
+

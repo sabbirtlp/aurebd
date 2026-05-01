@@ -34,16 +34,29 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
   const filteredAndSortedProducts = useMemo(() => {
     let result = [...initialProducts];
 
+    // Filter by Category
     if (activeCategory !== "All") {
-      result = result.filter(p => p.category === activeCategory || activeCategory === "Skin Essentials");
+      const categoryMap: any = {
+        "Skin Essentials": ["Sets"],
+        "Radiance Serums": ["Serums"],
+        "Hydration Creams": ["Creams"],
+        "UV Protection": ["Sunscreen"],
+        "Cleansers": ["Cleansers"]
+      };
+      const dbCategories = categoryMap[activeCategory] || [activeCategory];
+      result = result.filter(p => dbCategories.includes(p.category));
     }
 
+    // Filter by Price
     result = result.filter(p => p.price <= priceRange);
 
+    // Sort
     if (sortBy === "lowToHigh") {
       result.sort((a, b) => a.price - b.price);
     } else if (sortBy === "highToLow") {
       result.sort((a, b) => b.price - a.price);
+    } else if (sortBy === "newest") {
+      result.reverse(); // Assume initial order is oldest first or just reverse for "newest" feel
     }
 
     return result;
@@ -63,13 +76,12 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
 
   // Reset to page 1 when filters change (except price)
   useEffect(() => {
-    if (currentPage !== 1) {
-      setCurrentPage(1);
-      const params = new URLSearchParams(window.location.search);
-      params.set('page', '1');
-      window.history.pushState({}, '', `${window.location.pathname}?${params.toString()}`);
-    }
-  }, [activeCategory, sortBy, currentPage]);
+    setCurrentPage(1);
+    const params = new URLSearchParams(window.location.search);
+    params.set('page', '1');
+    window.history.pushState({}, '', `${window.location.pathname}?${params.toString()}`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeCategory, sortBy]);
 
   return (
     <div className={`animate-fade-in ${styles.shopPage}`}>
