@@ -13,9 +13,10 @@ interface EditableImageProps {
   fill?: boolean;
   className?: string;
   priority?: boolean;
+  sizes?: string;
 }
 
-export default function EditableImage({ page, section, field, defaultSrc, alt, fill, className, priority }: EditableImageProps) {
+export default function EditableImage({ page, section, field, defaultSrc, alt, fill, className, priority, sizes }: EditableImageProps) {
   const { content } = useEditable();
   const { language } = useLanguageStore();
 
@@ -32,8 +33,10 @@ export default function EditableImage({ page, section, field, defaultSrc, alt, f
       fill={fill}
       className={className}
       priority={priority}
+      sizes={sizes}
       {...(!fill ? { width: 500, height: 500 } : {})} // Provide default dimensions if not fill
       style={!fill ? { width: "100%", height: "auto" } : {}}
     />
   );
 }
+

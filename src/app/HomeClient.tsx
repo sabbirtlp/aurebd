@@ -1,16 +1,21 @@
 "use client";
 
+import { useState, useEffect, useMemo } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import styles from "./page.module.css";
 import ProductCard from '@/features/products/ProductCard';
-import TestimonialSlider from '@/components/shared/TestimonialSlider';
 import { useLanguageStore } from "@/store/languageStore";
-import { useState, useEffect } from "react";
-import Newsletter from '@/components/shared/Newsletter';
 import Editable from "@/components/cms/Editable";
 import EditableImage from "@/components/cms/EditableImage";
+
+// Lazy load non-critical sections
+const TestimonialSlider = dynamic(() => import('@/components/shared/TestimonialSlider'), { ssr: false });
+const Newsletter = dynamic(() => import('@/components/shared/Newsletter'), { ssr: false });
+
+const MotionLink = motion(Link);
 
 export default function HomeClient({ products }: { products: any[] }) {
   const { t, language } = useLanguageStore();
@@ -122,6 +127,7 @@ export default function HomeClient({ products }: { products: any[] }) {
                 fill 
                 className={styles.heroImage}
                 priority
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
               />
             </div>
             
@@ -177,30 +183,58 @@ export default function HomeClient({ products }: { products: any[] }) {
             <p className={styles.sectionSubtitle}><Editable page="home" section="categories" field="subtitle" defaultText={tr('cat.subtitle')} /></p>
           </header>
           <div className={styles.categoryGrid}>
-            <Link href="/shop?category=Radiance%20Serums" className={styles.categoryCard}>
+            <MotionLink 
+              href="/shop?category=Radiance%20Serums" 
+              className={styles.categoryCard}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+            >
               <div className={styles.categoryImgWrapper}>
-                <EditableImage page="home" section="categories" field="serums_img" defaultSrc="/images/sakura-serum.png" alt="Serums" fill className={styles.categoryImg} />
+                <EditableImage page="home" section="categories" field="serums_img" defaultSrc="/images/sakura-serum.png" alt="Serums" fill className={styles.categoryImg} sizes="(max-width: 768px) 50vw, 250px" />
               </div>
               <h3 className={styles.categoryName}><Editable page="home" section="categories" field="serums" defaultText={tr('cat.serums')} /></h3>
-            </Link>
-            <Link href="/shop?category=Hydration%20Creams" className={styles.categoryCard}>
+            </MotionLink>
+            <MotionLink 
+              href="/shop?category=Hydration%20Creams" 
+              className={styles.categoryCard}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+            >
               <div className={styles.categoryImgWrapper}>
-                <EditableImage page="home" section="categories" field="creams_img" defaultSrc="/images/sakura-cream.png" alt="Creams" fill className={styles.categoryImg} />
+                <EditableImage page="home" section="categories" field="creams_img" defaultSrc="/images/sakura-cream.png" alt="Creams" fill className={styles.categoryImg} sizes="(max-width: 768px) 50vw, 250px" />
               </div>
               <h3 className={styles.categoryName}><Editable page="home" section="categories" field="creams" defaultText={tr('cat.creams')} /></h3>
-            </Link>
-            <Link href="/shop?category=UV%20Protection" className={styles.categoryCard}>
+            </MotionLink>
+            <MotionLink 
+              href="/shop?category=UV%20Protection" 
+              className={styles.categoryCard}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+            >
               <div className={styles.categoryImgWrapper}>
-                <EditableImage page="home" section="categories" field="uv_img" defaultSrc="/images/sakura-sunscreen.png" alt="UV" fill className={styles.categoryImg} />
+                <EditableImage page="home" section="categories" field="uv_img" defaultSrc="/images/sakura-sunscreen.png" alt="UV" fill className={styles.categoryImg} sizes="(max-width: 768px) 50vw, 250px" />
               </div>
               <h3 className={styles.categoryName}><Editable page="home" section="categories" field="uv" defaultText={tr('cat.uv')} /></h3>
-            </Link>
-            <Link href="/shop?category=Skin%20Essentials" className={styles.categoryCard}>
+            </MotionLink>
+            <MotionLink 
+              href="/shop?category=Skin%20Essentials" 
+              className={styles.categoryCard}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+            >
               <div className={styles.categoryImgWrapper}>
-                <EditableImage page="home" section="categories" field="essentials_img" defaultSrc="/images/sakura-set.png" alt="Essentials" fill className={styles.categoryImg} />
+                <EditableImage page="home" section="categories" field="essentials_img" defaultSrc="/images/sakura-set.png" alt="Essentials" fill className={styles.categoryImg} sizes="(max-width: 768px) 50vw, 250px" />
               </div>
               <h3 className={styles.categoryName}><Editable page="home" section="categories" field="essentials" defaultText={tr('cat.essentials')} /></h3>
-            </Link>
+            </MotionLink>
           </div>
         </div>
       </section>
@@ -213,8 +247,16 @@ export default function HomeClient({ products }: { products: any[] }) {
             <p className={styles.sectionSubtitle}><Editable page="home" section="new_arrivals" field="subtitle" defaultText={tr('prod.new_subtitle')} /></p>
           </header>
           <div className={styles.productGrid}>
-            {products.slice(0, 4).map((product: any) => (
-              <ProductCard key={product._id} product={product} />
+            {products.slice(0, 4).map((product: any, idx: number) => (
+              <motion.div 
+                key={product._id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+              >
+                <ProductCard product={product} />
+              </motion.div>
             ))}
           </div>
           <div style={{ textAlign: "center", marginTop: "var(--sp-8)" }}>
@@ -236,7 +278,7 @@ export default function HomeClient({ products }: { products: any[] }) {
               <Link href="/shop" className={styles.btnPrimary}><Editable page="home" section="promo" field="cta" defaultText={tr('promo.cta')} /></Link>
             </div>
             <div className={styles.promoImageContainer}>
-              <Image src="/images/sakura-set.png" alt="Promo Product" fill className={styles.promoImage} />
+              <Image src="/images/sakura-set.png" alt="Promo Product" fill className={styles.promoImage} sizes="(max-width: 768px) 100vw, 500px" />
             </div>
           </div>
         </div>
@@ -250,11 +292,27 @@ export default function HomeClient({ products }: { products: any[] }) {
             <p className={styles.sectionSubtitle}><Editable page="home" section="best_sellers" field="subtitle" defaultText={tr('prod.best_subtitle')} /></p>
           </header>
           <div className={styles.productGrid}>
-            {products.slice(4, 8).map((product: any) => (
-              <ProductCard key={product._id} product={product} />
+            {products.slice(4, 8).map((product: any, idx: number) => (
+              <motion.div 
+                key={product._id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+              >
+                <ProductCard product={product} />
+              </motion.div>
             ))}
-            {products.length < 5 && products.slice(0, 4).map((product: any) => (
-              <ProductCard key={product._id + '-dup'} product={product} />
+            {products.length < 5 && products.slice(0, 4).map((product: any, idx: number) => (
+              <motion.div 
+                key={product._id + '-dup'}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+              >
+                <ProductCard product={product} />
+              </motion.div>
             ))}
           </div>
         </div>

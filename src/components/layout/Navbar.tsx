@@ -57,6 +57,7 @@ export default function Navbar() {
                 height={200}
                 style={{ width: "auto", height: "64px", objectFit: "contain", maxWidth: "120px" }}
                 priority
+                sizes="120px"
               />
             </Link>
           </div>
@@ -90,7 +91,7 @@ export default function Navbar() {
 
                 <div className={styles.megaFeatured}>
                   <div className={styles.featuredImg}>
-                    <Image src="/images/sakura-set.png" alt="Featured" fill style={{ objectFit: "cover" }} />
+                    <Image src="/images/sakura-set.png" alt="Featured" fill style={{ objectFit: "cover" }} sizes="300px" />
                   </div>
                   <div className={styles.featuredInfo}>
                     <span className={styles.featuredBadge}>{language === 'bn' ? 'সুপার ডিল' : 'Super Deal'}</span>
