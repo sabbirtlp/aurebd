@@ -35,10 +35,10 @@ export default function HomeClient({ products }: { products: any[] }) {
   ];
 
   const categories = [
-    { name: tr('cat.serums'), raw: "Radiance Serums", img: "/images/sakura-serum.png" },
-    { name: tr('cat.creams'), raw: "Hydration Creams", img: "/images/sakura-cream.png" },
-    { name: tr('cat.uv'), raw: "UV Protection", img: "/images/sakura-sunscreen.png" },
-    { name: tr('cat.essentials'), raw: "Skin Essentials", img: "/images/sakura-set.png" }
+    { name: tr('cat.serums'), raw: "Radiance Serums", img: "/images/sakura-serum.webp" },
+    { name: tr('cat.creams'), raw: "Hydration Creams", img: "/images/sakura-cream.webp" },
+    { name: tr('cat.uv'), raw: "UV Protection", img: "/images/sakura-sunscreen.webp" },
+    { name: tr('cat.essentials'), raw: "Skin Essentials", img: "/images/sakura-set.webp" }
   ];
 
   return (
@@ -122,7 +122,7 @@ export default function HomeClient({ products }: { products: any[] }) {
                 page="home"
                 section="hero"
                 field="image"
-                defaultSrc="/images/sakura-set.png" 
+                defaultSrc="/images/sakura-set.webp" 
                 alt="Premium Skincare Collection" 
                 fill 
                 className={styles.heroImage}
@@ -192,7 +192,7 @@ export default function HomeClient({ products }: { products: any[] }) {
               transition={{ delay: 0.1 }}
             >
               <div className={styles.categoryImgWrapper}>
-                <EditableImage page="home" section="categories" field="serums_img" defaultSrc="/images/sakura-serum.png" alt="Serums" fill className={styles.categoryImg} sizes="(max-width: 768px) 50vw, 250px" />
+                <EditableImage page="home" section="categories" field="serums_img" defaultSrc="/images/sakura-serum.webp" alt="Serums" fill className={styles.categoryImg} sizes="(max-width: 768px) 50vw, 250px" />
               </div>
               <h3 className={styles.categoryName}><Editable page="home" section="categories" field="serums" defaultText={tr('cat.serums')} /></h3>
             </MotionLink>
@@ -205,7 +205,7 @@ export default function HomeClient({ products }: { products: any[] }) {
               transition={{ delay: 0.2 }}
             >
               <div className={styles.categoryImgWrapper}>
-                <EditableImage page="home" section="categories" field="creams_img" defaultSrc="/images/sakura-cream.png" alt="Creams" fill className={styles.categoryImg} sizes="(max-width: 768px) 50vw, 250px" />
+                <EditableImage page="home" section="categories" field="creams_img" defaultSrc="/images/sakura-cream.webp" alt="Creams" fill className={styles.categoryImg} sizes="(max-width: 768px) 50vw, 250px" />
               </div>
               <h3 className={styles.categoryName}><Editable page="home" section="categories" field="creams" defaultText={tr('cat.creams')} /></h3>
             </MotionLink>
@@ -218,7 +218,7 @@ export default function HomeClient({ products }: { products: any[] }) {
               transition={{ delay: 0.3 }}
             >
               <div className={styles.categoryImgWrapper}>
-                <EditableImage page="home" section="categories" field="uv_img" defaultSrc="/images/sakura-sunscreen.png" alt="UV" fill className={styles.categoryImg} sizes="(max-width: 768px) 50vw, 250px" />
+                <EditableImage page="home" section="categories" field="uv_img" defaultSrc="/images/sakura-sunscreen.webp" alt="UV" fill className={styles.categoryImg} sizes="(max-width: 768px) 50vw, 250px" />
               </div>
               <h3 className={styles.categoryName}><Editable page="home" section="categories" field="uv" defaultText={tr('cat.uv')} /></h3>
             </MotionLink>
@@ -231,7 +231,7 @@ export default function HomeClient({ products }: { products: any[] }) {
               transition={{ delay: 0.4 }}
             >
               <div className={styles.categoryImgWrapper}>
-                <EditableImage page="home" section="categories" field="essentials_img" defaultSrc="/images/sakura-set.png" alt="Essentials" fill className={styles.categoryImg} sizes="(max-width: 768px) 50vw, 250px" />
+                <EditableImage page="home" section="categories" field="essentials_img" defaultSrc="/images/sakura-set.webp" alt="Essentials" fill className={styles.categoryImg} sizes="(max-width: 768px) 50vw, 250px" />
               </div>
               <h3 className={styles.categoryName}><Editable page="home" section="categories" field="essentials" defaultText={tr('cat.essentials')} /></h3>
             </MotionLink>
@@ -278,7 +278,7 @@ export default function HomeClient({ products }: { products: any[] }) {
               <Link href="/shop" className={styles.btnPrimary}><Editable page="home" section="promo" field="cta" defaultText={tr('promo.cta')} /></Link>
             </div>
             <div className={styles.promoImageContainer}>
-              <Image src="/images/sakura-set.png" alt="Promo Product" fill className={styles.promoImage} sizes="(max-width: 768px) 100vw, 500px" />
+              <Image src="/images/sakura-set.webp" alt="Promo Product" fill className={styles.promoImage} sizes="(max-width: 768px) 100vw, 500px" />
             </div>
           </div>
         </div>

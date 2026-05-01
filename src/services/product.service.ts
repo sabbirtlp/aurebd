@@ -24,12 +24,12 @@ export async function seedDatabase() {
   const count = await Product.countDocuments();
   if (count === 0) {
     const defaultProducts = [
-      { name: "Laikou Japan Sakura 5pcs Skincare Set", slug: "laikou-japan-sakura-5pcs-skincare-set", description: "Complete 5pcs set for glowing skin.", price: 1250, image: "/images/sakura-set.png", stock: 50, category: "Sets" },
-      { name: "Japan Sakura Sunscreen", slug: "japan-sakura-sunscreen", description: "SPF 50 protection with Sakura extract.", price: 450, image: "/images/sakura-sunscreen.png", stock: 100, category: "Sunscreen" },
-      { name: "Japan Sakura Essence Cream", slug: "japan-sakura-essence-cream", description: "Deeply moisturizing essence cream.", price: 550, image: "/images/sakura-cream.png", stock: 80, category: "Creams" },
-      { name: "Japan Sakura Eye Cream", slug: "japan-sakura-eye-cream", description: "Reduces dark circles and puffiness.", price: 350, image: "/images/sakura-eye-cream.png", stock: 120, category: "Creams" },
-      { name: "Japan Sakura Serum", slug: "japan-sakura-serum", description: "Brightening and anti-aging serum.", price: 400, image: "/images/sakura-serum.png", stock: 90, category: "Serums" },
-      { name: "Japan Sakura Facewash", slug: "japan-sakura-facewash", description: "Gentle daily cleanser.", price: 300, image: "/images/sakura-facewash.png", stock: 150, category: "Cleansers" },
+      { name: "Laikou Japan Sakura 5pcs Skincare Set", slug: "laikou-japan-sakura-5pcs-skincare-set", description: "Complete 5pcs set for glowing skin.", price: 1250, image: "/images/sakura-set.webp", stock: 50, category: "Sets" },
+      { name: "Japan Sakura Sunscreen", slug: "japan-sakura-sunscreen", description: "SPF 50 protection with Sakura extract.", price: 450, image: "/images/sakura-sunscreen.webp", stock: 100, category: "Sunscreen" },
+      { name: "Japan Sakura Essence Cream", slug: "japan-sakura-essence-cream", description: "Deeply moisturizing essence cream.", price: 550, image: "/images/sakura-cream.webp", stock: 80, category: "Creams" },
+      { name: "Japan Sakura Eye Cream", slug: "japan-sakura-eye-cream", description: "Reduces dark circles and puffiness.", price: 350, image: "/images/sakura-eye-cream.webp", stock: 120, category: "Creams" },
+      { name: "Japan Sakura Serum", slug: "japan-sakura-serum", description: "Brightening and anti-aging serum.", price: 400, image: "/images/sakura-serum.webp", stock: 90, category: "Serums" },
+      { name: "Japan Sakura Facewash", slug: "japan-sakura-facewash", description: "Gentle daily cleanser.", price: 300, image: "/images/sakura-facewash.webp", stock: 150, category: "Cleansers" },
     ];
     await Product.insertMany(defaultProducts);
   }

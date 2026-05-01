@@ -11,21 +11,21 @@ const slides = [
     tagline: "Premium Japanese Skincare",
     title: "Protect Your \n Skin This \n Summer",
     subtitle: "SPF 50+ protection infused with Sakura extracts for a weightless, non-greasy glow.",
-    image: "/images/premium-hero-bg.png",
+    image: "/images/premium-hero-bg.webp",
   },
   {
     id: 2,
     tagline: "Nature Meets Science",
     title: "Glow From \n Within \n Naturally",
     subtitle: "Experience the legend of Japanese Sakura distilled into pure, potent skincare.",
-    image: "/images/sakura-hero-banner.png",
+    image: "/images/hero-banner.webp",
   },
   {
     id: 3,
     tagline: "The Art of Self-Care",
     title: "Complete \n Ritual For \n Radiance",
     subtitle: "A holistic 5-step journey to your most luminous skin ever.",
-    image: "/images/sakura-set.png",
+    image: "/images/sakura-set.webp",
   }
 ];
 

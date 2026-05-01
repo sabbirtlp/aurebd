@@ -51,7 +51,7 @@ export default function Navbar() {
           <div className={styles.logoWrapper}>
             <Link href="/">
               <Image
-                src="/images/logo-v2.png"
+                src="/images/logo-v2.webp"
                 alt="Aurea BD"
                 width={600}
                 height={200}
@@ -91,7 +91,7 @@ export default function Navbar() {
 
                 <div className={styles.megaFeatured}>
                   <div className={styles.featuredImg}>
-                    <Image src="/images/sakura-set.png" alt="Featured" fill style={{ objectFit: "cover" }} sizes="300px" />
+                    <Image src="/images/sakura-set.webp" alt="Featured" fill style={{ objectFit: "cover" }} sizes="300px" />
                   </div>
                   <div className={styles.featuredInfo}>
                     <span className={styles.featuredBadge}>{language === 'bn' ? 'সুপার ডিল' : 'Super Deal'}</span>

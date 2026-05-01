@@ -32,7 +32,7 @@ export default function Footer() {
             {/* BRAND COLUMN */}
             <div className={styles.brandCol}>
               <Image
-                src="/images/logo-v2.png"
+                src="/images/logo-v2.webp"
                 alt="Aurea BD"
                 width={600}
                 height={200}

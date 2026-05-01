@@ -23,7 +23,7 @@ export default function AboutPage() {
       {/* HERO SECTION */}
       <section className={styles.aboutHero}>
         <div className={styles.heroImage}>
-          <Image src="/images/sakura-set.png" alt="About Aurea" fill style={{ objectFit: "cover", opacity: 0.4, filter: "blur(10px) brightness(1.2)" }} />
+          <Image src="/images/sakura-set.webp" alt="About Aurea" fill style={{ objectFit: "cover", opacity: 0.4, filter: "blur(10px) brightness(1.2)" }} />
         </div>
         <div className="container" style={{ position: "relative", zIndex: 10, height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
           <div className={styles.heroContent}>
@@ -76,7 +76,7 @@ export default function AboutPage() {
             </p>
           </div>
           <div className={`${styles.storyImage} nm-card`}>
-            <Image src="/images/sakura-set.png" alt="Our Process" width={500} height={500} style={{ objectFit: "contain" }} />
+            <Image src="/images/sakura-set.webp" alt="Our Process" width={500} height={500} style={{ objectFit: "contain" }} />
           </div>
         </div>
       </section>
