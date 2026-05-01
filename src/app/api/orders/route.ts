@@ -4,6 +4,7 @@ import Product from "@/models/Product";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import { NextResponse } from "next/server";
+import { sendAdminOrderNotification } from "@/lib/email";
 
 export async function POST(req: Request) {
   try {
@@ -25,10 +26,12 @@ export async function POST(req: Request) {
       paymentMethod,
     });
 
-    // Send admin notification (non-blocking)
-    import("@/lib/email").then(({ sendAdminOrderNotification }) => {
-      sendAdminOrderNotification(order).catch(err => console.error("Email notify error:", err));
-    });
+    // Send admin notification (Awaited to ensure Vercel sends it)
+    try {
+      await sendAdminOrderNotification(order);
+    } catch (err) {
+      console.error("Email notification failed:", err);
+    }
 
     // Decrement stock for each product
     for (const item of items) {
