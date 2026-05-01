@@ -1622,6 +1622,46 @@
 }
 
 @media (max-width: 640px) {
+  .profilePage {
+    padding: var(--sp-4) 0;
+  }
+
+  .layoutGrid {
+    gap: var(--sp-4);
+  }
+
+  .sidebar {
+    padding: var(--sp-4);
+    border-radius: 20px;
+  }
+
+  .userBrief {
+    padding-bottom: var(--sp-4);
+    margin-bottom: var(--sp-4);
+  }
+
+  .navItem {
+    padding: 10px 12px;
+    font-size: 0.85rem;
+  }
+
+  .logoutBtn {
+    margin-top: var(--sp-4);
+    padding: 10px 12px;
+  }
+
+  .statCard, .actionCard, .settingsCard, .addressCard {
+    padding: var(--sp-4);
+    border-radius: 20px;
+  }
+
+  .photoSection {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+  }
 
   .addressGrid,
   .wishlistGrid {
@@ -1634,8 +1674,8 @@
     font-size: 1.2rem;
   }
 
-  .dashboardHeader h1 {
-    font-size: 1.5rem;
+  .welcomeTitle {
+    font-size: 1.5rem !important;
   }
 
   .card {
