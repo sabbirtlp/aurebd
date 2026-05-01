@@ -1191,6 +1191,7 @@
 .mainContent {
   flex: 1;
   min-width: 0;
+  max-width: 100%;
   /* Prevent grid blowout */
 }
 
@@ -1212,11 +1213,14 @@
   margin-bottom: var(--sp-6);
   border: 1px solid var(--border);
   color: var(--text-dark);
+  max-width: 100%;
+  overflow: hidden;
 }
 
 /* TABLE RESPONSIVENESS */
 .tableContainer {
   width: 100%;
+  max-width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
