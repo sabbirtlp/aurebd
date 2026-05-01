@@ -118,7 +118,7 @@ export default function HomeClient({ products }: { products: any[] }) {
                 <p className={styles.cardPrice}><Editable page="home" section="hero" field="card_price" defaultText="৳ ১২৫০" /></p>
               </div>
             </motion.div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
