@@ -65,7 +65,7 @@ export const sendAdminOrderNotification = async (order: any) => {
 
             <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin-top: 20px;">
               <h3 style="margin-top: 0; font-size: 14px; color: #666; text-transform: uppercase;">Customer Information</h3>
-              <p style="margin: 5px 0;"><strong>Name:</strong> ${order.shippingAddress.name}</p>
+              <p style="margin: 5px 0;"><strong>Name:</strong> ${order.shippingAddress.fullName}</p>
               <p style="margin: 5px 0;"><strong>Phone:</strong> ${order.shippingAddress.phone}</p>
               <p style="margin: 5px 0;"><strong>Address:</strong> ${order.shippingAddress.address}, ${order.shippingAddress.city}</p>
               <p style="margin: 5px 0;"><strong>Payment Method:</strong> ${order.paymentMethod}</p>
