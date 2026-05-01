@@ -73,22 +73,7 @@ export default function HomeClient({ products }: { products: any[] }) {
               <Link href="/about" className={styles.btnSecondary}>{tr('hero.our_story')}</Link>
             </div>
 
-            {/* Trust Badges in Hero */}
-            <motion.div 
-              className={styles.heroTrust}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1, delay: 1 }}
-            >
-              <div className={styles.trustItem}>
-                <span className={styles.trustIcon}>✦</span>
-                <span>{language === 'bn' ? 'অর্গানিক উপাদান' : '100% Organic'}</span>
-              </div>
-              <div className={styles.trustItem}>
-                <span className={styles.trustIcon}>✦</span>
-                <span>{language === 'bn' ? 'জাপানি প্রযুক্তি' : 'Japan Tech'}</span>
-              </div>
-            </motion.div>
+
           </div>
 
           <div className={`${styles.heroImageContainer} ${styles.heroImageAnimate}`}>
@@ -111,6 +96,7 @@ export default function HomeClient({ products }: { products: any[] }) {
               className={styles.floatingCard}
               animate={{ y: [0, -15, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              style={{ willChange: "transform", translateZ: 0 }}
             >
               <div className={styles.cardIcon}><Editable page="home" section="hero" field="card_icon" defaultText="🌸" /></div>
               <div>
@@ -253,7 +239,16 @@ export default function HomeClient({ products }: { products: any[] }) {
               <Link href="/shop" className={styles.btnPrimary}><Editable page="home" section="promo" field="cta" defaultText={tr('promo.cta')} /></Link>
             </div>
             <div className={styles.promoImageContainer}>
-              <Image src="/images/sakura-set.webp" alt="Promo Product" fill className={styles.promoImage} sizes="(max-width: 768px) 100vw, 500px" />
+              <EditableImage 
+                page="home" 
+                section="promo" 
+                field="image" 
+                defaultSrc="/images/sakura-set.webp" 
+                alt="Promo Product" 
+                fill 
+                className={styles.promoImage} 
+                sizes="(max-width: 768px) 100vw, 500px" 
+              />
             </div>
           </div>
         </div>

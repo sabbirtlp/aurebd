@@ -4,6 +4,7 @@ import dbConnect from "@/lib/db";
 import Product from "@/models/Product";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
+import { unstable_cache } from "next/cache";
 
 export async function seedDatabase() {
   await dbConnect();
@@ -37,12 +38,18 @@ export async function seedDatabase() {
   return { success: true };
 }
 
-export async function getFeaturedProducts() {
+async function _getFeaturedProducts() {
   await dbConnect();
   return await Product.find({}).select("name slug price image category").limit(8).lean();
 }
 
-export async function getProducts() {
+export const getFeaturedProducts = unstable_cache(
+  _getFeaturedProducts,
+  ["featured-products"],
+  { revalidate: 3600 }
+);
+
+async function _getProducts() {
   try {
     await dbConnect();
     let products = await Product.find({}).lean();
@@ -61,7 +68,13 @@ export async function getProducts() {
   }
 }
 
-export async function getProductBySlug(slug: string) {
+export const getProducts = unstable_cache(
+  _getProducts,
+  ["all-products"],
+  { revalidate: 3600 }
+);
+
+async function _getProductBySlug(slug: string) {
   try {
     await dbConnect();
     // Try by slug first, then by ID as fallback
@@ -77,11 +90,17 @@ export async function getProductBySlug(slug: string) {
   }
 }
 
+export const getProductBySlug = unstable_cache(
+  _getProductBySlug,
+  ["product-by-slug"],
+  { revalidate: 3600 }
+);
+
 export async function getProductById(id: string) {
   return getProductBySlug(id); // Proxy for compatibility
 }
 
-export async function getRelatedProducts(productId: string, category: string, limit: number = 4) {
+async function _getRelatedProducts(productId: string, category: string, limit: number = 4) {
   try {
     await dbConnect();
     // Query only related products directly from MongoDB — no need to fetch ALL products
@@ -103,3 +122,10 @@ export async function getRelatedProducts(productId: string, category: string, li
     return [];
   }
 }
+
+export const getRelatedProducts = unstable_cache(
+  _getRelatedProducts,
+  ["related-products"],
+  { revalidate: 3600 }
+);
+

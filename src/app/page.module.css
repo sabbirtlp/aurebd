@@ -170,6 +170,7 @@
   gap: 12px;
   z-index: 20;
   border: 1px solid var(--border);
+  will-change: transform;
 }
 
 .cardIcon {
@@ -293,13 +294,11 @@
   border-radius: 16px;
   box-shadow: var(--nm-inner-pressed-sm);
   background: var(--bg-color);
-  opacity: 0.8;
   overflow: hidden;
 }
 
 .categoryImg {
-  object-fit: contain;
-  padding: var(--sp-4);
+  object-fit: cover;
   transition: transform 0.6s ease;
 }
 
@@ -389,16 +388,20 @@
 .promoImageContainer {
   flex: 1;
   position: relative;
-  height: 450px;
-  display: flex;
-  justify-content: flex-end;
-  background: radial-gradient(circle at center, rgba(203,163,148,0.1) 0%, transparent 70%);
+  height: 400px;
+  margin: var(--sp-6);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--nm-outer-raised-sm);
 }
 
 .promoImage {
-  object-fit: contain;
-  padding: var(--sp-6);
-  transform: scale(1.1);
+  object-fit: cover;
+  transition: transform 0.8s ease;
+}
+
+.promoImageContainer:hover .promoImage {
+  transform: scale(1.05);
 }
 
 

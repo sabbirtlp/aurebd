@@ -89,7 +89,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             <button className={styles.socialBtn}>IG</button>
             <button className={styles.socialBtn}>WA</button>
           </div>
-          <p className={styles.footerText}>© 2026 Aurea BD • Radiance Delivered</p>
+          <p className={styles.footerText}>© 2026 Aurea BD • {language === 'bn' ? 'উজ্জ্বলতায় পৌঁছে দেওয়া' : 'Radiance Delivered'}</p>
         </div>
       </div>
     </div>

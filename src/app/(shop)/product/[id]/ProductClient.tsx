@@ -9,14 +9,59 @@ import ProductCard from '@/features/products/ProductCard';
 import TestimonialSlider from "@/components/shared/TestimonialSlider";
 import { useLanguageStore } from "@/store/languageStore";
 
+const TAB_KEYS: Record<string, string> = {
+  description: 'product.tab_description',
+  ingredients: 'product.tab_ingredients',
+  howToUse: 'product.tab_how_to_use'
+};
+
 export default function ProductClient({ product, relatedProducts }: { product: any, relatedProducts: any[] }) {
-  const { language } = useLanguageStore();
+  const { language, t } = useLanguageStore();
   const [mainImage, setMainImage] = useState(product.image);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("description");
   const [zoomStyle, setZoomStyle] = useState({ transformOrigin: 'center center', transform: 'scale(1)' });
   const [isHovering, setIsHovering] = useState(false);
   const { addItem } = useCartStore();
+
+  const [reviewForm, setReviewForm] = useState({ name: '', rating: 5, comment: '' });
+  const [submittingReview, setSubmittingReview] = useState(false);
+  
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const reviewsPerPage = 3;
+  const totalReviews = product.reviews?.length || 0;
+  const totalPages = Math.ceil(totalReviews / reviewsPerPage);
+  const currentReviews = product.reviews?.slice((currentPage - 1) * reviewsPerPage, currentPage * reviewsPerPage) || [];
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewForm.name || !reviewForm.comment) return toast.error("Please fill all fields");
+    setSubmittingReview(true);
+    try {
+      const res = await fetch(`/api/products/${product._id}/reviews`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(reviewForm),
+      });
+      if (res.ok) {
+        toast.success("Review submitted successfully!");
+        setReviewForm({ name: '', rating: 5, comment: '' });
+        window.location.reload();
+      } else {
+        const data = await res.json();
+        toast.error(data.message || "Failed to submit review");
+      }
+    } catch (err) {
+      toast.error("An error occurred");
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -30,7 +75,7 @@ export default function ProductClient({ product, relatedProducts }: { product: a
       image: product.image,
       quantity: quantity
     });
-    toast.success(`Added ${quantity} ${product.name} to cart`);
+    toast.success(`${product.name} ${t('product.added_to_cart')}`);
   };
 
   const handleBuyNow = () => {
@@ -104,14 +149,16 @@ export default function ProductClient({ product, relatedProducts }: { product: a
               <span className={styles.categoryBadge}>{product.category}</span>
               <h1 className={styles.title}>{product.name}</h1>
               <div className={styles.ratingRow}>
-                <div className={styles.stars}>★★★★★</div>
-                <span className={styles.reviewCount}>(124 Reviews)</span>
+                <div className={styles.stars}>
+                  {"★".repeat(Math.round(product.rating || 5)) + "☆".repeat(5 - Math.round(product.rating || 5))}
+                </div>
+                <span className={styles.reviewCount}>({product.numReviews || 0} {t('product.reviews') || 'Reviews'})</span>
               </div>
               <p className={styles.price}>৳ {product.price}</p>
             </div>
 
             <p className={styles.shortDesc}>
-              Experience the natural brightening power of Japanese Sakura. This premium formula deeply hydrates and rejuvenates your skin for a healthy, youthful glow.
+              {t('product.short_desc')}
             </p>
 
             <div className={styles.actions}>
@@ -121,25 +168,25 @@ export default function ProductClient({ product, relatedProducts }: { product: a
                 <button onClick={() => setQuantity(quantity + 1)}>+</button>
               </div>
               <button className="btn-nm btn-nm-primary" style={{ flex: 1, height: "56px" }} onClick={handleAddToCart}>
-                Add to Cart
+                {t('product.add_to_cart')}
               </button>
               <button className="btn-nm" style={{ flex: 1, height: "56px" }} onClick={handleBuyNow}>
-                Buy Now
+                {t('product.buy_now')}
               </button>
             </div>
 
             <div className={styles.trustBadges}>
               <div className={styles.badge}>
                 <span className={styles.badgeIcon}>🛡️</span>
-                <span>Authentic Product</span>
+                <span>{t('product.authentic')}</span>
               </div>
               <div className={styles.badge}>
                 <span className={styles.badgeIcon}>🚚</span>
-                <span>Fast Delivery</span>
+                <span>{t('product.fast_delivery')}</span>
               </div>
               <div className={styles.badge}>
                 <span className={styles.badgeIcon}>🔒</span>
-                <span>Safe Payment</span>
+                <span>{t('product.safe_payment')}</span>
               </div>
             </div>
           </div>
@@ -149,10 +196,10 @@ export default function ProductClient({ product, relatedProducts }: { product: a
         <section className="section">
           <div className={styles.benefitsGrid}>
             {[
-              { icon: "💧", title: "Deep Hydration", desc: "Locks in moisture for 24 hours." },
-              { icon: "✨", title: "Brightening", desc: "Reduces dullness and evening skin tone." },
-              { icon: "🌿", title: "Pure Ingredients", desc: "Sakura essence from nature." },
-              { icon: "⚡", title: "Fast Absorbing", desc: "Non-greasy, lightweight formula." }
+              { icon: "💧", title: t('product.benefit_hydration'), desc: t('product.benefit_hydration_desc') },
+              { icon: "✨", title: t('product.benefit_brightening'), desc: t('product.benefit_brightening_desc') },
+              { icon: "🌿", title: t('product.benefit_pure'), desc: t('product.benefit_pure_desc') },
+              { icon: "⚡", title: t('product.benefit_absorbing'), desc: t('product.benefit_absorbing_desc') }
             ].map((benefit, i) => (
               <div key={i} className={`${styles.benefitCard} nm-card`}>
                 <div className={styles.benefitIcon}>{benefit.icon}</div>
@@ -173,7 +220,7 @@ export default function ProductClient({ product, relatedProducts }: { product: a
                   className={`${styles.tabBtn} ${activeTab === tab ? styles.activeTab : ""}`}
                   onClick={() => setActiveTab(tab)}
                 >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1).replace(/([A-Z])/g, ' $1')}
+                  {t(TAB_KEYS[tab])}
                 </button>
               ))}
             </div>
@@ -181,17 +228,17 @@ export default function ProductClient({ product, relatedProducts }: { product: a
               {activeTab === "description" && (
                 <div className="animate-fade-in">
                   <p>{product.description}</p>
-                  <p>Our Japan Sakura line is crafted with care to bring the legendary beauty of Japanese blossoms to your daily routine. Each batch is tested for purity and effectiveness, ensuring a premium experience every time.</p>
+                  <p>{t('product.desc_extra')}</p>
                 </div>
               )}
               {activeTab === "ingredients" && (
                 <div className="animate-fade-in">
-                  <p>Aqua, Prunus Lannesiana Flower Extract, Ascorbic Acid, Malic Acid, Prunus Mume Fruit Extract, Citric Acid, Potassium Hydroxide, Sodium Hyaluronate.</p>
+                  <p>{product.ingredients || 'Aqua, Prunus Lannesiana Flower Extract, Ascorbic Acid, Malic Acid, Prunus Mume Fruit Extract, Citric Acid, Potassium Hydroxide, Sodium Hyaluronate.'}</p>
                 </div>
               )}
               {activeTab === "howToUse" && (
                 <div className="animate-fade-in">
-                  <p>1. Cleanse your face with Sakura Facewash.<br/>2. Apply a small amount of product to your fingertips.<br/>3. Gently massage onto skin in upward circular motions.<br/>4. Use morning and night for best results.</p>
+                  <p style={{ whiteSpace: 'pre-line' }}>{t('product.how_to_use_steps')}</p>
                 </div>
               )}
             </div>
@@ -199,29 +246,113 @@ export default function ProductClient({ product, relatedProducts }: { product: a
         </section>
 
         {/* REVIEWS SECTION */}
-        <section className="section">
-          <TestimonialSlider 
-            title={language === 'bn' ? 'গ্রাহকদের রিভিউ' : 'Customer Reviews'}
-            items={language === 'bn' ? [
-              { name: "তাহমিদ এ.", location: "ঢাকা", text: "অসাধারণ পণ্য! আমার ত্বক এখন অনেক নরম অনুভূত হয়।", initial: "T" },
-              { name: "সাদিয়া জে.", location: "চট্টগ্রাম", text: "আমি এটার হালকা সুগন্ধি খুব পছন্দ করি। খুব প্রিমিয়াম ফিল দেয়।", initial: "S" },
-              { name: "ফাহিম এস.", location: "সিলেট", text: "দ্রুত ডেলিভারি এবং আসল পণ্য। আমি অবশ্যই এটি রিকমেন্ড করছি।", initial: "F" },
-              { name: "আনিকা আর.", location: "রাজশাহী", text: "প্যাকেজিং খুবই লাক্সারি। কাউকে গিফট করার জন্য একদম উপযুক্ত।", initial: "A" },
-              { name: "রাইসা এম.", location: "ঢাকা", text: "বাংলাদেশে জাপানি স্কিনকেয়ারের জন্য সেরা। দাম অনুযায়ী মান অনেক ভালো।", initial: "R" }
-            ] : [
-              { name: "Tahmid A.", location: "Dhaka", text: "Amazing product! My skin has never felt so soft.", initial: "T" },
-              { name: "Sadiya J.", location: "Chittagong", text: "I love the subtle floral scent. Very premium feel.", initial: "S" },
-              { name: "Fahim S.", location: "Sylhet", text: "Fast delivery and authentic product. Highly recommend.", initial: "F" },
-              { name: "Anika R.", location: "Rajshahi", text: "The packaging is so luxury. Perfect for gifting.", initial: "A" },
-              { name: "Raisa M.", location: "Dhaka", text: "Best Japanese skincare in BD. Totally worth it.", initial: "R" }
-            ]}
-          />
+        <section className="section" id="reviews">
+          <h2 className="section-title">{language === 'bn' ? 'কাস্টমার রিভিউ' : 'Customer Reviews'}</h2>
+          <div className={styles.reviewsContainer}>
+            <div className={styles.reviewsList}>
+              {totalReviews > 0 ? (
+                <>
+                  {currentReviews.map((rv: any, idx: number) => (
+                    <div key={idx} className={`${styles.reviewCard} nm-card`} style={{ marginBottom: '1rem', padding: '1.5rem', textAlign: 'left' }}>
+                      <div className={styles.reviewHeader} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                        <strong style={{ color: 'var(--primary)' }}>{rv.user}</strong>
+                        <span className={styles.stars}>{"★".repeat(rv.rating)}{"☆".repeat(5 - rv.rating)}</span>
+                      </div>
+                      <p style={{ marginBottom: '0.5rem' }}>{rv.comment}</p>
+                      <small style={{ color: 'var(--text-light)' }}>{new Date(rv.createdAt || new Date()).toLocaleDateString()}</small>
+                    </div>
+                  ))}
+                  
+                  {/* Pagination Controls */}
+                  {totalPages > 1 && (
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '1rem' }}>
+                      <button 
+                        onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                        disabled={currentPage === 1}
+                        className="btn-nm"
+                        style={{ padding: '0.5rem 1rem' }}
+                      >
+                        &laquo;
+                      </button>
+                      {Array.from({ length: totalPages }).map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => handlePageChange(i + 1)}
+                          className={`btn-nm ${currentPage === i + 1 ? 'btn-nm-primary' : ''}`}
+                          style={{ padding: '0.5rem 1rem' }}
+                        >
+                          {i + 1}
+                        </button>
+                      ))}
+                      <button 
+                        onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                        disabled={currentPage === totalPages}
+                        className="btn-nm"
+                        style={{ padding: '0.5rem 1rem' }}
+                      >
+                        &raquo;
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="nm-card" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-light)' }}>
+                  {language === 'bn' ? 'এখনো কোনো রিভিউ নেই। আপনিই প্রথম হোন!' : 'No reviews yet. Be the first to review this product!'}
+                </div>
+              )}
+            </div>
+            
+            <div className={`${styles.reviewFormCard} nm-card`} style={{ padding: '2rem', textAlign: 'left' }}>
+              <h3 style={{ marginBottom: '1.5rem', fontSize: '1.2rem', color: 'var(--primary)' }}>
+                {language === 'bn' ? 'রিভিউ লিখুন' : 'Write a Review'}
+              </h3>
+              <form onSubmit={handleReviewSubmit}>
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>{language === 'bn' ? 'আপনার নাম' : 'Your Name'}</label>
+                  <input 
+                    type="text" 
+                    value={reviewForm.name} 
+                    onChange={e => setReviewForm({...reviewForm, name: e.target.value})} 
+                    required 
+                    style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-color)', color: 'var(--text-color)' }}
+                  />
+                </div>
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>{language === 'bn' ? 'রেটিং' : 'Rating'}</label>
+                  <select 
+                    value={reviewForm.rating} 
+                    onChange={e => setReviewForm({...reviewForm, rating: Number(e.target.value)})}
+                    style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-color)', color: 'var(--text-color)' }}
+                  >
+                    <option value={5}>5 - Excellent</option>
+                    <option value={4}>4 - Very Good</option>
+                    <option value={3}>3 - Average</option>
+                    <option value={2}>2 - Poor</option>
+                    <option value={1}>1 - Terrible</option>
+                  </select>
+                </div>
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>{language === 'bn' ? 'আপনার মন্তব্য' : 'Review'}</label>
+                  <textarea 
+                    rows={4} 
+                    value={reviewForm.comment} 
+                    onChange={e => setReviewForm({...reviewForm, comment: e.target.value})} 
+                    required 
+                    style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-color)', color: 'var(--text-color)', resize: 'vertical' }}
+                  />
+                </div>
+                <button type="submit" className="btn-nm btn-nm-primary" disabled={submittingReview} style={{ width: '100%' }}>
+                  {submittingReview ? (language === 'bn' ? "সাবমিট হচ্ছে..." : "Submitting...") : (language === 'bn' ? "সাবমিট করুন" : "Submit Review")}
+                </button>
+              </form>
+            </div>
+          </div>
         </section>
 
         {/* RELATED PRODUCTS */}
         {relatedProducts && relatedProducts.length > 0 && (
           <section className="section">
-            <h2 className="section-title">{language === 'bn' ? 'সংশ্লিষ্ট পণ্য' : 'Related Products'}</h2>
+            <h2 className="section-title">{t('product.related')}</h2>
             <div className={styles.relatedGrid}>
               {relatedProducts.slice(0, 4).map((rp: any) => (
                 <ProductCard key={rp._id} product={rp} />

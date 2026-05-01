@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useLanguageStore } from "@/store/languageStore";
 import styles from "./headerSearch.module.css";
 
 export default function HeaderSearch() {
@@ -14,6 +15,7 @@ export default function HeaderSearch() {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const { t } = useLanguageStore();
 
   // Debounce effect
   useEffect(() => {
@@ -71,7 +73,7 @@ export default function HeaderSearch() {
       <div className={styles.inputGroup}>
         <input
           type="text"
-          placeholder="Search products..."
+          placeholder={t('nav.search')}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -106,7 +108,7 @@ export default function HeaderSearch() {
                 <div className={styles.productInfo}>
                   <div className={styles.nameRow}>
                     <h4>{product.name}</h4>
-                    {product.stock < 10 && <span className={styles.stockLabel}>Limited</span>}
+                    {product.stock < 10 && <span className={styles.stockLabel}>{t('search.limited')}</span>}
                   </div>
                   <p>{product.category}</p>
                   <span className={styles.price}>৳ {product.price}</span>
@@ -114,7 +116,7 @@ export default function HeaderSearch() {
               </Link>
             ))
           ) : !isLoading ? (
-            <div className={styles.noResults}>No products found for &quot;{query}&quot;</div>
+            <div className={styles.noResults}>{t('search.no_results')} &quot;{query}&quot;</div>
           ) : null}
         </div>
       )}

@@ -21,7 +21,7 @@
 .imageWrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 4/5;
+  aspect-ratio: 1/1;
   background-color: var(--bg-color);
   border-radius: 12px;
   overflow: hidden;
@@ -32,10 +32,10 @@
 }
 
 .image {
-  object-fit: contain;
-  padding: 24px;
+  object-fit: cover;
   transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  filter: drop-shadow(0 10px 15px rgba(0,0,0,0.05));
+  /* Optional: if you want images with transparent backgrounds to blend nicely */
+  background-color: var(--surface); 
 }
 
 .card:hover .image {

@@ -101,6 +101,7 @@ const PAGE_SECTIONS: PageGroup[] = [
           { key: "title", label: "Promo Title", type: "text", placeholder: "e.g. Sakura 5pcs Skincare Set" },
           { key: "desc", label: "Description", type: "textarea", placeholder: "e.g. Get the complete routine..." },
           { key: "cta", label: "Button Text", type: "text", placeholder: "e.g. Shop Now" },
+          { key: "image", label: "Promo Image", type: "image" },
         ],
       },
       {

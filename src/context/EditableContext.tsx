@@ -26,15 +26,16 @@ export function EditableProvider({
   const [content, setContent] = useState<Record<string, string>>(initialContent);
   const isAdmin = session?.user?.role === "admin";
 
-  // Fetch all CMS content on load IF not provided by server
+  // Fetch CMS content client-side only if not provided by server
   useEffect(() => {
+    if (initialContent && Object.keys(initialContent).length > 0) return;
+    
+    let cancelled = false;
     async function fetchContent() {
-      if (Object.keys(initialContent).length > 0) return; // Skip if already have data
-      
       try {
         const res = await fetch("/api/admin/content");
         const data = await res.json();
-        if (data.content) {
+        if (!cancelled && data.content) {
           const map: Record<string, string> = {};
           data.content.forEach((item: any) => {
             const compositeKey = `${item.page}__${item.section}__${item.key}__${item.language || "en"}`;
@@ -47,6 +48,7 @@ export function EditableProvider({
       }
     }
     fetchContent();
+    return () => { cancelled = true; };
   }, [initialContent]);
 
   const updateContent = async (page: string, section: string, key: string, value: string, language: string) => {

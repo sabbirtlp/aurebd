@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { useLanguageStore } from "@/store/languageStore";
 import styles from "./searchOverlay.module.css";
 
 interface SearchOverlayProps {
@@ -13,6 +14,7 @@ interface SearchOverlayProps {
 export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
   const [query, setQuery] = useState("");
   const router = useRouter();
+  const { t } = useLanguageStore();
 
   useEffect(() => {
     if (isOpen) {
@@ -47,7 +49,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
           >
             <div className={styles.header}>
-              <h3>Search Aurea</h3>
+              <h3>{t('search.title')}</h3>
               <button className={styles.closeBtn} onClick={onClose}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
               </button>
@@ -57,7 +59,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
               <div className={styles.inputWrapper}>
                 <input 
                   type="text" 
-                  placeholder="What are you looking for?" 
+                  placeholder={t('search.placeholder')}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   autoFocus
@@ -70,7 +72,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
             </form>
 
             <div className={styles.suggestions}>
-              <p>Popular Searches:</p>
+              <p>{t('search.popular')}</p>
               <div className={styles.tagGroup}>
                 {["Sakura", "Serum", "Set", "Cleanser", "Sunscreen"].map(tag => (
                   <button 

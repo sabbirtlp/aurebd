@@ -1,8 +1,9 @@
 import "server-only";
 import dbConnect from "@/lib/db";
 import SiteContent from "@/models/SiteContent";
+import { unstable_cache } from "next/cache";
 
-export async function getCMSContent() {
+async function _getCMSContent() {
   try {
     await dbConnect();
     const content = await SiteContent.find({}).lean();
@@ -19,3 +20,9 @@ export async function getCMSContent() {
     return {};
   }
 }
+
+export const getCMSContent = unstable_cache(
+  _getCMSContent,
+  ["cms-content"],
+  { revalidate: 3600, tags: ['cms'] }
+);

@@ -81,11 +81,21 @@ export default function NewProductPage() {
 
             <div className={styles.formGroup}>
               <label className={styles.formLabel}>Category</label>
-              <select name="category" value={form.category} onChange={handleChange} className={styles.formInput}>
+              <input 
+                type="text" 
+                name="category" 
+                value={form.category} 
+                onChange={handleChange} 
+                className={styles.formInput} 
+                list="category-options"
+                placeholder="Type or select a category..."
+                required 
+              />
+              <datalist id="category-options">
                 {CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>{cat}</option>
+                  <option key={cat} value={cat} />
                 ))}
-              </select>
+              </datalist>
             </div>
 
             <div className={styles.formGroup}>

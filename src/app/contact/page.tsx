@@ -5,10 +5,12 @@ import styles from "./contact.module.css";
 import { toast } from "react-toastify";
 
 import Editable from "@/components/cms/Editable";
+import { useLanguageStore } from "@/store/languageStore";
 
 export default function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const { t } = useLanguageStore();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -59,10 +61,10 @@ export default function ContactPage() {
                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
                   </svg>
                 </div>
-                <h3 style={{ fontSize: "1.5rem", marginBottom: "0.5rem", color: "var(--primary)" }}>Message Sent Successfully!</h3>
-                <p style={{ color: "var(--text-light)", marginBottom: "2rem" }}>Thank you for reaching out. We will get back to you within 24 hours.</p>
+                <h3 style={{ fontSize: "1.5rem", marginBottom: "0.5rem", color: "var(--primary)" }}>{t('contact.success_title')}</h3>
+                <p style={{ color: "var(--text-light)", marginBottom: "2rem" }}>{t('contact.success_text')}</p>
                 <button className="btn-nm btn-nm-primary" onClick={() => setSuccess(false)}>
-                  Send Another Message
+                  {t('contact.send_another')}
                 </button>
               </div>
             ) : (
@@ -71,19 +73,19 @@ export default function ContactPage() {
                 <input type="hidden" name="_subject" value="Aureabd Contact Form - New Message!" />
                 
                 <div className={styles.inputField}>
-                  <label>Your Name</label>
-                  <input type="text" name="name" placeholder="Full Name" className={styles.nmInput} required disabled={loading} />
+                  <label>{t('contact.your_name')}</label>
+                  <input type="text" name="name" placeholder={t('contact.full_name')} className={styles.nmInput} required disabled={loading} />
                 </div>
                 <div className={styles.inputField}>
-                  <label>Email Address</label>
+                  <label>{t('contact.email')}</label>
                   <input type="email" name="email" placeholder="email@example.com" className={styles.nmInput} required disabled={loading} />
                 </div>
                 <div className={styles.inputField}>
-                  <label>Message</label>
-                  <textarea name="message" placeholder="How can we help you?" rows={6} className={styles.nmInput} required disabled={loading}></textarea>
+                  <label>{t('contact.message')}</label>
+                  <textarea name="message" placeholder={t('contact.message_placeholder')} rows={6} className={styles.nmInput} required disabled={loading}></textarea>
                 </div>
                 <button type="submit" className="btn-nm btn-nm-primary" style={{ width: "100%", justifyContent: "center" }} disabled={loading}>
-                  {loading ? "Sending Message..." : "Send Message"}
+                  {loading ? t('contact.sending') : t('contact.send_btn')}
                 </button>
               </form>
             )}
@@ -95,21 +97,21 @@ export default function ContactPage() {
               <div className={styles.infoItem}>
                 <span className={styles.infoIcon}>📞</span>
                 <div>
-                  <h4>Phone</h4>
+                  <h4>{t('contact.phone')}</h4>
                   <p><Editable page="contact" section="info" field="phone" defaultText="+880 1XXX-XXXXXX" /></p>
                 </div>
               </div>
               <div className={styles.infoItem}>
                 <span className={styles.infoIcon}>✉️</span>
                 <div>
-                  <h4>Email</h4>
+                  <h4>{t('contact.email_label')}</h4>
                   <p><Editable page="contact" section="info" field="email" defaultText="official.aureabd@gmail.com" /></p>
                 </div>
               </div>
               <div className={styles.infoItem}>
                 <span className={styles.infoIcon}>📍</span>
                 <div>
-                  <h4>Address</h4>
+                  <h4>{t('contact.address')}</h4>
                   <p><Editable page="contact" section="info" field="address" defaultText="Dhaka, Bangladesh" /></p>
                 </div>
               </div>

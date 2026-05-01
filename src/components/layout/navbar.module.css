@@ -19,8 +19,9 @@
 }
 
 .topBar {
-  background: var(--primary);
+  background: var(--accent);
   color: white;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   text-align: center;
   padding: var(--sp-1) 0;
   font-size: 0.75rem;
@@ -42,6 +43,12 @@
 @keyframes marquee {
   0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
 }
 
 @media (max-width: 768px) {
@@ -75,9 +82,14 @@
 .navLink {
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--text-dark);
+  color: white;
   position: relative;
   padding: 4px 0;
+  transition: opacity 0.3s ease;
+}
+
+.navLink:hover {
+  opacity: 0.8;
 }
 
 .navLink::after {
@@ -87,7 +99,7 @@
   left: 0;
   width: 0;
   height: 2px;
-  background: var(--primary);
+  background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
   transition: width 0.3s ease;
 }
 

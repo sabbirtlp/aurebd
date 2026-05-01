@@ -6,12 +6,14 @@ import Link from "next/link";
 import { useWishlistStore } from "@/store/wishlistStore";
 import { useCartStore } from "@/store/cartStore";
 import { toast } from "react-toastify";
+import { useLanguageStore } from "@/store/languageStore";
 import { useHasHydrated } from "@/hooks/useHasHydrated";
 import styles from "./wishlist.module.css";
 
 export default function WishlistPage() {
   const { items, removeItem } = useWishlistStore();
   const { addItem } = useCartStore();
+  const { t } = useLanguageStore();
   const hasHydrated = useHasHydrated();
 
   const handleAddToCart = (item: any) => {
@@ -23,7 +25,7 @@ export default function WishlistPage() {
       image: item.image,
       quantity: 1,
     });
-    toast.success(`Added ${item.name} to cart`);
+    toast.success(`${item.name} ${t('product.added_to_cart')}`);
   };
 
   useEffect(() => {
@@ -37,8 +39,8 @@ export default function WishlistPage() {
       <div className={styles.pageContainer}>
         <div className="container">
           <div className={styles.header}>
-            <h1 className={styles.title}>My Wishlist</h1>
-            <p className={styles.subtitle}>Curating your favorite skincare essentials...</p>
+            <h1 className={styles.title}>{t('wishlist.title')}</h1>
+            <p className={styles.subtitle}>{t('wishlist.curating')}</p>
           </div>
           <div className={styles.grid}>
             {[1, 2, 3].map(i => (
@@ -54,9 +56,9 @@ export default function WishlistPage() {
     <div className={`${styles.pageContainer} animate-fade-in`}>
       <div className="container">
         <div className={styles.header}>
-          <h1 className={styles.title}>My Wishlist</h1>
+          <h1 className={styles.title}>{t('wishlist.title')}</h1>
           <p className={styles.subtitle}>
-            Your favorite skincare essentials, saved beautifully in one place.
+            {t('wishlist.subtitle')}
           </p>
         </div>
 
@@ -98,7 +100,7 @@ export default function WishlistPage() {
                       onClick={() => handleAddToCart(item)}
                       disabled={item.stock <= 0}
                     >
-                      {item.stock > 0 ? "Add to Cart" : "Out of Stock"}
+                      {item.stock > 0 ? t('product.add_to_cart') : t('wishlist.out_of_stock')}
                     </button>
                   </div>
                 </div>
@@ -108,12 +110,12 @@ export default function WishlistPage() {
         ) : (
           <div className={styles.emptyState}>
             <div className={styles.emptyIcon}>🤍</div>
-            <h3 className={styles.emptyTitle}>Your wishlist is empty</h3>
+            <h3 className={styles.emptyTitle}>{t('wishlist.empty')}</h3>
             <p className={styles.emptyDesc}>
-              Discover the purest essence of Japanese skincare and save your favorites here.
+              {t('wishlist.empty_desc')}
             </p>
             <Link href="/shop" className={styles.exploreBtn}>
-              Explore Collection
+              {t('wishlist.explore')}
             </Link>
           </div>
         )}

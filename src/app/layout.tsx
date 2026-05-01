@@ -4,6 +4,7 @@ import "./globals.css";
 import Providers from "@/components/Providers";
 import ShopLayoutWrapper from '@/components/layout/ShopLayoutWrapper';
 import TopLoadingBar from "@/components/layout/TopLoadingBar";
+import ThemeWrapper from "@/components/ThemeWrapper";
 import { getCMSContent } from "@/services/cms.service";
 
 const poppins = Poppins({ 
@@ -21,8 +22,6 @@ export const metadata: Metadata = {
     apple: "/apple-icon.png",
   }
 };
-
-import ThemeWrapper from "@/components/ThemeWrapper";
 
 export default async function RootLayout({
   children,
