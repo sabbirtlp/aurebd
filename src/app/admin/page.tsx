@@ -6,18 +6,30 @@ import User from "@/models/User";
 import Link from "next/link";
 import RecentOrdersTable from "./RecentOrdersTable";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminDashboard() {
   await dbConnect();
   
-  const totalOrders = await Order.countDocuments();
-  const totalProducts = await Product.countDocuments();
-  const totalUsers = await User.countDocuments({ role: "user" });
+  // Run ALL queries in parallel instead of sequentially
+  const [
+    totalOrders,
+    totalProducts,
+    totalUsers,
+    revenueResult,
+    recentOrders,
+    pendingOrders
+  ] = await Promise.all([
+    Order.countDocuments(),
+    Product.countDocuments(),
+    User.countDocuments({ role: "user" }),
+    // Use MongoDB aggregation for revenue instead of fetching ALL orders
+    Order.aggregate([{ $group: { _id: null, total: { $sum: "$totalAmount" } } }]),
+    Order.find({}).sort({ createdAt: -1 }).limit(8).lean(),
+    Order.countDocuments({ status: "Pending" })
+  ]);
   
-  const allOrders = await Order.find({}).lean();
-  const totalRevenue = allOrders.reduce((acc, order: any) => acc + order.totalAmount, 0);
-  
-  const recentOrders = await Order.find({}).sort({ createdAt: -1 }).limit(8).lean();
-  const pendingOrders = await Order.countDocuments({ status: "Pending" });
+  const totalRevenue = revenueResult.length > 0 ? revenueResult[0].total : 0;
 
   return (
     <>
