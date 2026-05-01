@@ -27,7 +27,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="dark">
+      <head>
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            (function() {
+              try {
+                var theme = JSON.parse(localStorage.getItem('theme-storage')).state.theme;
+                if (theme) {
+                  document.documentElement.setAttribute('data-theme', theme);
+                } else {
+                  document.documentElement.setAttribute('data-theme', 'dark');
+                }
+              } catch (e) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+              }
+            })()
+          `
+        }} />
+      </head>
       <body className={poppins.variable}>
         <Providers>
           <ThemeWrapper>
