@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import styles from "../admin.module.css";
 import { Plus, Edit2, Trash2, Star, Quote, Globe, CheckCircle, X } from "lucide-react";
 import { toast } from "react-toastify";
@@ -93,7 +93,7 @@ export default function AdminTestimonialsClient() {
   };
 
   return (
-    <React.Fragment>
+    <div className="admin-testimonials-container">
       <div className={styles.pageHeader}>
         <div>
           <h2 className={styles.pageTitle}>Testimonials</h2>
@@ -291,6 +291,6 @@ export default function AdminTestimonialsClient() {
           </div>
         </div>
       )}
-    </React.Fragment>
+    </div>
   );
 }
