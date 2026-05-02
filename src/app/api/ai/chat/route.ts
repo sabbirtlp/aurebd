@@ -17,51 +17,50 @@ export async function POST(req: Request) {
     }
 
     // --- FETCH REAL KNOWLEDGE ---
-    await dbConnect();
-    
-    // 1. Get All Products for grounding
-    const products = await Product.find({ stock: { $gt: 0 } }).select('name price category slug').lean();
-    const productList = products.map(p => `- ${p.name} (Category: ${p.category}) - Price: ৳${p.price} - Link: /product/${p.slug}`).join('\n');
+    try {
+      await dbConnect();
+      
+      // 1. Get Top Products (Limit to prevent context overflow)
+      const products = await Product.find({ stock: { $gt: 0 } })
+        .sort({ updatedAt: -1 })
+        .limit(30)
+        .select('name price category slug')
+        .lean();
+      
+      const productList = products.map(p => `- ${p.name} (৳${p.price}) -> /product/${p.slug}`).join('\n');
 
-    // 2. Get EVERYTHING from CMS for site-wide knowledge
-    const cmsData = await SiteContent.find({}).lean();
-    const siteKnowledge = cmsData.reduce((acc: any, item: any) => {
-      if (!acc[item.page]) acc[item.page] = {};
-      acc[item.page][item.key] = item.value;
-      return acc;
-    }, {});
+      // 2. Get CMS Data (Optimized truncation)
+      const cmsData = await SiteContent.find({}).limit(100).lean();
+      const siteKnowledge = cmsData.reduce((acc: any, item: any) => {
+        if (!acc[item.page]) acc[item.page] = [];
+        // Only take the first 100 characters of each value to keep prompt small
+        const val = item.value.length > 150 ? item.value.substring(0, 150) + '...' : item.value;
+        acc[item.page].push(`${item.key}: ${val}`);
+        return acc;
+      }, {});
 
-    const knowledgeSummary = Object.entries(siteKnowledge).map(([page, fields]: [string, any]) => {
-      return `PAGE: ${page.toUpperCase()}\n${Object.entries(fields).map(([k, v]) => `- ${k}: ${v}`).join('\n')}`;
-    }).join('\n\n');
+      const knowledgeSummary = Object.entries(siteKnowledge).map(([page, lines]: [string, any]) => {
+        return `PAGE ${page.toUpperCase()}:\n${lines.join('\n')}`;
+      }).join('\n\n');
 
-    const systemPrompt = `You are Aurea AI, the luxury skincare concierge for AureaBD. 
-    Your tone is sophisticated, helpful, and grounded in FACTUAL information.
-    
-    CRITICAL RULES:
-    1. ONLY suggest products from the "REAL PRODUCTS" list below.
-    2. ONLY provide information found in the "SITE-WIDE KNOWLEDGE" section.
-    3. If a user asks for a page link, use the Sitemap below.
-    4. You support both English and Bangla. Respond in the language the user uses.
-    
-    SITEMAP:
-    - Home: /
-    - Shop/All Products: /shop
-    - About Us: /about
-    - Contact Us: /contact
-    - FAQ: /faq
-    - Shipping Policy: /shipping
-    - Returns & Refunds: /returns
-    - Terms of Service: /terms-of-service
-    - Privacy Policy: /privacy-policy
-    
-    REAL PRODUCTS AT AUREA BD:
-    ${productList || "No products currently in stock."}
-    
-    SITE-WIDE KNOWLEDGE:
-    ${knowledgeSummary || "Aurea BD: Premium Japanese Sakura Skincare in Bangladesh."}
-    
-    Keep responses concise but elegant. Use emojis sparingly (✨, 🌿, 🧴).`;
+      const systemPrompt = `You are Aurea AI, the luxury skincare concierge for AureaBD. 
+      Tone: Sophisticated, helpful, factual.
+      
+      CRITICAL RULES:
+      1. ONLY suggest products from the list below.
+      2. Use the Sitemap for page links.
+      3. Respond in the user's language (English/Bangla).
+      
+      SITEMAP:
+      - Home: / | Shop: /shop | About: /about | FAQ: /faq | Shipping: /shipping | Returns: /returns
+      
+      REAL PRODUCTS:
+      ${productList || "Visit our shop for latest products."}
+      
+      SITE KNOWLEDGE:
+      ${knowledgeSummary.substring(0, 4000) /* Safety truncate */}
+      
+      Keep responses concise.`;
 
     // 1. TRY GROQ (Ultra Fast Chat)
     if (groqKey) {
