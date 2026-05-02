@@ -52,64 +52,120 @@ export default function AIAssistant({ productName, category, field, existingCont
   };
 
   const fieldLabels: Record<string, string> = {
-    description: "Description",
-    ingredients: "Ingredients",
-    howToUse: "Usage Guide"
+    description: "description",
+    ingredients: "ingredients",
+    howToUse: "usage guide"
   };
 
   return (
-    <div className="w-full mb-6 animate-fade-in group">
-      <div className="flex items-center gap-3 p-1.5 px-4 rounded-xl transition-all border border-[var(--border)]" 
-           style={{ 
-             background: 'var(--bg-color)', 
-             boxShadow: 'var(--nm-inner-pressed-sm)' 
-           }}>
-        
-        {/* Pro Icon */}
-        <div className="flex items-center gap-2 pr-2 border-r border-[var(--border)] opacity-60">
-          <Sparkles className="w-4 h-4" style={{ color: 'var(--primary)' }} />
-          <span className="text-[9px] font-black uppercase tracking-widest hidden sm:block" style={{ color: 'var(--text-dark)' }}>AI</span>
+    <div style={{ marginBottom: '12px' }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        padding: '6px 6px 6px 14px',
+        borderRadius: '12px',
+        background: 'var(--bg-color)',
+        border: '1px solid var(--border)',
+        boxShadow: 'var(--nm-inner-pressed-sm)',
+        transition: 'all 0.3s ease',
+      }}>
+        {/* AI Icon */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          paddingRight: '10px',
+          borderRight: '1px solid var(--border)',
+          flexShrink: 0,
+        }}>
+          <Sparkles style={{ width: '14px', height: '14px', color: 'var(--primary)' }} />
+          <span style={{
+            fontSize: '0.6rem',
+            fontWeight: 800,
+            textTransform: 'uppercase' as const,
+            letterSpacing: '1.5px',
+            color: 'var(--primary)',
+          }}>AI</span>
         </div>
-        
-        {/* High-Contrast Input */}
+
+        {/* Input */}
         <input
           type="text"
           value={customPrompt}
           onChange={(e) => setCustomPrompt(e.target.value)}
-          placeholder={`Add custom instructions for ${fieldLabels[field].toLowerCase()}...`}
-          className="flex-1 bg-transparent py-2 text-sm outline-none border-none placeholder:text-gray-400 font-medium"
-          style={{ 
-            color: 'var(--text-dark)', 
-            fontSize: '0.85rem' 
+          placeholder={`Custom instructions for ${fieldLabels[field]}...`}
+          style={{
+            flex: 1,
+            background: 'transparent',
+            border: 'none',
+            outline: 'none',
+            padding: '8px 0',
+            fontSize: '0.82rem',
+            color: 'var(--text-dark)',
+            fontWeight: 500,
+            minWidth: 0,
           }}
         />
 
-        {/* Premium Brand Button */}
+        {/* Generate Button */}
         <button
           type="button"
           onClick={generateContent}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all rounded-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
-          style={{ 
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '8px 16px',
+            fontSize: '0.65rem',
+            fontWeight: 800,
+            textTransform: 'uppercase' as const,
+            letterSpacing: '1px',
             color: 'white',
-            background: 'var(--primary)',
-            boxShadow: 'var(--nm-outer-raised-sm)'
+            background: loading ? 'var(--text-light)' : 'var(--primary)',
+            borderRadius: '8px',
+            border: 'none',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            transition: 'all 0.2s ease',
+            boxShadow: 'var(--nm-outer-raised-sm)',
+            flexShrink: 0,
+            opacity: loading ? 0.7 : 1,
           }}
         >
           {loading ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            <Loader2 style={{ width: '12px', height: '12px', animation: 'spin 1s linear infinite' }} />
           ) : (
-            <Wand2 className="w-3.5 h-3.5" />
+            <Wand2 style={{ width: '12px', height: '12px' }} />
           )}
-          {loading ? "WIRTING..." : "GENERATE"}
+          {loading ? "Writing..." : "Generate"}
         </button>
       </div>
-      
-      {/* Dynamic Feedback Footer */}
-      <div className="mt-1.5 px-2 flex items-center gap-2 opacity-40">
-        <div className="w-1 h-1 rounded-full bg-[var(--primary)] animate-pulse"></div>
-        <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-light)' }}>
-          {loading ? 'Aurea Intelligence is crafting your content...' : 'Aurea AI Assistant v2.1 • High Precision Mode'}
+
+      {/* Status Line */}
+      <div style={{
+        marginTop: '6px',
+        paddingLeft: '4px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+        opacity: 0.35,
+      }}>
+        <div style={{
+          width: '4px',
+          height: '4px',
+          borderRadius: '50%',
+          background: loading ? '#4ade80' : 'var(--primary)',
+          animation: loading ? 'pulse 1.5s infinite' : 'none',
+        }}></div>
+        <span style={{
+          fontSize: '0.6rem',
+          fontWeight: 700,
+          textTransform: 'uppercase' as const,
+          letterSpacing: '1px',
+          color: 'var(--text-light)',
+        }}>
+          {loading ? 'Generating content...' : 'Aurea AI • Ready'}
         </span>
       </div>
     </div>
