@@ -11,6 +11,7 @@
   box-shadow: var(--nm-outer-raised-sm);
   border: 1px solid var(--border);
   height: 100%;
+  width: 100%;
 }
 
 .card:hover {
