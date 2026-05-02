@@ -1,32 +1,45 @@
 .uploadContainer {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-2);
+  gap: 1rem;
   width: 100%;
 }
 
 .label {
-  font-weight: 500;
+  font-weight: 800;
   color: var(--text-dark);
-  font-size: 0.95rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.7;
 }
 
 .dropZone {
-  border: 2px dashed var(--border);
-  border-radius: 16px;
-  background-color: var(--bg-color);
-  padding: var(--sp-6) var(--sp-4);
+  border: 1px dashed var(--border);
+  border-radius: 20px;
+  background-color: rgba(203, 163, 148, 0.02);
+  padding: 3rem 1.5rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
-.dropZone:hover, .dropZone.dragging {
+.dropZone:hover {
   border-color: var(--primary);
-  background-color: rgba(203, 163, 148, 0.05);
+  background-color: rgba(203, 163, 148, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(203, 163, 148, 0.1);
+}
+
+.dragging {
+  border-color: var(--primary);
+  background-color: rgba(203, 163, 148, 0.12);
+  transform: scale(1.02);
 }
 
 .fileInput {
@@ -37,53 +50,53 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--sp-2);
+  gap: 0.75rem;
   color: var(--text-light);
 }
 
 .uploadIcon {
   color: var(--primary);
-  margin-bottom: var(--sp-1);
+  opacity: 0.6;
 }
 
 .dropText {
-  font-size: 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
   color: var(--text-dark);
 }
 
 .dropText strong {
   color: var(--primary);
+  font-weight: 800;
 }
 
 .dropHint {
-  font-size: 0.85rem;
-  opacity: 0.7;
-}
-
-.spinner {
-  animation: spin 1s linear infinite;
-  color: var(--primary);
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  font-size: 0.75rem;
+  opacity: 0.6;
 }
 
 .previewGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: var(--sp-3);
-  margin-top: var(--sp-2);
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 .previewItem {
   position: relative;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
   box-shadow: var(--nm-outer-raised-sm);
   aspect-ratio: 1;
-  background-color: #fff;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
+
+.previewItem:hover {
+  transform: scale(1.05);
+  box-shadow: var(--nm-outer-raised);
+  z-index: 5;
 }
 
 .imageWrapper {
@@ -94,23 +107,36 @@
 
 .removeBtn {
   position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 24px;
-  height: 24px;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
-  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   z-index: 10;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 .removeBtn:hover {
-  background: #e74c3c;
-  transform: scale(1.1);
+  background: #ef4444;
+  color: white;
+  transform: scale(1.1) rotate(90deg);
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+  color: var(--primary);
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }

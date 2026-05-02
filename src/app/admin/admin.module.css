@@ -169,7 +169,22 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  padding: 1rem 0;
+}
+
+.stickyHeader {
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  background: var(--bg-color);
+  padding: 1rem 2rem;
+  margin: -2rem -3rem 2rem -3rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(10px);
 }
 
 .pageTitle {
@@ -605,61 +620,158 @@
   box-shadow: var(--nm-outer-raised-sm);
 }
 
-@media (max-width: 768px) {
-  .adminContainer {
-    flex-direction: column;
-  }
+/* --- PREMIUM EDIT LAYOUT --- */
+.editLayout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 2rem;
+  align-items: start;
+}
 
-  .mobileHeader {
-    display: flex;
-  }
+.mainCol {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
 
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 200;
-    transform: translateX(-100%);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 8px 0 24px rgba(0,0,0,0.15);
-  }
+.sideCol {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  position: sticky;
+  top: 100px;
+}
 
-  .sidebar.open {
-    transform: translateX(0);
-  }
+.sectionCard {
+  background: var(--bg-color);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: var(--nm-outer-raised-sm);
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
 
-  .closeSidebarBtn {
-    background: var(--bg-color);
-    border: 1px solid var(--border);
-    box-shadow: var(--nm-outer-raised-sm);
-    color: var(--primary);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-  }
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
 
-  .mainContent {
-    max-width: 100vw;
-    margin-left: 0;
-    padding: 1.5rem 1rem;
-  }
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0;
+}
 
-  .statsGrid {
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.fieldFull {
+  grid-column: 1 / -1;
+}
+
+/* Premium Switches */
+.switchLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: rgba(203, 163, 148, 0.03);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.switchLabel:hover {
+  background: rgba(203, 163, 148, 0.08);
+  border-color: var(--primary);
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--nm-dark);
+  transition: .4s;
+  border-radius: 34px;
+  box-shadow: var(--nm-inner-pressed-sm);
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+input:checked + .slider {
+  background-color: var(--primary);
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* AI Highlighted Section */
+.aiSection {
+  border: 1px solid var(--primary);
+  background: linear-gradient(135deg, rgba(203, 163, 148, 0.05) 0%, transparent 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.aiSection::before {
+  content: 'AI ASSISTED';
+  position: absolute;
+  top: 10px;
+  right: -30px;
+  background: var(--primary);
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 900;
+  padding: 4px 40px;
+  transform: rotate(45deg);
+  letter-spacing: 1px;
+}
+
+@media (max-width: 1200px) {
+  .editLayout {
     grid-template-columns: 1fr;
-    gap: 1rem;
   }
-
-  .pageHeader {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .formGrid {
-    grid-template-columns: 1fr;
+  .sideCol {
+    position: static;
   }
 }
+

@@ -1,10 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Link from "next/link";
-import Image from "next/image";
+import { 
+  ArrowLeft, 
+  Save, 
+  Tag, 
+  Package, 
+  Image as ImageIcon, 
+  Sparkles, 
+  Eye, 
+  CheckCircle2,
+  AlertCircle
+} from "lucide-react";
 import styles from "../../../admin.module.css";
 import ImageUpload from "@/components/admin/ImageUpload";
 import RichTextEditor from "@/components/admin/RichTextEditor";
@@ -36,21 +46,16 @@ export default function EditProductClient({ product }: { product: any }) {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setIsSaved(false); // Reactivate button on change
-  };
-
-  const handleImageChange = (newImage: string) => {
-    setForm({ ...form, image: newImage });
     setIsSaved(false);
   };
 
-  const handleGalleryChange = (newGallery: string[]) => {
-    setForm({ ...form, gallery: newGallery });
+  const handleToggle = (name: string) => {
+    setForm({ ...form, [name]: !((form as any)[name]) });
     setIsSaved(false);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setLoading(true);
 
     try {
@@ -61,7 +66,7 @@ export default function EditProductClient({ product }: { product: any }) {
       });
 
       if (res.ok) {
-        toast.success("Product updated successfully! ✅");
+        toast.success("Product changes synchronized! ✅");
         setIsSaved(true);
         router.refresh();
       } else {
@@ -76,177 +81,98 @@ export default function EditProductClient({ product }: { product: any }) {
   };
 
   return (
-    <>
-      <div className={styles.pageHeader}>
-        <div>
-          <h2 className={styles.pageTitle}>Edit Product</h2>
-          <p className={styles.pageSubtitle}>Editing: {product.name}</p>
+    <div className="pb-20">
+      {/* Sticky Premium Header */}
+      <div className={styles.stickyHeader}>
+        <div className="flex items-center gap-4">
+          <Link href="/admin/products" className={styles.btnEdit} style={{ borderRadius: '50%', width: '40px', height: '40px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ArrowLeft className="w-4 h-4" />
+          </Link>
+          <div>
+            <h2 className={styles.pageTitle} style={{ fontSize: '1.5rem' }}>{form.name || "Untitled Product"}</h2>
+            <div className="flex items-center gap-2 mt-1">
+              <span className={styles.badgePending} style={{ fontSize: '0.6rem' }}>Product ID: {product._id}</span>
+              {isSaved && <span className="text-green-500 text-[10px] font-bold flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> All changes saved</span>}
+            </div>
+          </div>
         </div>
-        <Link href="/admin/products" className={styles.btnSecondary}>
-          ← Back to Products
-        </Link>
+
+        <div className="flex items-center gap-3">
+          <Link href={`/product/${product._id}`} target="_blank" className={styles.btnSecondary}>
+            <Eye className="w-4 h-4" />
+            Preview
+          </Link>
+          <button 
+            onClick={() => handleSubmit()}
+            className={styles.btnPrimary} 
+            disabled={loading || isSaved}
+            style={{ background: isSaved ? 'var(--nm-dark)' : 'var(--primary)', color: isSaved ? 'var(--text-light)' : 'white' }}
+          >
+            {loading ? <span className="animate-pulse">Saving...</span> : isSaved ? "Changes Saved" : <><Save className="w-4 h-4" /> Save Changes</>}
+          </button>
+        </div>
       </div>
 
-      <div className={styles.panel}>
-        <form onSubmit={handleSubmit}>
-          <div className={styles.formGrid}>
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Product Name</label>
-              <input type="text" name="name" value={form.name} onChange={handleChange} className={styles.formInput} required />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Category</label>
-              <input 
-                type="text" 
-                name="category" 
-                value={form.category} 
-                onChange={handleChange} 
-                className={styles.formInput} 
-                list="category-options"
-                placeholder="Type or select a category..."
-                required 
-              />
-              <datalist id="category-options">
-                {CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat} />
-                ))}
-              </datalist>
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Price (৳)</label>
-              <input type="number" name="price" value={form.price} onChange={handleChange} className={styles.formInput} required />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Discount Price (৳) - Optional</label>
-              <input type="number" name="discountPrice" value={form.discountPrice} onChange={handleChange} className={styles.formInput} />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Stock Quantity</label>
-              <input type="number" name="stock" value={form.stock} onChange={handleChange} className={styles.formInput} required />
-            </div>
-
-            <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
-              <ImageUpload 
-                label="Primary Product Image"
-                images={form.image ? [form.image] : []}
-                onChange={(images) => handleImageChange(images[0] || "")}
-                maxImages={1}
-              />
-            </div>
-
-            <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
-              <ImageUpload 
-                label="Product Image Gallery"
-                images={form.gallery}
-                onChange={handleGalleryChange}
-                maxImages={10}
-              />
-            </div>
-
-            <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
-              <div style={{ display: "flex", gap: "2rem", padding: "1rem", background: "rgba(0,0,0,0.05)", borderRadius: "12px" }}>
-                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
-                  <input 
-                    type="checkbox" 
-                    name="isNewArrival" 
-                    checked={form.isNewArrival} 
-                    onChange={(e) => {
-                      setForm({ ...form, isNewArrival: e.target.checked });
-                      setIsSaved(false);
-                    }}
-                    style={{ width: "1.2rem", height: "1.2rem" }}
-                  />
-                  <span>Mark as New Arrival</span>
-                </label>
-                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
-                  <input 
-                    type="checkbox" 
-                    name="isBestSeller" 
-                    checked={form.isBestSeller} 
-                    onChange={(e) => {
-                      setForm({ ...form, isBestSeller: e.target.checked });
-                      setIsSaved(false);
-                    }}
-                    style={{ width: "1.2rem", height: "1.2rem" }}
-                  />
-                  <span>Best Seller</span>
-                </label>
-                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
-                  <input 
-                    type="checkbox" 
-                    name="isSpecialOffer" 
-                    checked={form.isSpecialOffer} 
-                    onChange={(e) => {
-                      setForm({ ...form, isSpecialOffer: e.target.checked });
-                      setIsSaved(false);
-                    }}
-                    style={{ width: "1.2rem", height: "1.2rem" }}
-                  />
-                  <span>Special Offer</span>
-                </label>
-                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
-                  <input 
-                    type="checkbox" 
-                    name="isGiftSet" 
-                    checked={form.isGiftSet} 
-                    onChange={(e) => {
-                      setForm({ ...form, isGiftSet: e.target.checked });
-                      setIsSaved(false);
-                    }}
-                    style={{ width: "1.2rem", height: "1.2rem" }}
-                  />
-                  <span>Gift Set</span>
-                </label>
+      <div className={styles.editLayout}>
+        {/* Main Content Column */}
+        <div className={styles.mainCol}>
+          
+          {/* General Information */}
+          <section className={styles.sectionCard}>
+            <div className={styles.sectionHeader}>
+              <div className="flex items-center gap-2">
+                <Tag className="w-4 h-4 text-[var(--primary)]" />
+                <h3 className={styles.sectionTitle}>Product Information</h3>
               </div>
             </div>
-
-            <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
-              <AIAssistant 
-                productName={form.name} 
-                category={form.category} 
-                field="ingredients" 
-                onGenerate={(text) => {
-                  setForm({ ...form, ingredients: text });
-                  setIsSaved(false);
-                }} 
-              />
-              <RichTextEditor 
-                label="Ingredients"
-                value={form.ingredients}
-                onChange={(val) => {
-                  setForm({ ...form, ingredients: val });
-                  setIsSaved(false);
-                }}
-              />
+            <div className={styles.fieldGrid}>
+              <div className={styles.fieldFull}>
+                <label className={styles.contentFieldLabel}>Formal Product Name</label>
+                <input type="text" name="name" value={form.name} onChange={handleChange} className={styles.formInput} placeholder="e.g. Japan Sakura Radiance Serum" required />
+              </div>
+              <div>
+                <label className={styles.contentFieldLabel}>Product Category</label>
+                <input 
+                  type="text" 
+                  name="category" 
+                  value={form.category} 
+                  onChange={handleChange} 
+                  className={styles.formInput} 
+                  list="category-options"
+                  placeholder="Select category..."
+                  required 
+                />
+                <datalist id="category-options">
+                  {CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat} />
+                  ))}
+                </datalist>
+              </div>
+              <div>
+                <label className={styles.contentFieldLabel}>Inventory Status</label>
+                <div className="relative">
+                  <Package className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-40" />
+                  <input type="number" name="stock" value={form.stock} onChange={handleChange} className={styles.formInput} style={{ paddingLeft: '2.5rem' }} placeholder="0" required />
+                </div>
+              </div>
             </div>
+          </section>
 
-            <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
-              <AIAssistant 
-                productName={form.name} 
-                category={form.category} 
-                field="howToUse" 
-                onGenerate={(text) => {
-                  setForm({ ...form, howToUse: text });
-                  setIsSaved(false);
-                }} 
-              />
-              <RichTextEditor 
-                label="How To Use"
-                value={form.howToUse}
-                onChange={(val) => {
-                  setForm({ ...form, howToUse: val });
-                  setIsSaved(false);
-                }}
-              />
+          {/* Marketing & Description (AI ASSISTED) */}
+          <section className={`${styles.sectionCard} ${styles.aiSection}`}>
+            <div className={styles.sectionHeader}>
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[var(--primary)]" />
+                <h3 className={styles.sectionTitle}>Merchandising Content</h3>
+              </div>
             </div>
-
-            <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "0.5rem" }}>
-                <label className={styles.formLabel} style={{ marginBottom: 0 }}>Short Description</label>
+            
+            <div className="flex flex-col gap-8">
+              {/* Short Description */}
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <label className={styles.contentFieldLabel}>Hook / Short Description</label>
+                </div>
                 <AIAssistant 
                   productName={form.name} 
                   category={form.category} 
@@ -257,20 +183,63 @@ export default function EditProductClient({ product }: { product: any }) {
                     setIsSaved(false);
                   }} 
                 />
+                <textarea 
+                  name="shortDescription" 
+                  value={form.shortDescription} 
+                  onChange={handleChange} 
+                  className={styles.formInput} 
+                  rows={2} 
+                  placeholder="A catchy 2-sentence summary for the product header..."
+                />
               </div>
-              <textarea 
-                name="shortDescription" 
-                value={form.shortDescription} 
-                onChange={handleChange} 
-                className={styles.formInput} 
-                rows={2} 
-                style={{ resize: "vertical" }} 
-              />
-            </div>
 
-            <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "0.5rem" }}>
-                <label className={styles.formLabel} style={{ marginBottom: 0 }}>Description</label>
+              {/* Ingredients */}
+              <div>
+                <label className={styles.contentFieldLabel}>Active Ingredients</label>
+                <AIAssistant 
+                  productName={form.name} 
+                  category={form.category} 
+                  field="ingredients" 
+                  onGenerate={(text) => {
+                    setForm({ ...form, ingredients: text });
+                    setIsSaved(false);
+                  }} 
+                />
+                <RichTextEditor 
+                  label=""
+                  value={form.ingredients}
+                  onChange={(val) => {
+                    setForm({ ...form, ingredients: val });
+                    setIsSaved(false);
+                  }}
+                />
+              </div>
+
+              {/* Usage */}
+              <div>
+                <label className={styles.contentFieldLabel}>Application Guide</label>
+                <AIAssistant 
+                  productName={form.name} 
+                  category={form.category} 
+                  field="howToUse" 
+                  onGenerate={(text) => {
+                    setForm({ ...form, howToUse: text });
+                    setIsSaved(false);
+                  }} 
+                />
+                <RichTextEditor 
+                  label=""
+                  value={form.howToUse}
+                  onChange={(val) => {
+                    setForm({ ...form, howToUse: val });
+                    setIsSaved(false);
+                  }}
+                />
+              </div>
+
+              {/* Main Description */}
+              <div>
+                <label className={styles.contentFieldLabel}>Full Detailed Description</label>
                 <AIAssistant 
                   productName={form.name} 
                   category={form.category} 
@@ -280,24 +249,109 @@ export default function EditProductClient({ product }: { product: any }) {
                     setIsSaved(false);
                   }} 
                 />
+                <textarea name="description" value={form.description} onChange={handleChange} className={styles.formInput} rows={6} placeholder="Describe the science and benefits of this product..." required />
               </div>
-              <textarea name="description" value={form.description} onChange={handleChange} className={styles.formInput} rows={4} required style={{ resize: "vertical" }} />
             </div>
-          </div>
+          </section>
+        </div>
 
-          <div className={styles.formActions}>
-            <Link href="/admin/products" className={styles.btnSecondary}>Back to List</Link>
-            <button 
-              type="submit" 
-              className={styles.btnPrimary} 
-              disabled={loading || isSaved}
-              style={{ minWidth: "140px" }}
-            >
-              {loading ? "Saving..." : isSaved ? "Saved! ✅" : "Save Changes"}
-            </button>
+        {/* Sidebar Column */}
+        <div className={styles.sideCol}>
+          
+          {/* Pricing Card */}
+          <section className={styles.sectionCard}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.sectionTitle}>Pricing (৳)</h3>
+            </div>
+            <div className="flex flex-col gap-4">
+              <div>
+                <label className={styles.contentFieldLabel}>Regular Price</label>
+                <input type="number" name="price" value={form.price} onChange={handleChange} className={styles.formInput} required />
+              </div>
+              <div>
+                <label className={styles.contentFieldLabel}>Discounted Price</label>
+                <input type="number" name="discountPrice" value={form.discountPrice} onChange={handleChange} className={styles.formInput} />
+                <p className="text-[10px] mt-1 opacity-50">Leave empty if no active discount.</p>
+              </div>
+            </div>
+          </section>
+
+          {/* Product Media */}
+          <section className={styles.sectionCard}>
+            <div className={styles.sectionHeader}>
+              <div className="flex items-center gap-2">
+                <ImageIcon className="w-4 h-4 text-[var(--primary)]" />
+                <h3 className={styles.sectionTitle}>Product Media</h3>
+              </div>
+            </div>
+            <div className="flex flex-col gap-6">
+              <ImageUpload 
+                label="Primary Visual"
+                images={form.image ? [form.image] : []}
+                onChange={(images) => {
+                  setForm({ ...form, image: images[0] || "" });
+                  setIsSaved(false);
+                }}
+                maxImages={1}
+              />
+              <div className="border-t border-[var(--border)] pt-4">
+                <ImageUpload 
+                  label="Gallery Collection"
+                  images={form.gallery}
+                  onChange={(images) => {
+                    setForm({ ...form, gallery: images });
+                    setIsSaved(false);
+                  }}
+                  maxImages={10}
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* Organization & Visibility */}
+          <section className={styles.sectionCard}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.sectionTitle}>Organization</h3>
+            </div>
+            <div className="flex flex-col gap-3">
+              <label className={styles.switchLabel}>
+                <span className="text-xs font-bold opacity-80">New Arrival</span>
+                <div className={styles.switch}>
+                  <input type="checkbox" checked={form.isNewArrival} onChange={() => handleToggle('isNewArrival')} />
+                  <span className={styles.slider}></span>
+                </div>
+              </label>
+              <label className={styles.switchLabel}>
+                <span className="text-xs font-bold opacity-80">Best Seller</span>
+                <div className={styles.switch}>
+                  <input type="checkbox" checked={form.isBestSeller} onChange={() => handleToggle('isBestSeller')} />
+                  <span className={styles.slider}></span>
+                </div>
+              </label>
+              <label className={styles.switchLabel}>
+                <span className="text-xs font-bold opacity-80">Special Offer</span>
+                <div className={styles.switch}>
+                  <input type="checkbox" checked={form.isSpecialOffer} onChange={() => handleToggle('isSpecialOffer')} />
+                  <span className={styles.slider}></span>
+                </div>
+              </label>
+              <label className={styles.switchLabel}>
+                <span className="text-xs font-bold opacity-80">Gift Set</span>
+                <div className={styles.switch}>
+                  <input type="checkbox" checked={form.isGiftSet} onChange={() => handleToggle('isGiftSet')} />
+                  <span className={styles.slider}></span>
+                </div>
+              </label>
+            </div>
+          </section>
+
+          {/* Danger Zone */}
+          <div className="mt-4 px-2 flex items-start gap-2 opacity-40 hover:opacity-100 transition-opacity">
+            <AlertCircle className="w-4 h-4 text-red-500 mt-0.5" />
+            <p className="text-[10px] leading-tight">Deletion of this product is permanent and will remove it from all active orders and collections.</p>
           </div>
-        </form>
+        </div>
       </div>
-    </>
+    </div>
   );
 }
