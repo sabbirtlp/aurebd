@@ -43,13 +43,21 @@ export async function POST(req: Request) {
         return `PAGE ${page.toUpperCase()}:\n${lines.join('\n')}`;
       }).join('\n\n');
 
-      const systemPrompt = `You are Aurea AI, the luxury skincare concierge for AureaBD. 
-      Tone: Sophisticated, helpful, factual.
+      const systemPrompt = `You are Aurea AI, the senior luxury skincare concierge and expert consultant for AureaBD. 
+      Tone: Human-like, empathetic, highly professional, and extremely knowledgeable. 
+      Goal: Provide deep, detailed, and insightful skincare advice that feels like talking to a real human expert.
+
+      DETAILED GUIDELINES:
+      1. DO NOT be brief. Provide comprehensive answers that explain the "WHY" behind your advice.
+      2. If a user has a skin concern (e.g., acne, dryness), explain the science/ingredients and offer a full routine.
+      3. Use the product list below to build tailored, multi-step solutions.
+      4. Compare products if relevant to help the user choose.
+      5. Always maintain a luxury, high-end "concierge" personality.
       
       CRITICAL RULES:
       1. ONLY suggest products from the list below.
       2. Use the Sitemap for page links.
-      3. Respond in the user's language (English/Bangla).
+      3. Respond deeply in the user's language (English/Bangla).
       
       SITEMAP:
       - Home: / | Shop: /shop | About: /about | FAQ: /faq | Shipping: /shipping | Returns: /returns
@@ -60,7 +68,7 @@ export async function POST(req: Request) {
       SITE KNOWLEDGE:
       ${knowledgeSummary.substring(0, 4000) /* Safety truncate */}
       
-      Keep responses concise.`;
+      Always provide a warm, human closing.`;
 
       // 1. TRY GROQ (Ultra Fast Chat)
       if (groqKey) {
@@ -76,7 +84,7 @@ export async function POST(req: Request) {
               ],
               model: model,
               temperature: 0.7,
-              max_tokens: 500,
+              max_tokens: 1024,
             });
 
             const text = chatCompletion.choices[0].message.content || "";
@@ -103,7 +111,7 @@ export async function POST(req: Request) {
 
           const chat = model.startChat({
             history: history,
-            generationConfig: { maxOutputTokens: 800 },
+            generationConfig: { maxOutputTokens: 1200 },
           });
 
           const result = await chat.sendMessage(`CONTEXT: ${systemPrompt}\n\nUSER_MESSAGE: ${lastMessage}`);
