@@ -61,11 +61,8 @@ export async function POST(req: Request) {
       const groqModels = ["llama-3.3-70b-versatile", "llama-3.1-70b-versatile", "llama3-70b-8192"];
       
       const prompt = `
-        ### REAL-TIME BROWSING DATA (MOST ACCURATE)
-        ${browsingData ? `FACTUAL CONTENT FROM LINK: "${browsingData}"` : 'No external link provided.'}
-
-        ### SOURCE OF TRUTH (REFERENCE)
-        ${existingContent ? `USE THIS AS SECONDARY SOURCE: "${existingContent}"` : ''}
+        ### REAL-TIME BROWSING DATA
+        ${browsingData ? `FACTUAL CONTENT: "${browsingData}"` : 'No external link.'}
 
         ### USER INSTRUCTIONS
         ${customPrompt ? `FOLLOW THESE: "${customPrompt}"` : 'Follow luxury tone.'}
@@ -75,8 +72,14 @@ export async function POST(req: Request) {
         Category: ${category}
         Target Field: ${field}
 
+        ### BANGLA WRITING RULES (IF OUTPUT IS BANGLA):
+        1. NO LITERAL TRANSLATIONS: Do not use "জৈব মহাকর্য" for "organic masterpiece". Use natural phrases like "ত্বকের অসাধারণ যত্ন".
+        2. NO ROBOTIC TERMS: Avoid dictionary-literal terms like "ফর্ম এবং সমতল". Use "ত্বক টানটান ও মসৃণ করে".
+        3. TONE: Professional, sophisticated, and natural (যেমন একজন প্রফেশনাল কপিরাইটার লেখেন).
+        4. FLOW: The text must flow naturally like native Bangladeshi advertising.
+
         ### REQUIREMENTS
-        - Style: Professional luxury skincare brand tone (Elegant, Sophisticated).
+        - Style: Professional luxury skincare brand tone.
         - Output: ONLY the generated text for ${field}.
         ${field === 'description' ? '- Format: A single elegant paragraph.' : ''}
         ${field === 'ingredients' ? '- Format: An HTML <ul> list.' : ''}
@@ -88,11 +91,11 @@ export async function POST(req: Request) {
           const groq = new OpenAI({ apiKey: groqKey, baseURL: "https://api.groq.com/openai/v1" });
           const chatCompletion = await groq.chat.completions.create({
             messages: [
-              { role: "system", content: "You are an AI Content Specialist for Aurea BD. You write high-end, luxury skincare copy and extract facts from provided web content." },
+              { role: "system", content: "You are a Native Bangladeshi Luxury Copywriter for Aurea BD. You write elegant, natural, and non-robotic content in both English and Bangla. You avoid literal translations and prioritize professional marketing flow." },
               { role: "user", content: prompt }
             ],
             model: model,
-            temperature: 0.5,
+            temperature: 0.6,
             max_tokens: 1500,
           });
 
