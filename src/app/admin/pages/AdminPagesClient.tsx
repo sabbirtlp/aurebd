@@ -133,6 +133,7 @@ const PAGE_SECTIONS: PageGroup[] = [
           { key: "title", label: "Story Title", type: "text", placeholder: "e.g. Bridging Science and Nature" },
           { key: "paragraph1", label: "Paragraph 1", type: "textarea", placeholder: "e.g. Aurea BD was founded with..." },
           { key: "paragraph2", label: "Paragraph 2", type: "textarea", placeholder: "e.g. Today, we continue to..." },
+          { key: "image", label: "Story Image", type: "image" },
         ],
       },
       {
