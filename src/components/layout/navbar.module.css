@@ -13,7 +13,8 @@
 
 .header.scrolled {
   top: 0;
-  box-shadow: var(--nm-outer-raised-sm); /* Add a beautiful neumorphic drop shadow when scrolling */
+  box-shadow: var(--nm-outer-raised-sm);
+  /* Add a beautiful neumorphic drop shadow when scrolling */
   background: var(--bg-color);
   opacity: 1;
 }
@@ -41,8 +42,13 @@
 }
 
 @keyframes marquee {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
 }
 
 @keyframes shine {
@@ -55,7 +61,8 @@
   .topBarContent {
     animation: marquee 15s linear infinite;
     display: inline-block;
-    padding-left: 10%; /* small buffer */
+    padding-left: 10%;
+    /* small buffer */
   }
 }
 
@@ -366,30 +373,39 @@
 }
 
 @media (max-width: 992px) {
-  .desktopNav, .searchForm, .desktopActions {
+
+  .desktopNav,
+  .searchForm,
+  .desktopActions {
     display: none;
   }
+
   .mobileActions {
     display: flex;
     align-items: center;
     gap: 8px;
     margin-right: 4px;
   }
+
   .actions {
     gap: 8px;
   }
+
   .menuBtn {
     margin-left: 0;
   }
+
   .langToggle,
   .themeToggle {
     padding: 6px 10px;
     font-size: 0.75rem;
     min-width: 40px;
   }
+
   .navMain {
     height: 70px;
   }
+
   .logoWrapper img {
     width: 90px !important;
     height: auto !important;
@@ -567,6 +583,7 @@
     gap: var(--sp-6);
     padding: var(--sp-6);
   }
+
   .featuredImg {
     max-width: 180px;
   }
