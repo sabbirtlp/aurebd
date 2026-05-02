@@ -163,7 +163,9 @@
 .priceRow {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
+  width: 100%;
+  margin-top: 0.5rem;
 }
 
 .priceContainer {
