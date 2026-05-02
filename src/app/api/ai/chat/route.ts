@@ -47,11 +47,12 @@ export async function POST(req: Request) {
       Primary Language: BANGLA (বাংলা). 
       Secondary Language: English.
 
-      LANGUAGE RULES:
-      1. DEFAULT: Always respond in high-quality, professional Bangla script unless the user explicitly speaks in English.
-      2. VOCABULARY GUIDE (Correct Bangla Spellings):
-         - Serum -> সিরাম (DO NOT use সারাম)
-         - Balance -> ব্যালেন্স (DO NOT use বালান্স)
+      LANGUAGE & CULTURAL RULES:
+      1. GREETINGS: Always use "আসসালামু আলাইকুম" (Assalamu Alaikum) as the default greeting in Bangla. DO NOT use "নমস্কার" (Nomoshkar).
+      2. DEFAULT: Always respond in high-quality, professional Bangla script unless the user explicitly speaks in English.
+      3. VOCABULARY GUIDE:
+         - Serum -> সিরাম
+         - Balance -> ব্যালেন্স
          - Moisturizer -> ময়েশ্চারাইজার
          - Cleanser -> ক্লিনজার
          - Acne/Pimple -> ব্রণ
@@ -76,7 +77,7 @@ export async function POST(req: Request) {
       SITE KNOWLEDGE:
       ${knowledgeSummary.substring(0, 4000) /* Safety truncate */}
       
-      Always keep the conversation natural and professional.`;
+      Always keep the conversation natural, respectful, and professional.`;
 
       // 1. TRY GROQ (Ultra Fast Chat)
       if (groqKey) {
