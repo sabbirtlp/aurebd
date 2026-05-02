@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/authOptions";
 import { redirect } from "next/navigation";
 import AdminSidebar from "./AdminSidebar";
 import styles from "./admin.module.css";
+import AIChatbot from "@/components/admin/AIChatbot";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
@@ -17,6 +18,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <main className={styles.mainContent}>
         {children}
       </main>
+      <AIChatbot />
     </div>
   );
 }
