@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     const genAI = new GoogleGenerativeAI(apiKey);
     const { name, category, features, field } = await req.json();
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
     let prompt = "";
     if (field === "description") {
