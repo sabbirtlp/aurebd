@@ -30,7 +30,11 @@ export async function POST(req: Request) {
 
     await dbConnect();
     const body = await req.json();
-    const { name, description, price, image, gallery, stock, category } = body;
+    const { 
+      name, description, price, discountPrice, image, gallery, 
+      stock, category, isNewArrival, isBestSeller, isSpecialOffer, 
+      isGiftSet, ingredients, howToUse 
+    } = body;
 
     // Auto-generate slug from name
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -40,11 +44,23 @@ export async function POST(req: Request) {
       slug,
       description,
       price: Number(price),
+      discountPrice: discountPrice ? Number(discountPrice) : undefined,
       image,
       gallery: gallery || [],
       stock: Number(stock),
       category,
+      isNewArrival: Boolean(isNewArrival),
+      isBestSeller: Boolean(isBestSeller),
+      isSpecialOffer: Boolean(isSpecialOffer),
+      isGiftSet: Boolean(isGiftSet),
+      ingredients,
+      howToUse,
     });
+
+    // Revalidate cache
+    const { revalidateTag } = await import("next/cache");
+    revalidateTag("all-products");
+    revalidateTag("featured-products");
 
     return NextResponse.json({ success: true, product }, { status: 201 });
   } catch (error: any) {

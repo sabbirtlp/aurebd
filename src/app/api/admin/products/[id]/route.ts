@@ -33,19 +33,43 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
     await dbConnect();
     const body = await req.json();
-    const { name, description, price, image, gallery, stock, category } = body;
+    const { 
+      name, description, price, discountPrice, image, gallery, 
+      stock, category, isNewArrival, isBestSeller, isSpecialOffer, 
+      isGiftSet, ingredients, howToUse 
+    } = body;
 
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
     const product = await Product.findByIdAndUpdate(
       params.id,
-      { name, slug, description, price: Number(price), image, gallery: gallery || [], stock: Number(stock), category },
+      { 
+        name, slug, description, 
+        price: Number(price), 
+        discountPrice: discountPrice ? Number(discountPrice) : null,
+        image, 
+        gallery: gallery || [], 
+        stock: Number(stock), 
+        category,
+        isNewArrival: Boolean(isNewArrival),
+        isBestSeller: Boolean(isBestSeller),
+        isSpecialOffer: Boolean(isSpecialOffer),
+        isGiftSet: Boolean(isGiftSet),
+        ingredients,
+        howToUse,
+      },
       { new: true }
     );
 
     if (!product) {
       return NextResponse.json({ message: "Product not found" }, { status: 404 });
     }
+
+    // Revalidate cache
+    const { revalidateTag } = await import("next/cache");
+    revalidateTag("all-products");
+    revalidateTag("featured-products");
+    revalidateTag("product-by-slug");
 
     return NextResponse.json({ success: true, product });
   } catch (error: any) {
@@ -66,6 +90,11 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     if (!product) {
       return NextResponse.json({ message: "Product not found" }, { status: 404 });
     }
+
+    // Revalidate cache
+    const { revalidateTag } = await import("next/cache");
+    revalidateTag("all-products");
+    revalidateTag("featured-products");
 
     return NextResponse.json({ success: true, message: "Product deleted" });
   } catch (error) {
