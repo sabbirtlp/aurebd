@@ -18,10 +18,10 @@ const CATEGORIES = [
 export default function ShopClient({ initialProducts }: { initialProducts: any[] }) {
   const { t, language } = useLanguageStore();
   const [mounted, setMounted] = useState(false);
-  const [activeCategory, setActiveCategory] = useState("All");
+  const searchParams = useSearchParams();
+  const [activeCategory, setActiveCategory] = useState(searchParams.get('category') || "All");
   const [sortBy, setSortBy] = useState("newest");
   const [priceRange, setPriceRange] = useState(15000);
-  const searchParams = useSearchParams();
   const [currentPage, setCurrentPage] = useState(Number(searchParams.get('page')) || 1);
   const itemsPerPage = 6;
 
@@ -72,6 +72,9 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
   useEffect(() => {
     const page = Number(searchParams.get('page')) || 1;
     setCurrentPage(page);
+    
+    const cat = searchParams.get('category') || "All";
+    setActiveCategory(cat);
   }, [searchParams]);
 
   // Reset to page 1 when filters change (except price)
@@ -79,6 +82,11 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
     setCurrentPage(1);
     const params = new URLSearchParams(window.location.search);
     params.set('page', '1');
+    if (activeCategory !== "All") {
+      params.set('category', activeCategory);
+    } else {
+      params.delete('category');
+    }
     window.history.pushState({}, '', `${window.location.pathname}?${params.toString()}`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [activeCategory, sortBy]);
@@ -154,9 +162,16 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
               ))
             ) : (
               <div className={styles.noResults}>
-                <h3>{language === 'bn' ? 'কোনো পণ্য পাওয়া যায়নি' : 'No products found'}</h3>
-                <p style={{ color: 'var(--text-light)', marginBottom: 'var(--sp-4)' }}>
-                  {language === 'bn' ? 'আপনার ফিল্টার পরিবর্তন করে আবার চেষ্টা করুন।' : 'Try adjusting your filters to discover more.'}
+                <div className={styles.noResultsIcon}>✨</div>
+                <h3>{language === 'bn' ? 'দুঃখিত, কোনো পণ্য পাওয়া যায়নি' : 'Oops! No products found'}</h3>
+                <p>
+                  {language === 'bn' ? 
+                    `আমরা '${activeCategory}' ক্যাটাগরিতে এই মুহূর্তে কোনো পণ্য খুঁজে পাইনি।` : 
+                    `We couldn't find any products in the '${activeCategory}' category right now.`
+                  }
+                </p>
+                <p className={styles.noResultsHint}>
+                  {language === 'bn' ? 'অন্যান্য ক্যাটাগরি বা ফিল্টার ব্যবহার করে দেখুন।' : 'Try exploring our other categories or resetting your filters.'}
                 </p>
                 <button 
                   className="btn-nm" 
@@ -165,7 +180,7 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
                     setPriceRange(15000);
                   }}
                 >
-                  {language === 'bn' ? 'ফিল্টার পরিষ্কার করুন' : 'Clear Filters'}
+                  {language === 'bn' ? 'সব পণ্য দেখুন' : 'Browse All Products'}
                 </button>
               </div>
             )}
