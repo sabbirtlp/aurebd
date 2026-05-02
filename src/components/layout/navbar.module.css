@@ -421,9 +421,9 @@
 
 .megaMenu {
   position: absolute;
-  top: calc(100% - 10px);
+  top: 100%;
   left: 50%;
-  transform: translateX(-50%) translateY(20px);
+  transform: translateX(-50%) translateY(10px);
   width: 95vw;
   max-width: 1200px;
   background: var(--bg-color);
@@ -436,7 +436,7 @@
   gap: var(--sp-8);
   opacity: 0;
   visibility: hidden;
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 1000;
   pointer-events: none;
 }
@@ -458,7 +458,7 @@
 .navItem:hover .megaMenu {
   opacity: 1;
   visibility: visible;
-  transform: translateX(-50%) translateY(10px);
+  transform: translateX(-50%) translateY(-2px);
   pointer-events: all;
 }
 
