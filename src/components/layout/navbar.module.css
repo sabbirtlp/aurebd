@@ -488,86 +488,73 @@
 }
 
 .megaFeatured {
-  flex: 1.8;
+  flex: 2.5;
   display: flex;
-  gap: var(--sp-8);
+  flex-direction: row;
+  gap: var(--sp-10);
   align-items: center;
-  padding-left: var(--sp-8);
+  padding-left: var(--sp-12);
   border-left: 1px solid rgba(203, 163, 148, 0.15);
   transition: all 0.3s ease;
 }
 
 .featuredImg {
   position: relative;
-  width: 240px;
-  height: 240px;
-  border-radius: 12px;
+  width: 300px; /* Large Image as requested */
+  height: 300px;
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--nm-outer-raised-sm);
+  flex-shrink: 0;
   background: white;
 }
 
 .megaFeatured:hover .featuredImg {
-  transform: scale(1.02) translateY(-5px);
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12);
+  transform: scale(1.03);
+  box-shadow: var(--nm-outer-raised);
 }
 
 .featuredInfo {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
   align-items: flex-start;
-  flex: 1;
 }
 
-.featuredBadge {
-  font-size: 0.65rem;
-  font-weight: 600;
-  color: var(--primary);
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  border-bottom: 1px solid var(--primary);
-  padding-bottom: 2px;
-  margin-bottom: 4px;
+/* Hide badge and desc to focus on Title & Button as requested */
+.featuredBadge,
+.featuredInfo p {
+  display: none;
 }
 
 .featuredInfo h4 {
-  font-size: 1.5rem;
+  font-size: 1.75rem; /* Bigger title */
   color: var(--text-dark);
-  font-weight: 300;
+  font-weight: 700;
   margin: 0;
-  line-height: 1.1;
-  letter-spacing: -0.5px;
-}
-
-.featuredInfo p {
-  font-size: 0.95rem;
-  color: var(--text-light);
-  line-height: 1.6;
-  margin: 0;
-  max-width: 220px;
-  font-weight: 300;
+  line-height: 1.2;
+  max-width: 250px;
 }
 
 .featuredBtn {
-  font-size: 0.85rem;
+  font-size: 1rem;
   font-weight: 700;
-  color: var(--text-dark) !important;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+  color: white !important;
+  background: var(--primary);
+  padding: 14px 32px;
+  border-radius: 16px;
   text-decoration: none;
-  margin-top: 12px;
-  padding-bottom: 6px;
-  border-bottom: 2px solid var(--primary);
+  box-shadow: var(--nm-outer-raised-sm);
   transition: all 0.3s ease;
-  width: fit-content;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .featuredBtn:hover {
-  color: var(--primary) !important;
-  padding-left: 10px;
-  border-bottom-color: var(--accent);
+  background: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: var(--nm-outer-raised);
 }
