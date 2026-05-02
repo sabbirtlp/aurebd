@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { 
       name, description, shortDescription, price, discountPrice, image, gallery, 
-      stock, category, isNewArrival, isBestSeller, isSpecialOffer, 
+      stock, category, categories, isNewArrival, isBestSeller, isSpecialOffer, 
       isGiftSet, ingredients, howToUse 
     } = body;
 
@@ -50,6 +50,7 @@ export async function POST(req: Request) {
       gallery: gallery || [],
       stock: Number(stock),
       category,
+      categories: categories || [],
       isNewArrival: Boolean(isNewArrival),
       isBestSeller: Boolean(isBestSeller),
       isSpecialOffer: Boolean(isSpecialOffer),

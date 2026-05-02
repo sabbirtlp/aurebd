@@ -20,12 +20,13 @@ import ImageUpload from "@/components/admin/ImageUpload";
 import RichTextEditor from "@/components/admin/RichTextEditor";
 import AIAssistant from "@/components/admin/AIAssistant";
 
-const CATEGORIES = ["Sets", "Serums", "Creams", "Sunscreen", "Cleansers", "Radiance Serums", "Hydration Creams", "UV Protection", "Skin Essentials"];
+// Static categories removed in favor of DB categories
 
 export default function EditProductClient({ product }: { product: any }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [dbCategories, setDbCategories] = useState<{name: string, slug: string}[]>([]);
   const [form, setForm] = useState({
     name: product.name || "",
     description: product.description || "",
@@ -33,7 +34,8 @@ export default function EditProductClient({ product }: { product: any }) {
     image: product.image || "",
     gallery: product.gallery || [],
     stock: product.stock?.toString() || "",
-    category: product.category || CATEGORIES[0],
+    category: product.category || "",
+    categories: product.categories || [product.category].filter(Boolean) || [],
     isNewArrival: product.isNewArrival || false,
     isBestSeller: product.isBestSeller || false,
     isSpecialOffer: product.isSpecialOffer || false,
@@ -44,8 +46,32 @@ export default function EditProductClient({ product }: { product: any }) {
     shortDescription: product.shortDescription || "",
   });
 
+  useEffect(() => {
+    fetch("/api/admin/categories")
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setDbCategories(data);
+        }
+      });
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setIsSaved(false);
+  };
+
+  const handleCategoryToggle = (slug: string) => {
+    const newCategories = form.categories.includes(slug)
+      ? form.categories.filter(c => c !== slug)
+      : [...form.categories, slug];
+    
+    setForm({ 
+      ...form, 
+      categories: newCategories,
+      category: newCategories[0] || "", // First one as main
+      isSaved: false
+    } as any);
     setIsSaved(false);
   };
 
@@ -131,23 +157,25 @@ export default function EditProductClient({ product }: { product: any }) {
                 <label className={styles.contentFieldLabel}>Formal Product Name</label>
                 <input type="text" name="name" value={form.name} onChange={handleChange} className={styles.formInput} placeholder="e.g. Japan Sakura Radiance Serum" required />
               </div>
-              <div>
-                <label className={styles.contentFieldLabel}>Product Category</label>
-                <input 
-                  type="text" 
-                  name="category" 
-                  value={form.category} 
-                  onChange={handleChange} 
-                  className={styles.formInput} 
-                  list="category-options"
-                  placeholder="Select category..."
-                  required 
-                />
-                <datalist id="category-options">
-                  {CATEGORIES.map((cat) => (
-                    <option key={cat} value={cat} />
-                  ))}
-                </datalist>
+              <div className={styles.fieldFull}>
+                <label className={styles.contentFieldLabel}>Select Categories</label>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", padding: "1rem", background: "rgba(255,255,255,0.05)", borderRadius: "8px", border: "1px solid var(--border)" }}>
+                  {dbCategories.length === 0 ? (
+                    <p className="text-sm opacity-50">No categories found.</p>
+                  ) : (
+                    dbCategories.map((cat) => (
+                      <label key={cat.slug} style={{ display: "flex", alignItems: "center", gap: "0.4rem", cursor: "pointer", background: form.categories.includes(cat.slug) ? "var(--primary-dark)" : "transparent", padding: "2px 6px", borderRadius: "4px", border: "1px solid var(--border)" }}>
+                        <input 
+                          type="checkbox" 
+                          checked={form.categories.includes(cat.slug)} 
+                          onChange={() => handleCategoryToggle(cat.slug)}
+                          style={{ width: "0.9rem", height: "0.9rem" }}
+                        />
+                        <span className="text-xs">{cat.name}</span>
+                      </label>
+                    ))
+                  )}
+                </div>
               </div>
               <div>
                 <label className={styles.contentFieldLabel}>Inventory Status</label>

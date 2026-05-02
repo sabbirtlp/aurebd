@@ -15,7 +15,8 @@ const ProductSchema = new mongoose.Schema({
   image: { type: String, required: true },
   gallery: [{ type: String }],
   stock: { type: Number, required: true, default: 0 },
-  category: { type: String, required: true },
+  category: { type: String, required: true }, // Main category slug
+  categories: [{ type: String }], // Array of category slugs
   ingredients: { type: String },
   howToUse: { type: String },
   isNewArrival: { type: Boolean, default: false },

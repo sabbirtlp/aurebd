@@ -6,21 +6,26 @@ import ProductCard from '@/features/products/ProductCard';
 import styles from "./shop.module.css";
 import { useLanguageStore } from "@/store/languageStore";
 
-const CATEGORIES = [
-  { en: "All", bn: "সব পণ্য" },
-  { en: "Skin Essentials", bn: "স্কিন এসেনশিয়ালস" },
-  { en: "Radiance Serums", bn: "রেডিয়েন্স সিরাম" },
-  { en: "Hydration Creams", bn: "হাইড্রেশন ক্রিম" },
-  { en: "UV Protection", bn: "ইউভি প্রোটেকশন" },
-  { en: "Cleansers", bn: "ক্লিনজার" },
-  { en: "Special Offers", bn: "অফারসমূহ" }
-];
-
 export default function ShopClient({ initialProducts }: { initialProducts: any[] }) {
   const { t, language } = useLanguageStore();
   const [mounted, setMounted] = useState(false);
+  const [dbCategories, setDbCategories] = useState<{en: string, bn: string}[]>([]);
   const searchParams = useSearchParams();
   const [activeCategory, setActiveCategory] = useState(searchParams.get('category') || "All");
+  
+  useEffect(() => {
+    fetch("/api/admin/categories")
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          const cats = [
+            { en: "All", bn: "সব পণ্য" },
+            ...data.map((c: any) => ({ en: c.name, bn: c.name })) // BN translation could be added to DB later
+          ];
+          setDbCategories(cats);
+        }
+      });
+  }, []);
   const [sortBy, setSortBy] = useState("newest");
   const [priceRange, setPriceRange] = useState(15000);
   const [currentPage, setCurrentPage] = useState(Number(searchParams.get('page')) || 1);
@@ -58,8 +63,11 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
         "UV Protection": ["Sunscreen"],
         "Cleansers": ["Cleansers"]
       };
-      const dbCategories = categoryMap[activeCategory] || [activeCategory];
-      result = result.filter(p => dbCategories.includes(p.category));
+      const targetCategories = categoryMap[activeCategory] || [activeCategory];
+      result = result.filter(p => 
+        targetCategories.includes(p.category) || 
+        (p.categories && p.categories.some((c: string) => targetCategories.includes(c)))
+      );
     }
 
     // Filter by Price
@@ -124,7 +132,7 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
             
             {/* Categories */}
             <div className={styles.categoryGroup}>
-              {CATEGORIES.map(cat => (
+              {dbCategories.map(cat => (
                 <button 
                   key={cat.en}
                   className={`${styles.categoryPill} ${activeCategory === cat.en ? styles.active : ""}`}
