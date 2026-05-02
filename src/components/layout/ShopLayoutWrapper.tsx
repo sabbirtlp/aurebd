@@ -5,6 +5,7 @@ import CartSidebar from '@/features/cart/CartSidebar';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import MobileBottomBar from '@/components/layout/MobileBottomBar';
+import AIChatbot from '@/components/shop/AIChatbot';
 
 export default function ShopLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -21,6 +22,7 @@ export default function ShopLayoutWrapper({ children }: { children: React.ReactN
       <main className="main-content">
         {children}
       </main>
+      <AIChatbot />
       <MobileBottomBar />
       <Footer />
     </>
