@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import styles from "./page.module.css";
 import ProductCard from '@/features/products/ProductCard';
 import { useLanguageStore } from "@/store/languageStore";
+import { useEditable } from "@/context/EditableContext";
 import Editable from "@/components/cms/Editable";
 import EditableImage from "@/components/cms/EditableImage";
 
@@ -19,6 +20,7 @@ const MotionLink = motion(Link);
 
 export default function HomeClient({ products }: { products: any[] }) {
   const { t, language } = useLanguageStore();
+  const { content } = useEditable();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -40,6 +42,10 @@ export default function HomeClient({ products }: { products: any[] }) {
     { name: tr('cat.uv'), raw: "UV Protection", img: "/images/sakura-sunscreen.webp" },
     { name: tr('cat.essentials'), raw: "Skin Essentials", img: "/images/sakura-set.webp" }
   ];
+
+  const getCmsLink = (key: string, defaultLink: string) => {
+    return content[`home__categories__${key}__${language}`] || defaultLink;
+  };
 
   return (
     <main className={styles.homePage}>
@@ -145,7 +151,7 @@ export default function HomeClient({ products }: { products: any[] }) {
           </header>
           <div className={styles.categoryGrid}>
             <MotionLink 
-              href="/shop?category=Radiance%20Serums" 
+              href={getCmsLink("serums_url", "/shop?category=Radiance%20Serums")} 
               className={styles.categoryCard}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -158,7 +164,7 @@ export default function HomeClient({ products }: { products: any[] }) {
               <h3 className={styles.categoryName}><Editable page="home" section="categories" field="serums" defaultText={tr('cat.serums')} /></h3>
             </MotionLink>
             <MotionLink 
-              href="/shop?category=Hydration%20Creams" 
+              href={getCmsLink("creams_url", "/shop?category=Hydration%20Creams")} 
               className={styles.categoryCard}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -171,7 +177,7 @@ export default function HomeClient({ products }: { products: any[] }) {
               <h3 className={styles.categoryName}><Editable page="home" section="categories" field="creams" defaultText={tr('cat.creams')} /></h3>
             </MotionLink>
             <MotionLink 
-              href="/shop?category=UV%20Protection" 
+              href={getCmsLink("uv_url", "/shop?category=UV%20Protection")} 
               className={styles.categoryCard}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -184,7 +190,7 @@ export default function HomeClient({ products }: { products: any[] }) {
               <h3 className={styles.categoryName}><Editable page="home" section="categories" field="uv" defaultText={tr('cat.uv')} /></h3>
             </MotionLink>
             <MotionLink 
-              href="/shop?category=Skin%20Essentials" 
+              href={getCmsLink("essentials_url", "/shop?category=Skin%20Essentials")} 
               className={styles.categoryCard}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
