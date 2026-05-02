@@ -21,7 +21,10 @@ export async function POST(req: Request) {
     const genAI = new GoogleGenerativeAI(apiKey);
     const { name, category, features, field } = await req.json();
 
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    // Fallback logic for models
+    const modelNames = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro", "gemini-1.0-pro"];
+    let text = "";
+    let lastError = null;
 
     let prompt = "";
     if (field === "description") {
@@ -41,9 +44,23 @@ export async function POST(req: Request) {
       Format: A numbered list of 3-5 steps. Use HTML <ol> and <li> tags.`;
     }
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    for (const modelName of modelNames) {
+      try {
+        const model = genAI.getGenerativeModel({ model: modelName });
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        text = response.text();
+        if (text) break; // Success!
+      } catch (err: any) {
+        console.warn(`Model ${modelName} failed, trying next...`, err.message);
+        lastError = err;
+        continue;
+      }
+    }
+
+    if (!text) {
+      throw lastError || new Error("All AI models failed to respond");
+    }
 
     return NextResponse.json({ text });
   } catch (error: any) {

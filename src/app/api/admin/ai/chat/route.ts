@@ -29,23 +29,41 @@ export async function POST(req: Request) {
     const genAI = new GoogleGenerativeAI(apiKey);
     const { messages } = await req.json();
 
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-
-    const chat = model.startChat({
-      history: [
-        { role: "user", parts: [{ text: SYSTEM_CONTEXT }] },
-        { role: "model", parts: [{ text: "Understood. I am the Aurea BD Admin Assistant, ready to help manage the luxury skincare platform." }] },
-        ...messages.slice(0, -1).map((m: any) => ({
-          role: m.role === "user" ? "user" : "model",
-          parts: [{ text: m.content }]
-        }))
-      ],
-    });
+    // Fallback logic for models
+    const modelNames = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro", "gemini-1.0-pro"];
+    let text = "";
+    let lastError = null;
 
     const lastMessage = messages[messages.length - 1].content;
-    const result = await chat.sendMessage(lastMessage);
-    const response = await result.response;
-    const text = response.text();
+
+    for (const modelName of modelNames) {
+      try {
+        const model = genAI.getGenerativeModel({ model: modelName });
+        const chat = model.startChat({
+          history: [
+            { role: "user", parts: [{ text: SYSTEM_CONTEXT }] },
+            { role: "model", parts: [{ text: "Understood. I am the Aurea BD Admin Assistant, ready to help manage the luxury skincare platform." }] },
+            ...messages.slice(0, -1).map((m: any) => ({
+              role: m.role === "user" ? "user" : "model",
+              parts: [{ text: m.content }]
+            }))
+          ],
+        });
+
+        const result = await chat.sendMessage(lastMessage);
+        const response = await result.response;
+        text = response.text();
+        if (text) break;
+      } catch (err: any) {
+        console.warn(`Model ${modelName} failed in chat, trying next...`, err.message);
+        lastError = err;
+        continue;
+      }
+    }
+
+    if (!text) {
+      throw lastError || new Error("All AI chat models failed to respond");
+    }
 
     return NextResponse.json({ text });
   } catch (error: any) {
