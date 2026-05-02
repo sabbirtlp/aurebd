@@ -23,29 +23,34 @@ export async function POST(req: Request) {
 
     // 1. TRY GROQ FIRST (Completely Free & Ultra Fast)
     if (groqKey) {
-      try {
-        const groq = new OpenAI({
-          apiKey: groqKey,
-          baseURL: "https://api.groq.com/openai/v1",
-        });
+      const groqModels = ["llama-3.1-70b-versatile", "llama-3.1-8b-instant", "llama3-70b-8192", "llama3-8b-8192"];
+      
+      const prompt = `Generate a luxury skincare product ${field} for a product named "${name}" in the "${category}" category. 
+      Key features: ${features}. 
+      Field: ${field}.
+      ${field === 'description' ? 'Format: A single elegant paragraph (100-150 words).' : ''}
+      ${field === 'ingredients' ? 'Format: An HTML <ul> list of premium ingredients.' : ''}
+      ${field === 'howToUse' ? 'Format: An HTML <ol> list of 3-5 steps.' : ''}
+      Style: Professional, luxury skincare brand tone.`;
 
-        const prompt = `Generate a luxury skincare product ${field} for a product named "${name}" in the "${category}" category. 
-        Key features: ${features}. 
-        Field: ${field}.
-        ${field === 'description' ? 'Format: A single elegant paragraph (100-150 words).' : ''}
-        ${field === 'ingredients' ? 'Format: An HTML <ul> list of premium ingredients.' : ''}
-        ${field === 'howToUse' ? 'Format: An HTML <ol> list of 3-5 steps.' : ''}
-        Style: Professional, luxury skincare brand tone.`;
+      for (const model of groqModels) {
+        try {
+          const groq = new OpenAI({
+            apiKey: groqKey,
+            baseURL: "https://api.groq.com/openai/v1",
+          });
 
-        const chatCompletion = await groq.chat.completions.create({
-          messages: [{ role: "user", content: prompt }],
-          model: "llama3-70b-8192",
-        });
+          const chatCompletion = await groq.chat.completions.create({
+            messages: [{ role: "user", content: prompt }],
+            model: model,
+          });
 
-        text = chatCompletion.choices[0].message.content || "";
-        if (text) return NextResponse.json({ text });
-      } catch (err: any) {
-        console.warn("Groq failed, trying Gemini...", err.message);
+          text = chatCompletion.choices[0].message.content || "";
+          if (text) return NextResponse.json({ text });
+        } catch (err: any) {
+          console.warn(`Groq model ${model} failed:`, err.message);
+          continue;
+        }
       }
     }
 

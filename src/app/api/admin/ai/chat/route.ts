@@ -29,27 +29,32 @@ export async function POST(req: Request) {
 
     // 1. TRY GROQ FIRST
     if (groqKey) {
-      try {
-        const groq = new OpenAI({
-          apiKey: groqKey,
-          baseURL: "https://api.groq.com/openai/v1",
-        });
+      const groqModels = ["llama-3.1-70b-versatile", "llama-3.1-8b-instant", "llama3-70b-8192", "llama3-8b-8192"];
+      
+      for (const model of groqModels) {
+        try {
+          const groq = new OpenAI({
+            apiKey: groqKey,
+            baseURL: "https://api.groq.com/openai/v1",
+          });
 
-        const chatCompletion = await groq.chat.completions.create({
-          messages: [
-            { role: "system", content: SYSTEM_CONTEXT },
-            ...messages.map((m: any) => ({
-              role: m.role === "ai" ? "assistant" : "user",
-              content: m.content
-            }))
-          ],
-          model: "llama3-70b-8192",
-        });
+          const chatCompletion = await groq.chat.completions.create({
+            messages: [
+              { role: "system", content: SYSTEM_CONTEXT },
+              ...messages.map((m: any) => ({
+                role: m.role === "ai" ? "assistant" : "user",
+                content: m.content
+              }))
+            ],
+            model: model,
+          });
 
-        text = chatCompletion.choices[0].message.content || "";
-        if (text) return NextResponse.json({ text });
-      } catch (err: any) {
-        console.warn("Groq chat failed...", err.message);
+          text = chatCompletion.choices[0].message.content || "";
+          if (text) return NextResponse.json({ text });
+        } catch (err: any) {
+          console.warn(`Groq chat model ${model} failed:`, err.message);
+          continue;
+        }
       }
     }
 
