@@ -24,6 +24,8 @@ export default function EditProductClient({ product }: { product: any }) {
     category: product.category || CATEGORIES[0],
     isNewArrival: product.isNewArrival || false,
     isBestSeller: product.isBestSeller || false,
+    isSpecialOffer: product.isSpecialOffer || false,
+    isGiftSet: product.isGiftSet || false,
     discountPrice: product.discountPrice?.toString() || "",
   });
 
@@ -166,7 +168,33 @@ export default function EditProductClient({ product }: { product: any }) {
                     }}
                     style={{ width: "1.2rem", height: "1.2rem" }}
                   />
-                  <span>Mark as Best Seller</span>
+                  <span>Best Seller</span>
+                </label>
+                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
+                  <input 
+                    type="checkbox" 
+                    name="isSpecialOffer" 
+                    checked={form.isSpecialOffer} 
+                    onChange={(e) => {
+                      setForm({ ...form, isSpecialOffer: e.target.checked });
+                      setIsSaved(false);
+                    }}
+                    style={{ width: "1.2rem", height: "1.2rem" }}
+                  />
+                  <span>Special Offer</span>
+                </label>
+                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
+                  <input 
+                    type="checkbox" 
+                    name="isGiftSet" 
+                    checked={form.isGiftSet} 
+                    onChange={(e) => {
+                      setForm({ ...form, isGiftSet: e.target.checked });
+                      setIsSaved(false);
+                    }}
+                    style={{ width: "1.2rem", height: "1.2rem" }}
+                  />
+                  <span>Gift Set</span>
                 </label>
               </div>
             </div>

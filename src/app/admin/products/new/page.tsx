@@ -22,6 +22,8 @@ export default function NewProductPage() {
     category: CATEGORIES[0],
     isNewArrival: false,
     isBestSeller: false,
+    isSpecialOffer: false,
+    isGiftSet: false,
     discountPrice: "",
   });
 
@@ -177,7 +179,27 @@ export default function NewProductPage() {
                     onChange={(e) => setForm({ ...form, isBestSeller: e.target.checked })}
                     style={{ width: "1.2rem", height: "1.2rem" }}
                   />
-                  <span>Mark as Best Seller</span>
+                  <span>Best Seller</span>
+                </label>
+                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
+                  <input 
+                    type="checkbox" 
+                    name="isSpecialOffer" 
+                    checked={form.isSpecialOffer} 
+                    onChange={(e) => setForm({ ...form, isSpecialOffer: e.target.checked })}
+                    style={{ width: "1.2rem", height: "1.2rem" }}
+                  />
+                  <span>Special Offer</span>
+                </label>
+                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
+                  <input 
+                    type="checkbox" 
+                    name="isGiftSet" 
+                    checked={form.isGiftSet} 
+                    onChange={(e) => setForm({ ...form, isGiftSet: e.target.checked })}
+                    style={{ width: "1.2rem", height: "1.2rem" }}
+                  />
+                  <span>Gift Set</span>
                 </label>
               </div>
             </div>

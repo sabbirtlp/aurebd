@@ -46,9 +46,9 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
     } else if (activeCategory === "Best Sellers") {
       result = result.filter(p => p.isBestSeller || (p.soldCount && p.soldCount >= 20));
     } else if (activeCategory === "Special Offers" || activeCategory === "Offers") {
-      result = result.filter(p => p.discountPrice && p.discountPrice < p.price);
+      result = result.filter(p => p.isSpecialOffer || (p.discountPrice && p.discountPrice < p.price));
     } else if (activeCategory === "Gift Sets") {
-      result = result.filter(p => p.category === "Sets");
+      result = result.filter(p => p.isGiftSet || p.category === "Sets");
     } else if (activeCategory !== "All") {
       const categoryMap: any = {
         "Skin Essentials": ["Sets"],

@@ -17,6 +17,8 @@ const ProductSchema = new mongoose.Schema({
   category: { type: String, required: true },
   isNewArrival: { type: Boolean, default: false },
   isBestSeller: { type: Boolean, default: false },
+  isSpecialOffer: { type: Boolean, default: false },
+  isGiftSet: { type: Boolean, default: false },
   discountPrice: { type: Number },
   soldCount: { type: Number, default: 0 },
   reviews: [ReviewSchema],
