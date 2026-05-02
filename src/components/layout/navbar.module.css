@@ -458,8 +458,19 @@
 .navItem:hover .megaMenu {
   opacity: 1;
   visibility: visible;
-  transform: translateX(-50%) translateY(-2px);
+  transform: translateX(-50%) translateY(-5px);
   pointer-events: all;
+}
+
+.megaMenu::before {
+  content: '';
+  position: absolute;
+  top: -30px; /* Bridge the gap to the header */
+  left: 0;
+  width: 100%;
+  height: 30px;
+  background: transparent;
+  z-index: -1;
 }
 
 .megaLinksCol {
