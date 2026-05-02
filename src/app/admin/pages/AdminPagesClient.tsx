@@ -325,7 +325,7 @@ export default function AdminPagesClient({ initialContent }: { initialContent: a
           <h2 className={styles.pageTitle}>Pages (CMS)</h2>
           <p className={styles.pageSubtitle}>Edit your website content directly</p>
         </div>
-        <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+        <div className={styles.pageHeaderActions}>
           {/* Professional Language Toggle */}
           <div className={styles.tabGroup} style={{ marginBottom: 0, padding: "4px" }}>
             <button
