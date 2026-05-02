@@ -1,6 +1,9 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
+import dbConnect from "@/lib/db";
+import Product from "@/models/Product";
+import SiteContent from "@/models/SiteContent";
 
 export async function POST(req: Request) {
   try {
@@ -13,14 +16,33 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "AI Assistant is resting..." }, { status: 500 });
     }
 
+    // --- FETCH REAL KNOWLEDGE ---
+    await dbConnect();
+    
+    // 1. Get All Products for grounding
+    const products = await Product.find({ stock: { $gt: 0 } }).select('name price category slug').lean();
+    const productList = products.map(p => `- ${p.name} (Category: ${p.category}) - Price: ৳${p.price} - Link: /product/${p.slug}`).join('\n');
+
+    // 2. Get Contact Details from CMS
+    const contactInfo = await SiteContent.find({ section: 'contact' }).lean();
+    const contactDetails = contactInfo.map((c: any) => `${c.key}: ${c.value}`).join(', ') || "Email: info@aureabd.com, Phone: +880123456789";
+
     const systemPrompt = `You are Aurea AI, the luxury skincare concierge for AureaBD. 
-    Your tone is sophisticated, helpful, and knowledgeable about skincare.
-    You assist customers with:
-    - Product recommendations.
-    - Ingredients and their benefits.
-    - Skincare routines (morning/night).
-    - Order tracking (general info).
-    - Brand values: Luxury, Organic, Effective.
+    Your tone is sophisticated, helpful, and grounded in FACTUAL information.
+    
+    CRITICAL RULES:
+    1. ONLY suggest products from the "REAL PRODUCTS" list below. NEVER make up product names.
+    2. ONLY provide contact info from the "OFFICIAL CONTACT" section below.
+    3. If a user asks for a link, use the relative path provided in the product list (e.g., /product/slug).
+    4. You support both English and Bangla. Respond in the language the user uses.
+    
+    REAL PRODUCTS AT AUREA BD:
+    ${productList || "Loading products..."}
+    
+    OFFICIAL CONTACT & STORE INFO:
+    ${contactDetails}
+    
+    Brand Story: Aurea BD offers premium Japanese Sakura skincare. We focus on natural glow, hydration, and organic ingredients. Our collections include Laikou Sakura sets, serums, and creams.
     
     Keep responses concise but elegant. Use emojis sparingly (✨, 🌿, 🧴).`;
 
