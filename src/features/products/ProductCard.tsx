@@ -14,6 +14,7 @@ interface ProductCardProps {
     _id: string;
     name: string;
     price: number;
+    discountPrice?: number;
     image: string;
     stock: number;
     category?: string;
@@ -35,7 +36,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     addItem({
       id: product._id,
       name: product.name,
-      price: product.price,
+      price: product.discountPrice || product.price,
       image: product.image,
       quantity: 1,
     });
@@ -55,7 +56,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       addWishlistItem({
         id: product._id,
         name: product.name,
-        price: product.price,
+        price: product.discountPrice || product.price,
         image: product.image,
         category: product.category || "Aurea BD",
         stock: product.stock,
@@ -123,7 +124,14 @@ export default function ProductCard({ product }: ProductCardProps) {
           {product.name}
         </Link>
         <div className={styles.priceRow}>
-          <span className={styles.price}>৳ {product.price.toLocaleString()}</span>
+          {product.discountPrice ? (
+            <div className={styles.priceContainer}>
+              <span className={styles.discountPrice}>৳ {product.discountPrice.toLocaleString()}</span>
+              <span className={styles.originalPrice}>৳ {product.price.toLocaleString()}</span>
+            </div>
+          ) : (
+            <span className={styles.price}>৳ {product.price.toLocaleString()}</span>
+          )}
           <div className={styles.rating}>
             <span className={styles.ratingStar}>★</span> 4.8
           </div>

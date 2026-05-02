@@ -71,7 +71,7 @@ export default function ProductClient({ product, relatedProducts }: { product: a
     addItem({
       id: product._id,
       name: product.name,
-      price: product.price,
+      price: product.discountPrice || product.price,
       image: product.image,
       quantity: quantity
     });
@@ -154,7 +154,14 @@ export default function ProductClient({ product, relatedProducts }: { product: a
                 </div>
                 <span className={styles.reviewCount}>({product.numReviews || 0} {t('product.reviews') || 'Reviews'})</span>
               </div>
-              <p className={styles.price}>৳ {product.price}</p>
+              {product.discountPrice ? (
+                <div className={styles.priceContainer}>
+                  <span className={styles.discountPrice}>৳ {product.discountPrice.toLocaleString()}</span>
+                  <span className={styles.originalPrice}>৳ {product.price.toLocaleString()}</span>
+                </div>
+              ) : (
+                <p className={styles.price}>৳ {product.price.toLocaleString()}</p>
+              )}
             </div>
 
             <p className={styles.shortDesc}>

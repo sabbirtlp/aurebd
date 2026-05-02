@@ -163,15 +163,26 @@
 .priceRow {
   display: flex;
   justify-content: space-between;
-  width: 100%;
-  align-items: center;
-  margin-top: auto;
+  align-items: baseline;
 }
 
-.price {
+.priceContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.price, .discountPrice {
   font-size: 1.15rem;
-  font-weight: 600;
-  color: var(--text-dark);
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.originalPrice {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  text-decoration: line-through;
+  opacity: 0.7;
 }
 
 .rating {
