@@ -25,14 +25,23 @@ export async function POST(req: Request) {
     if (groqKey) {
       const groqModels = ["llama-3.1-70b-versatile", "llama-3.1-8b-instant", "llama3-70b-8192", "llama3-8b-8192"];
       
-      const prompt = `Generate a luxury skincare product ${field} for a product named "${name}" in the "${category}" category. 
-      Key features: ${features}. 
-      Field: ${field}.
-      ${field === 'description' ? 'Format: A single elegant paragraph (100-150 words).' : ''}
-      ${field === 'ingredients' ? 'Format: An HTML <ul> list of premium ingredients.' : ''}
-      ${field === 'howToUse' ? 'Format: An HTML <ol> list of 3-5 steps.' : ''}
-      Style: Professional, luxury skincare brand tone.
-      ${customPrompt ? `Special instructions from user: ${customPrompt}` : ''}`;
+      const prompt = `
+        ### CRITICAL INSTRUCTIONS
+        ${customPrompt ? `PRIORITY: The user has specified these exact instructions which YOU MUST FOLLOW: "${customPrompt}"` : 'Follow the default luxury brand tone.'}
+
+        ### CONTEXT
+        Product: ${name}
+        Category: ${category}
+        Key Features: ${features}
+        Target Field: ${field}
+
+        ### REQUIREMENTS
+        - Style: Professional, high-end luxury skincare brand tone.
+        - Language: English (unless specified otherwise in critical instructions).
+        ${field === 'description' ? '- Format: A single elegant paragraph (100-150 words).' : ''}
+        ${field === 'ingredients' ? '- Format: An HTML <ul> list of premium ingredients. ONLY return the <ul> content.' : ''}
+        ${field === 'howToUse' ? '- Format: An HTML <ol> list of 3-5 steps. ONLY return the <ol> content.' : ''}
+      `;
 
       for (const model of groqModels) {
         try {
@@ -42,8 +51,12 @@ export async function POST(req: Request) {
           });
 
           const chatCompletion = await groq.chat.completions.create({
-            messages: [{ role: "user", content: prompt }],
+            messages: [
+              { role: "system", content: "You are an expert luxury skincare copywriter. You follow user instructions with extreme precision." },
+              { role: "user", content: prompt }
+            ],
             model: model,
+            temperature: 0.7,
           });
 
           text = chatCompletion.choices[0].message.content || "";
@@ -60,15 +73,21 @@ export async function POST(req: Request) {
       const genAI = new GoogleGenerativeAI(geminiKey);
       const modelNames = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"];
       
-      let prompt = "";
-      if (field === "description") {
-        prompt = `Generate a luxury skincare product description for a product named "${name}" in the "${category}" category. 
-        Key features: ${features}. Style: Elegant. Format: One paragraph. ${customPrompt ? `Note: ${customPrompt}` : ''}`;
-      } else if (field === "ingredients") {
-        prompt = `Generate an HTML <ul> list of ingredients for "${name}" (${category}). ${customPrompt ? `Note: ${customPrompt}` : ''}`;
-      } else if (field === "howToUse") {
-        prompt = `Generate an HTML <ol> list of instructions for "${name}" (${category}). ${customPrompt ? `Note: ${customPrompt}` : ''}`;
-      }
+      const prompt = `
+        ACT AS A LUXURY SKINCARE COPYWRITER.
+        
+        USER INSTRUCTION (PRIORITY): ${customPrompt || "No specific instructions."}
+        
+        TASK: Generate the ${field} for "${name}" in "${category}".
+        KEY FEATURES: ${features}
+        
+        FORMATTING:
+        - If ingredients: Provide ONLY an HTML <ul> list.
+        - If howToUse: Provide ONLY an HTML <ol> list.
+        - If description: Provide one elegant paragraph.
+        
+        Ensure you follow the USER INSTRUCTION above with absolute precision.
+      `;
 
       for (const modelName of modelNames) {
         try {
