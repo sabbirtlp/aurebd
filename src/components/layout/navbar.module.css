@@ -415,9 +415,9 @@
   box-shadow: var(--nm-outer-raised);
   border: 1px solid rgba(203, 163, 148, 0.15);
   border-radius: 32px;
-  padding: var(--sp-12);
+  padding: var(--sp-8);
   display: flex;
-  gap: var(--sp-16);
+  gap: var(--sp-10);
   opacity: 0;
   visibility: hidden;
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
@@ -491,9 +491,9 @@
   flex: 2.5;
   display: flex;
   flex-direction: row;
-  gap: var(--sp-10);
+  gap: var(--sp-8);
   align-items: center;
-  padding-left: var(--sp-12);
+  padding-left: var(--sp-8);
   border-left: 1px solid rgba(203, 163, 148, 0.15);
   transition: all 0.3s ease;
 }
