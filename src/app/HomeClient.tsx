@@ -215,7 +215,7 @@ export default function HomeClient({ products }: { products: any[] }) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                style={{ height: '100%', display: 'flex' }}
+                style={{ height: '100%', display: 'flex', width: '100%' }}
               >
                 <ProductCard product={product} />
               </motion.div>
@@ -270,7 +270,7 @@ export default function HomeClient({ products }: { products: any[] }) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                style={{ height: '100%', display: 'flex' }}
+                style={{ height: '100%', display: 'flex', width: '100%' }}
               >
                 <ProductCard product={product} />
               </motion.div>
@@ -282,7 +282,7 @@ export default function HomeClient({ products }: { products: any[] }) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                style={{ height: '100%', display: 'flex' }}
+                style={{ height: '100%', display: 'flex', width: '100%' }}
               >
                 <ProductCard product={product} />
               </motion.div>
