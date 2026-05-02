@@ -23,26 +23,43 @@ export async function POST(req: Request) {
     const products = await Product.find({ stock: { $gt: 0 } }).select('name price category slug').lean();
     const productList = products.map(p => `- ${p.name} (Category: ${p.category}) - Price: ৳${p.price} - Link: /product/${p.slug}`).join('\n');
 
-    // 2. Get Contact Details from CMS
-    const contactInfo = await SiteContent.find({ section: 'contact' }).lean();
-    const contactDetails = contactInfo.map((c: any) => `${c.key}: ${c.value}`).join(', ') || "Email: info@aureabd.com, Phone: +880123456789";
+    // 2. Get EVERYTHING from CMS for site-wide knowledge
+    const cmsData = await SiteContent.find({}).lean();
+    const siteKnowledge = cmsData.reduce((acc: any, item: any) => {
+      if (!acc[item.page]) acc[item.page] = {};
+      acc[item.page][item.key] = item.value;
+      return acc;
+    }, {});
+
+    const knowledgeSummary = Object.entries(siteKnowledge).map(([page, fields]: [string, any]) => {
+      return `PAGE: ${page.toUpperCase()}\n${Object.entries(fields).map(([k, v]) => `- ${k}: ${v}`).join('\n')}`;
+    }).join('\n\n');
 
     const systemPrompt = `You are Aurea AI, the luxury skincare concierge for AureaBD. 
     Your tone is sophisticated, helpful, and grounded in FACTUAL information.
     
     CRITICAL RULES:
-    1. ONLY suggest products from the "REAL PRODUCTS" list below. NEVER make up product names.
-    2. ONLY provide contact info from the "OFFICIAL CONTACT" section below.
-    3. If a user asks for a link, use the relative path provided in the product list (e.g., /product/slug).
+    1. ONLY suggest products from the "REAL PRODUCTS" list below.
+    2. ONLY provide information found in the "SITE-WIDE KNOWLEDGE" section.
+    3. If a user asks for a page link, use the Sitemap below.
     4. You support both English and Bangla. Respond in the language the user uses.
     
+    SITEMAP:
+    - Home: /
+    - Shop/All Products: /shop
+    - About Us: /about
+    - Contact Us: /contact
+    - FAQ: /faq
+    - Shipping Policy: /shipping
+    - Returns & Refunds: /returns
+    - Terms of Service: /terms-of-service
+    - Privacy Policy: /privacy-policy
+    
     REAL PRODUCTS AT AUREA BD:
-    ${productList || "Loading products..."}
+    ${productList || "No products currently in stock."}
     
-    OFFICIAL CONTACT & STORE INFO:
-    ${contactDetails}
-    
-    Brand Story: Aurea BD offers premium Japanese Sakura skincare. We focus on natural glow, hydration, and organic ingredients. Our collections include Laikou Sakura sets, serums, and creams.
+    SITE-WIDE KNOWLEDGE:
+    ${knowledgeSummary || "Aurea BD: Premium Japanese Sakura Skincare in Bangladesh."}
     
     Keep responses concise but elegant. Use emojis sparingly (✨, 🌿, 🧴).`;
 
