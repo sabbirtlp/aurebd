@@ -46,7 +46,7 @@ async function _getFeaturedProducts() {
 export const getFeaturedProducts = unstable_cache(
   _getFeaturedProducts,
   ["featured-products"],
-  { revalidate: 3600 }
+  { revalidate: 3600, tags: ["featured-products"] }
 );
 
 async function _getProducts() {
@@ -71,7 +71,7 @@ async function _getProducts() {
 export const getProducts = unstable_cache(
   _getProducts,
   ["all-products"],
-  { revalidate: 3600 }
+  { revalidate: 3600, tags: ["all-products"] }
 );
 
 async function _getProductBySlug(slug: string) {
@@ -93,7 +93,7 @@ async function _getProductBySlug(slug: string) {
 export const getProductBySlug = unstable_cache(
   _getProductBySlug,
   ["product-by-slug"],
-  { revalidate: 3600 }
+  { revalidate: 3600, tags: ["product-by-slug"] }
 );
 
 export async function getProductById(id: string) {
@@ -126,6 +126,6 @@ async function _getRelatedProducts(productId: string, category: string, limit: n
 export const getRelatedProducts = unstable_cache(
   _getRelatedProducts,
   ["related-products"],
-  { revalidate: 3600 }
+  { revalidate: 3600, tags: ["related-products"] }
 );
 

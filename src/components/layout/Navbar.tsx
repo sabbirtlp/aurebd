@@ -131,7 +131,7 @@ export default function Navbar() {
                       <li><Link href={getUrl('col_1_url', '/shop?category=New%20Arrivals')} className={styles.megaLink}><Editable page="navbar" section="mega" field="col_1" defaultText={language === 'bn' ? 'নতুন পণ্য' : 'New Arrivals'} /></Link></li>
                       <li><Link href={getUrl('col_2_url', '/shop?category=Best%20Sellers')} className={styles.megaLink}><Editable page="navbar" section="mega" field="col_2" defaultText={language === 'bn' ? 'সেরা বিক্রয়' : 'Best Sellers'} /></Link></li>
                       <li><Link href={getUrl('col_3_url', '/shop?category=Sets')} className={styles.megaLink}><Editable page="navbar" section="mega" field="col_3" defaultText={language === 'bn' ? 'গিফট সেট' : 'Gift Sets'} /></Link></li>
-                      <li><Link href={getUrl('col_4_url', '/shop?category=Offers')} className={styles.megaLink}><Editable page="navbar" section="mega" field="col_4" defaultText={language === 'bn' ? 'অফারসমূহ' : 'Special Offers'} /></Link></li>
+                      <li><Link href={getUrl('col_4_url', '/shop?category=Special%20Offers')} className={styles.megaLink}><Editable page="navbar" section="mega" field="col_4" defaultText={language === 'bn' ? 'অফারসমূহ' : 'Special Offers'} /></Link></li>
                     </ul>
                   </div>
                 </div>

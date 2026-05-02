@@ -12,7 +12,8 @@ const CATEGORIES = [
   { en: "Radiance Serums", bn: "রেডিয়েন্স সিরাম" },
   { en: "Hydration Creams", bn: "হাইড্রেশন ক্রিম" },
   { en: "UV Protection", bn: "ইউভি প্রোটেকশন" },
-  { en: "Cleansers", bn: "ক্লিনজার" }
+  { en: "Cleansers", bn: "ক্লিনজার" },
+  { en: "Special Offers", bn: "অফারসমূহ" }
 ];
 
 export default function ShopClient({ initialProducts }: { initialProducts: any[] }) {
