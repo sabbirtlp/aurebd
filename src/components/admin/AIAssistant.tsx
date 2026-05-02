@@ -56,35 +56,42 @@ export default function AIAssistant({ productName, category, field, onGenerate }
   };
 
   return (
-    <div className="w-full mb-4 animate-fade-in">
-      {/* Sleek Minimalist AI Bar */}
-      <div className="flex items-center gap-3 p-1 px-3 rounded-2xl bg-white/50 backdrop-blur-sm border border-[var(--border)] shadow-sm hover:shadow-md transition-all">
-        {/* AI Icon & Placeholder */}
-        <Sparkles className="w-4 h-4 opacity-50" style={{ color: 'var(--primary)' }} />
+    <div className="w-full mb-6 animate-fade-in group">
+      <div className="flex items-center gap-3 p-1.5 px-4 rounded-xl transition-all border border-[var(--border)]" 
+           style={{ 
+             background: 'var(--bg-color)', 
+             boxShadow: 'var(--nm-inner-pressed-sm)' 
+           }}>
         
-        {/* Minimalist Input */}
+        {/* Pro Icon */}
+        <div className="flex items-center gap-2 pr-2 border-r border-[var(--border)] opacity-60">
+          <Sparkles className="w-4 h-4" style={{ color: 'var(--primary)' }} />
+          <span className="text-[9px] font-black uppercase tracking-widest hidden sm:block" style={{ color: 'var(--text-dark)' }}>AI</span>
+        </div>
+        
+        {/* High-Contrast Input */}
         <input
           type="text"
           value={customPrompt}
           onChange={(e) => setCustomPrompt(e.target.value)}
-          placeholder={`Add instructions for ${fieldLabels[field]} (optional)...`}
-          className="flex-1 bg-transparent py-2 text-sm outline-none border-none placeholder:text-gray-400"
-          style={{ color: 'var(--text-dark)', fontSize: '0.85rem' }}
+          placeholder={`Add custom instructions for ${fieldLabels[field].toLowerCase()}...`}
+          className="flex-1 bg-transparent py-2 text-sm outline-none border-none placeholder:text-gray-400 font-medium"
+          style={{ 
+            color: 'var(--text-dark)', 
+            fontSize: '0.85rem' 
+          }}
         />
 
-        {/* Vertical Divider */}
-        <div className="w-[1px] h-6 bg-[var(--border)] opacity-50"></div>
-
-        {/* Compact Pro Button */}
+        {/* Premium Brand Button */}
         <button
           type="button"
           onClick={generateContent}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all hover:opacity-80 active:scale-95 disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all rounded-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
           style={{ 
-            color: 'var(--primary)',
-            background: 'transparent',
-            borderRadius: '10px'
+            color: 'white',
+            background: 'var(--primary)',
+            boxShadow: 'var(--nm-outer-raised-sm)'
           }}
         >
           {loading ? (
@@ -96,12 +103,12 @@ export default function AIAssistant({ productName, category, field, onGenerate }
         </button>
       </div>
       
-      {/* Very Subtle Footer */}
-      <div className="mt-1 px-3 flex items-center justify-between opacity-40">
-        <span className="text-[9px] font-bold uppercase tracking-tighter">AI Assistant v2.0</span>
-        {customPrompt && (
-          <span className="text-[9px] italic">Using custom instructions</span>
-        )}
+      {/* Dynamic Feedback Footer */}
+      <div className="mt-1.5 px-2 flex items-center gap-2 opacity-40">
+        <div className="w-1 h-1 rounded-full bg-[var(--primary)] animate-pulse"></div>
+        <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-light)' }}>
+          {loading ? 'Aurea Intelligence is crafting your content...' : 'Aurea AI Assistant v2.1 • High Precision Mode'}
+        </span>
       </div>
     </div>
   );
