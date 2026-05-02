@@ -56,37 +56,48 @@ export default function AIAssistant({ productName, category, field, onGenerate }
   };
 
   return (
-    <div className="nm-card p-5 mb-8 w-full animate-fade-in" style={{ border: '1px dashed var(--primary)', background: 'rgba(203, 163, 148, 0.05)' }}>
-      <div className="flex flex-col gap-4">
-        {/* Header with Label */}
+    <div className="nm-card p-6 mb-8 w-full animate-fade-in" style={{ border: '1px dashed var(--primary)', background: 'rgba(203, 163, 148, 0.05)', borderRadius: '20px' }}>
+      <div className="flex flex-col gap-5">
+        {/* Header */}
         <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4" style={{ color: 'var(--primary)' }} />
-          <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--primary)' }}>
-            AI Smart Content Assistant
+          <Sparkles className="w-5 h-5" style={{ color: 'var(--primary)' }} />
+          <span className="text-sm font-black uppercase tracking-widest" style={{ color: 'var(--text-dark)' }}>
+            Aurea AI Command Center
           </span>
         </div>
 
-        {/* Input & Button Row */}
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1">
-            <label className="absolute -top-2 left-3 px-1 text-[10px] font-bold bg-white" style={{ color: 'var(--text-light)', background: 'var(--bg-color)' }}>
-              SPECIAL INSTRUCTIONS
-            </label>
+        {/* Instruction Field (Dedicated Row) */}
+        <div className="flex flex-col gap-2">
+          <label className="text-[10px] font-bold uppercase tracking-widest px-1 opacity-60" style={{ color: 'var(--text-dark)' }}>
+            Step 1: Specific Instructions (Optional)
+          </label>
+          <div className="relative w-full">
             <input
               type="text"
               value={customPrompt}
               onChange={(e) => setCustomPrompt(e.target.value)}
-              placeholder={`e.g. "Focus on hydration", "Style: Scientific but catchy"`}
-              className="w-full px-4 py-4 text-sm transition-all outline-none"
+              placeholder={`e.g. "Focus on Vitamin C benefits", "Tone: Luxury & Professional"`}
+              className="w-full px-5 py-4 text-sm transition-all outline-none"
               style={{ 
                 background: 'var(--bg-color)', 
                 color: 'var(--text-dark)',
                 border: '1px solid var(--border)',
-                borderRadius: '12px',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                borderRadius: '14px',
+                boxShadow: 'var(--nm-inner-pressed-sm)',
                 fontSize: '0.95rem'
               }}
             />
+            <div className="absolute right-5 top-1/2 -translate-y-1/2 opacity-30">
+              <Wand2 className="w-5 h-5" />
+            </div>
+          </div>
+        </div>
+
+        {/* Action Row */}
+        <div className="flex items-center justify-between border-t border-[var(--border)] pt-4">
+          <div className="flex flex-col">
+            <span className="text-[10px] font-bold uppercase tracking-tighter opacity-40">Intelligence Model</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-[var(--primary)]">Llama 3.1 GA</span>
           </div>
           
           <button
@@ -95,32 +106,27 @@ export default function AIAssistant({ productName, category, field, onGenerate }
             disabled={loading}
             className="btn-nm btn-nm-primary"
             style={{ 
-              height: "56px", 
+              height: "50px", 
               borderRadius: "12px",
               padding: "0 28px",
-              fontSize: "0.9rem",
+              fontSize: "0.85rem",
               display: "flex",
               alignItems: "center",
               gap: "10px",
-              whiteSpace: "nowrap",
-              boxShadow: 'var(--nm-outer-raised-sm)'
+              boxShadow: 'var(--nm-outer-raised-sm)',
+              marginLeft: 'auto'
             }}
           >
             {loading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
-              <Wand2 className="w-5 h-5" />
+              <Sparkles className="w-5 h-5" />
             )}
-            <span style={{ fontWeight: 800, letterSpacing: '0.5px' }}>
-              {loading ? "CRAFTING..." : `CREATE ${fieldLabels[field].toUpperCase()}`}
+            <span style={{ fontWeight: 800 }}>
+              {loading ? "CRAFTING..." : `GENERATE ${fieldLabels[field].toUpperCase()}`}
             </span>
           </button>
         </div>
-
-        {/* Dynamic Tip */}
-        <p className="text-[11px] opacity-70 italic" style={{ color: 'var(--text-light)', paddingLeft: '4px' }}>
-          Tip: Adding specific details about ingredients or benefits will result in much better content.
-        </p>
       </div>
     </div>
   );
