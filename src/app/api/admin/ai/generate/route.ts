@@ -58,7 +58,7 @@ export async function POST(req: Request) {
 
     // 1. TRY GROQ FIRST
     if (groqKey) {
-      const groqModels = ["llama-3.1-70b-versatile", "llama-3.1-8b-instant"];
+      const groqModels = ["llama-3.3-70b-versatile", "llama-3.1-70b-versatile", "llama3-70b-8192"];
       
       const prompt = `
         ### REAL-TIME BROWSING DATA (MOST ACCURATE)
@@ -76,7 +76,7 @@ export async function POST(req: Request) {
         Target Field: ${field}
 
         ### REQUIREMENTS
-        - Style: Professional luxury skincare brand tone.
+        - Style: Professional luxury skincare brand tone (Elegant, Sophisticated).
         - Output: ONLY the generated text for ${field}.
         ${field === 'description' ? '- Format: A single elegant paragraph.' : ''}
         ${field === 'ingredients' ? '- Format: An HTML <ul> list.' : ''}
@@ -88,16 +88,18 @@ export async function POST(req: Request) {
           const groq = new OpenAI({ apiKey: groqKey, baseURL: "https://api.groq.com/openai/v1" });
           const chatCompletion = await groq.chat.completions.create({
             messages: [
-              { role: "system", content: "You are an AI with real-time browsing capabilities. You extract facts from provided web content and write luxury skincare copy." },
+              { role: "system", content: "You are an AI Content Specialist for Aurea BD. You write high-end, luxury skincare copy and extract facts from provided web content." },
               { role: "user", content: prompt }
             ],
             model: model,
             temperature: 0.5,
+            max_tokens: 1500,
           });
 
           text = chatCompletion.choices[0].message.content || "";
           if (text) return NextResponse.json({ text });
         } catch (err: any) {
+          console.warn(`Groq Dashboard AI model ${model} failed:`, err.message);
           continue;
         }
       }
