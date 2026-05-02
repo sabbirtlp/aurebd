@@ -12,10 +12,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    if (!process.env.GEMINI_API_KEY) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
       return NextResponse.json({ message: "AI API Key not configured. Please add GEMINI_API_KEY to your environment variables." }, { status: 500 });
     }
 
+    // Initialize inside handler to ensure fresh ENV
+    const genAI = new GoogleGenerativeAI(apiKey);
     const { name, category, features, field } = await req.json();
 
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -45,6 +48,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ text });
   } catch (error: any) {
     console.error("AI Generation Error:", error);
-    return NextResponse.json({ message: "AI Generation failed" }, { status: 500 });
+    // Return more specific error if possible
+    const errorMessage = error.message || "AI Generation failed";
+    return NextResponse.json({ message: errorMessage }, { status: 500 });
   }
 }

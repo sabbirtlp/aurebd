@@ -20,10 +20,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    if (!process.env.GEMINI_API_KEY) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
       return NextResponse.json({ message: "AI API Key not configured." }, { status: 500 });
     }
 
+    // Initialize inside handler to ensure fresh ENV
+    const genAI = new GoogleGenerativeAI(apiKey);
     const { messages } = await req.json();
 
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -47,6 +50,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ text });
   } catch (error: any) {
     console.error("AI Chat Error:", error);
-    return NextResponse.json({ message: "AI Chat failed" }, { status: 500 });
+    const errorMessage = error.message || "AI Chat failed";
+    return NextResponse.json({ message: errorMessage }, { status: 500 });
   }
 }
