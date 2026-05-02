@@ -18,7 +18,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "No AI API Key configured. Please add GROQ_API_KEY or GEMINI_API_KEY to your .env.local" }, { status: 500 });
     }
 
-    const { name, category, features, field } = await req.json();
+    const { name, category, features, field, customPrompt } = await req.json();
     let text = "";
 
     // 1. TRY GROQ FIRST (Completely Free & Ultra Fast)
@@ -31,7 +31,8 @@ export async function POST(req: Request) {
       ${field === 'description' ? 'Format: A single elegant paragraph (100-150 words).' : ''}
       ${field === 'ingredients' ? 'Format: An HTML <ul> list of premium ingredients.' : ''}
       ${field === 'howToUse' ? 'Format: An HTML <ol> list of 3-5 steps.' : ''}
-      Style: Professional, luxury skincare brand tone.`;
+      Style: Professional, luxury skincare brand tone.
+      ${customPrompt ? `Special instructions from user: ${customPrompt}` : ''}`;
 
       for (const model of groqModels) {
         try {
@@ -62,11 +63,11 @@ export async function POST(req: Request) {
       let prompt = "";
       if (field === "description") {
         prompt = `Generate a luxury skincare product description for a product named "${name}" in the "${category}" category. 
-        Key features: ${features}. Style: Elegant. Format: One paragraph.`;
+        Key features: ${features}. Style: Elegant. Format: One paragraph. ${customPrompt ? `Note: ${customPrompt}` : ''}`;
       } else if (field === "ingredients") {
-        prompt = `Generate an HTML <ul> list of ingredients for "${name}" (${category}).`;
+        prompt = `Generate an HTML <ul> list of ingredients for "${name}" (${category}). ${customPrompt ? `Note: ${customPrompt}` : ''}`;
       } else if (field === "howToUse") {
-        prompt = `Generate an HTML <ol> list of instructions for "${name}" (${category}).`;
+        prompt = `Generate an HTML <ol> list of instructions for "${name}" (${category}). ${customPrompt ? `Note: ${customPrompt}` : ''}`;
       }
 
       for (const modelName of modelNames) {

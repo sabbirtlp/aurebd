@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Loader2, RefreshCw } from "lucide-react";
+import { Sparkles, Loader2, Wand2 } from "lucide-react";
 import { toast } from "react-toastify";
 
 interface AIAssistantProps {
@@ -13,6 +13,7 @@ interface AIAssistantProps {
 
 export default function AIAssistant({ productName, category, field, onGenerate }: AIAssistantProps) {
   const [loading, setLoading] = useState(false);
+  const [customPrompt, setCustomPrompt] = useState("");
 
   const generateContent = async () => {
     if (!productName) {
@@ -28,8 +29,9 @@ export default function AIAssistant({ productName, category, field, onGenerate }
         body: JSON.stringify({
           name: productName,
           category: category || "Skincare",
-          features: "Luxury, Organic, Effective", // Default features
-          field
+          features: "Luxury, Organic, Effective",
+          field,
+          customPrompt // Pass custom prompt to backend
         })
       });
 
@@ -47,25 +49,40 @@ export default function AIAssistant({ productName, category, field, onGenerate }
     }
   };
 
-  const label = {
+  const fieldLabels: Record<string, string> = {
     description: "Description",
     ingredients: "Ingredients",
-    howToUse: "Usage"
-  }[field];
+    howToUse: "Usage Guide"
+  };
 
   return (
-    <button
-      type="button"
-      onClick={generateContent}
-      disabled={loading}
-      className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed mb-2"
-    >
-      {loading ? (
-        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-      ) : (
-        <Sparkles className="w-3.5 h-3.5" />
-      )}
-      {loading ? "Generating..." : `AI Generate ${label}`}
-    </button>
+    <div className="flex flex-col gap-2 mb-4 w-full">
+      <div className="flex items-center gap-2 w-full">
+        <div className="relative flex-1">
+          <input
+            type="text"
+            value={customPrompt}
+            onChange={(e) => setCustomPrompt(e.target.value)}
+            placeholder={`Special instructions for ${fieldLabels[field]} (e.g. "Focus on Vitamin C", "Tone: Energetic")`}
+            className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none transition-all shadow-sm pr-10"
+          />
+          <Wand2 className="absolute right-3 top-2.5 w-4 h-4 text-gray-400" />
+        </div>
+        
+        <button
+          type="button"
+          onClick={generateContent}
+          disabled={loading}
+          className="flex items-center gap-2 px-4 py-2 text-sm font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_4px_15px_rgba(124,58,237,0.3)] disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+        >
+          {loading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Sparkles className="w-4 h-4" />
+          )}
+          {loading ? "Crafting..." : `Generate ${fieldLabels[field]}`}
+        </button>
+      </div>
+    </div>
   );
 }
