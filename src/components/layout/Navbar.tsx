@@ -128,10 +128,10 @@ export default function Navbar() {
                       <Editable page="navbar" section="mega" field="col_title" defaultText={language === 'bn' ? 'কালেকশন' : 'Collections'} />
                     </h3>
                     <ul className={styles.megaList}>
-                      <li><Link href="/shop" className={styles.megaLink}><Editable page="navbar" section="mega" field="col_1" defaultText={language === 'bn' ? 'নতুন পণ্য' : 'New Arrivals'} /></Link></li>
-                      <li><Link href="/shop" className={styles.megaLink}><Editable page="navbar" section="mega" field="col_2" defaultText={language === 'bn' ? 'সেরা বিক্রয়' : 'Best Sellers'} /></Link></li>
-                      <li><Link href="/shop" className={styles.megaLink}><Editable page="navbar" section="mega" field="col_3" defaultText={language === 'bn' ? 'গিফট সেট' : 'Gift Sets'} /></Link></li>
-                      <li><Link href="/shop" className={styles.megaLink}><Editable page="navbar" section="mega" field="col_4" defaultText={language === 'bn' ? 'অফারসমূহ' : 'Special Offers'} /></Link></li>
+                      <li><Link href={getUrl('col_1_url', '/shop')} className={styles.megaLink}><Editable page="navbar" section="mega" field="col_1" defaultText={language === 'bn' ? 'নতুন পণ্য' : 'New Arrivals'} /></Link></li>
+                      <li><Link href={getUrl('col_2_url', '/shop')} className={styles.megaLink}><Editable page="navbar" section="mega" field="col_2" defaultText={language === 'bn' ? 'সেরা বিক্রয়' : 'Best Sellers'} /></Link></li>
+                      <li><Link href={getUrl('col_3_url', '/shop')} className={styles.megaLink}><Editable page="navbar" section="mega" field="col_3" defaultText={language === 'bn' ? 'গিফট সেট' : 'Gift Sets'} /></Link></li>
+                      <li><Link href={getUrl('col_4_url', '/shop')} className={styles.megaLink}><Editable page="navbar" section="mega" field="col_4" defaultText={language === 'bn' ? 'অফারসমূহ' : 'Special Offers'} /></Link></li>
                     </ul>
                   </div>
                 </div>
