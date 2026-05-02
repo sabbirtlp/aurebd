@@ -36,7 +36,7 @@ export default function Footer() {
                 alt="Aurea BD"
                 width={600}
                 height={200}
-                style={{ width: "auto", height: "64px", objectFit: "contain" }}
+                style={{ width: "auto", height: "64px", objectFit: "contain", objectPosition: "left", alignSelf: "flex-start" }}
               />
               <p className={styles.brandDesc}>
                 {tr('footer.description')}
