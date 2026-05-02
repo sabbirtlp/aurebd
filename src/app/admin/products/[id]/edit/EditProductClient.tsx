@@ -177,6 +177,7 @@ export default function EditProductClient({ product }: { product: any }) {
                   productName={form.name} 
                   category={form.category} 
                   field="description" 
+                  existingContent={form.shortDescription}
                   onGenerate={(text) => {
                     const shortText = text.split('.').slice(0, 2).join('.') + '.';
                     setForm({ ...form, shortDescription: shortText });
@@ -200,6 +201,7 @@ export default function EditProductClient({ product }: { product: any }) {
                   productName={form.name} 
                   category={form.category} 
                   field="ingredients" 
+                  existingContent={form.ingredients}
                   onGenerate={(text) => {
                     setForm({ ...form, ingredients: text });
                     setIsSaved(false);
@@ -222,6 +224,7 @@ export default function EditProductClient({ product }: { product: any }) {
                   productName={form.name} 
                   category={form.category} 
                   field="howToUse" 
+                  existingContent={form.howToUse}
                   onGenerate={(text) => {
                     setForm({ ...form, howToUse: text });
                     setIsSaved(false);
@@ -244,6 +247,7 @@ export default function EditProductClient({ product }: { product: any }) {
                   productName={form.name} 
                   category={form.category} 
                   field="description" 
+                  existingContent={form.description}
                   onGenerate={(text) => {
                     setForm({ ...form, description: text });
                     setIsSaved(false);

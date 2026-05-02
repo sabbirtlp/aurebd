@@ -18,7 +18,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "No AI API Key configured. Please add GROQ_API_KEY or GEMINI_API_KEY to your .env.local" }, { status: 500 });
     }
 
-    const { name, category, features, field, customPrompt } = await req.json();
+    const { name, category, features, field, customPrompt, existingContent } = await req.json();
     let text = "";
 
     // 1. TRY GROQ FIRST (Completely Free & Ultra Fast)
@@ -26,8 +26,11 @@ export async function POST(req: Request) {
       const groqModels = ["llama-3.1-70b-versatile", "llama-3.1-8b-instant", "llama3-70b-8192", "llama3-8b-8192"];
       
       const prompt = `
+        ### SOURCE OF TRUTH (PRIORITY)
+        ${existingContent ? `USE THIS DATA AS THE PRIMARY SOURCE OF FACTS: "${existingContent}"` : 'Generate original content based on the product context.'}
+
         ### CRITICAL INSTRUCTIONS
-        ${customPrompt ? `PRIORITY: The user has specified these exact instructions which YOU MUST FOLLOW: "${customPrompt}"` : 'Follow the default luxury brand tone.'}
+        ${customPrompt ? `FOLLOW THESE STYLE/CONTENT REQUESTS: "${customPrompt}"` : 'Follow the default luxury brand tone.'}
 
         ### CONTEXT
         Product: ${name}
@@ -37,10 +40,13 @@ export async function POST(req: Request) {
 
         ### REQUIREMENTS
         - Style: Professional, high-end luxury skincare brand tone.
-        - Language: English (unless specified otherwise in critical instructions).
+        - Language: English.
         ${field === 'description' ? '- Format: A single elegant paragraph (100-150 words).' : ''}
         ${field === 'ingredients' ? '- Format: An HTML <ul> list of premium ingredients. ONLY return the <ul> content.' : ''}
         ${field === 'howToUse' ? '- Format: An HTML <ol> list of 3-5 steps. ONLY return the <ol> content.' : ''}
+        
+        ### GOAL
+        Beautify and professionalize the SOURCE OF TRUTH data if provided. If not provided, generate accurate data for the product.
       `;
 
       for (const model of groqModels) {

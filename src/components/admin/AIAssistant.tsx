@@ -8,10 +8,11 @@ interface AIAssistantProps {
   productName: string;
   category: string;
   field: "description" | "ingredients" | "howToUse";
+  existingContent?: string;
   onGenerate: (text: string) => void;
 }
 
-export default function AIAssistant({ productName, category, field, onGenerate }: AIAssistantProps) {
+export default function AIAssistant({ productName, category, field, existingContent, onGenerate }: AIAssistantProps) {
   const [loading, setLoading] = useState(false);
   const [customPrompt, setCustomPrompt] = useState("");
 
@@ -31,7 +32,8 @@ export default function AIAssistant({ productName, category, field, onGenerate }
           category: category || "Skincare",
           features: "Luxury, Organic, Effective",
           field,
-          customPrompt
+          customPrompt,
+          existingContent
         })
       });
 
