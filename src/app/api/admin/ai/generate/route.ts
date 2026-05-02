@@ -58,7 +58,7 @@ export async function POST(req: Request) {
 
     // 1. TRY GROQ FIRST
     if (groqKey) {
-      const groqModels = ["llama-3.3-70b-versatile", "llama-3.1-70b-versatile", "llama3-70b-8192"];
+      const groqModels = ["llama-3.3-70b-versatile", "mixtral-8x7b-32768", "gemma2-9b-it"];
       
       const prompt = `
         ### REAL-TIME BROWSING DATA
@@ -90,6 +90,7 @@ export async function POST(req: Request) {
         ${field === 'howToUse' ? '- Format: An HTML <ol> list.' : ''}
       `;
 
+      let lastErr = null;
       for (const model of groqModels) {
         try {
           const groq = new OpenAI({ apiKey: groqKey, baseURL: "https://api.groq.com/openai/v1" });
@@ -106,10 +107,12 @@ export async function POST(req: Request) {
           text = chatCompletion.choices[0].message.content || "";
           if (text) return NextResponse.json({ text });
         } catch (err: any) {
+          lastErr = err;
           console.warn(`Groq Dashboard AI model ${model} failed:`, err.message);
           continue;
         }
       }
+      if (lastErr && !geminiKey) throw lastErr;
     }
 
     // 2. FALLBACK TO GEMINI
@@ -140,8 +143,9 @@ export async function POST(req: Request) {
       }
     }
 
-    throw new Error("AI Generation failed");
+    throw new Error(text ? "No text generated" : "All models failed to generate content");
   } catch (error: any) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+    console.error("API Error in AI Generate:", error.message);
+    return NextResponse.json({ message: error.message || "Failed to generate content" }, { status: 500 });
   }
 }
