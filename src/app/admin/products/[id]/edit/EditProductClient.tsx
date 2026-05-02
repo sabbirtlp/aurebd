@@ -63,7 +63,7 @@ export default function EditProductClient({ product }: { product: any }) {
 
   const handleCategoryToggle = (slug: string) => {
     const newCategories = form.categories.includes(slug)
-      ? form.categories.filter(c => c !== slug)
+      ? form.categories.filter((c: string) => c !== slug)
       : [...form.categories, slug];
     
     setForm({ 

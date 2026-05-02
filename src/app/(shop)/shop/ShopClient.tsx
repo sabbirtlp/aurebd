@@ -119,7 +119,7 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
     }
 
     return result;
-  }, [activeCategoryName, sortBy, priceRange, initialProducts]);
+  }, [activeCategoryName, activeCategorySlug, sortBy, priceRange, initialProducts, maxPrice]);
 
   const totalPages = Math.ceil(filteredAndSortedProducts.length / itemsPerPage);
   const currentProducts = filteredAndSortedProducts.slice(
