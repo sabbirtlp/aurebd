@@ -232,14 +232,10 @@ export default function ProductClient({ product, relatedProducts }: { product: a
                 </div>
               )}
               {activeTab === "ingredients" && (
-                <div className="animate-fade-in">
-                  <p>{product.ingredients || 'Aqua, Prunus Lannesiana Flower Extract, Ascorbic Acid, Malic Acid, Prunus Mume Fruit Extract, Citric Acid, Potassium Hydroxide, Sodium Hyaluronate.'}</p>
-                </div>
+                <div className={`${styles.richText} animate-fade-in`} dangerouslySetInnerHTML={{ __html: product.ingredients || '<p>Aqua, Prunus Lannesiana Flower Extract, Ascorbic Acid, Malic Acid, Prunus Mume Fruit Extract, Citric Acid, Potassium Hydroxide, Sodium Hyaluronate.</p>' }} />
               )}
               {activeTab === "howToUse" && (
-                <div className="animate-fade-in">
-                  <p style={{ whiteSpace: 'pre-line' }}>{t('product.how_to_use_steps')}</p>
-                </div>
+                <div className={`${styles.richText} animate-fade-in`} dangerouslySetInnerHTML={{ __html: product.howToUse || `<p>1. Cleanse your face with Sakura Facewash.<br/>2. Apply a small amount to fingertips.<br/>3. Gently massage onto skin.<br/>4. Use morning and night.</p>` }} />
               )}
             </div>
           </div>

@@ -15,6 +15,8 @@ const ProductSchema = new mongoose.Schema({
   gallery: [{ type: String }],
   stock: { type: Number, required: true, default: 0 },
   category: { type: String, required: true },
+  ingredients: { type: String },
+  howToUse: { type: String },
   isNewArrival: { type: Boolean, default: false },
   isBestSeller: { type: Boolean, default: false },
   isSpecialOffer: { type: Boolean, default: false },

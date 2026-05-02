@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import styles from "../../admin.module.css";
 import ImageUpload from "@/components/admin/ImageUpload";
+import RichTextEditor from "@/components/admin/RichTextEditor";
 
 const CATEGORIES = ["Sets", "Serums", "Creams", "Sunscreen", "Cleansers", "Radiance Serums", "Hydration Creams", "UV Protection", "Skin Essentials"];
 
@@ -25,6 +26,8 @@ export default function NewProductPage() {
     isSpecialOffer: false,
     isGiftSet: false,
     discountPrice: "",
+    ingredients: "",
+    howToUse: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -202,6 +205,22 @@ export default function NewProductPage() {
                   <span>Gift Set</span>
                 </label>
               </div>
+            </div>
+
+            <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
+              <RichTextEditor 
+                label="Ingredients"
+                value={form.ingredients}
+                onChange={(val) => setForm({ ...form, ingredients: val })}
+              />
+            </div>
+
+            <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
+              <RichTextEditor 
+                label="How To Use"
+                value={form.howToUse}
+                onChange={(val) => setForm({ ...form, howToUse: val })}
+              />
             </div>
 
             <div className={`${styles.formGroup} ${styles.formGroupFull}`}>

@@ -232,9 +232,33 @@
   min-height: 200px;
 }
 
-.tabContent p {
+.richText {
   line-height: 1.8;
   color: var(--text-light);
+}
+
+.richText p {
+  margin-bottom: var(--sp-4);
+}
+
+.richText ul, .richText ol {
+  margin-left: var(--sp-6);
+  margin-bottom: var(--sp-4);
+}
+
+.richText li {
+  margin-bottom: var(--sp-2);
+}
+
+.richText strong {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.richText h1, .richText h2, .richText h3 {
+  color: var(--primary);
+  margin-top: var(--sp-6);
+  margin-bottom: var(--sp-3);
 }
 
 /* REVIEWS */
