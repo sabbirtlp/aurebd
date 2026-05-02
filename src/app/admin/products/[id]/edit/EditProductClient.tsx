@@ -68,6 +68,7 @@ export default function EditProductClient({ product }: { product: any }) {
       if (res.ok) {
         toast.success("Product changes synchronized! ✅");
         setIsSaved(true);
+        setTimeout(() => setIsSaved(false), 3000);
         router.refresh();
       } else {
         const data = await res.json();
@@ -97,7 +98,7 @@ export default function EditProductClient({ product }: { product: any }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <Link href={`/product/${product._id}`} target="_blank" className={styles.btnSecondary}>
             <Eye className="w-4 h-4" />
             Preview
