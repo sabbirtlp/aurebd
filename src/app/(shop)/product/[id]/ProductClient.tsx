@@ -231,7 +231,7 @@ export default function ProductClient({ product, relatedProducts }: { product: a
                 </button>
               ))}
             </div>
-            <div className={`${styles.tabContent} nm-card`}>
+            <div className={`${styles.tabContent} nm-card`} suppressHydrationWarning>
               {activeTab === "description" && (
                 <div className="animate-fade-in">
                   <p>{product.description}</p>

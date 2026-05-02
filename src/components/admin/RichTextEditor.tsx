@@ -35,7 +35,7 @@ export default function RichTextEditor({ label, value, onChange }: RichTextEdito
   ];
 
   return (
-    <div className="rich-text-editor" style={{ marginBottom: "1.5rem" }}>
+    <div className="rich-text-editor" style={{ marginBottom: "1.5rem" }} suppressHydrationWarning>
       <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "var(--text-dark)" }}>
         {label}
       </label>
