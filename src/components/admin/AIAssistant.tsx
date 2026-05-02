@@ -56,77 +56,52 @@ export default function AIAssistant({ productName, category, field, onGenerate }
   };
 
   return (
-    <div className="nm-card p-6 mb-8 w-full animate-fade-in" style={{ border: '1px dashed var(--primary)', background: 'rgba(203, 163, 148, 0.05)', borderRadius: '20px' }}>
-      <div className="flex flex-col gap-5">
-        {/* Header */}
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5" style={{ color: 'var(--primary)' }} />
-          <span className="text-sm font-black uppercase tracking-widest" style={{ color: 'var(--text-dark)' }}>
-            Aurea AI Command Center
-          </span>
-        </div>
+    <div className="w-full mb-4 animate-fade-in">
+      {/* Sleek Minimalist AI Bar */}
+      <div className="flex items-center gap-3 p-1 px-3 rounded-2xl bg-white/50 backdrop-blur-sm border border-[var(--border)] shadow-sm hover:shadow-md transition-all">
+        {/* AI Icon & Placeholder */}
+        <Sparkles className="w-4 h-4 opacity-50" style={{ color: 'var(--primary)' }} />
+        
+        {/* Minimalist Input */}
+        <input
+          type="text"
+          value={customPrompt}
+          onChange={(e) => setCustomPrompt(e.target.value)}
+          placeholder={`Add instructions for ${fieldLabels[field]} (optional)...`}
+          className="flex-1 bg-transparent py-2 text-sm outline-none border-none placeholder:text-gray-400"
+          style={{ color: 'var(--text-dark)', fontSize: '0.85rem' }}
+        />
 
-        {/* Instruction Field (Dedicated Row) */}
-        <div className="flex flex-col gap-2">
-          <label className="text-[10px] font-bold uppercase tracking-widest px-1 opacity-60" style={{ color: 'var(--text-dark)' }}>
-            Step 1: Specific Instructions (Optional)
-          </label>
-          <div className="relative w-full">
-            <input
-              type="text"
-              value={customPrompt}
-              onChange={(e) => setCustomPrompt(e.target.value)}
-              placeholder={`e.g. "Focus on Vitamin C benefits", "Tone: Luxury & Professional"`}
-              className="w-full px-5 py-4 text-sm transition-all outline-none"
-              style={{ 
-                background: 'var(--bg-color)', 
-                color: 'var(--text-dark)',
-                border: '1px solid var(--border)',
-                borderRadius: '14px',
-                boxShadow: 'var(--nm-inner-pressed-sm)',
-                fontSize: '0.95rem'
-              }}
-            />
-            <div className="absolute right-5 top-1/2 -translate-y-1/2 opacity-30">
-              <Wand2 className="w-5 h-5" />
-            </div>
-          </div>
-        </div>
+        {/* Vertical Divider */}
+        <div className="w-[1px] h-6 bg-[var(--border)] opacity-50"></div>
 
-        {/* Action Row */}
-        <div className="flex items-center justify-between border-t border-[var(--border)] pt-4">
-          <div className="flex flex-col">
-            <span className="text-[10px] font-bold uppercase tracking-tighter opacity-40">Intelligence Model</span>
-            <span className="text-[10px] font-black uppercase tracking-widest text-[var(--primary)]">Llama 3.1 GA</span>
-          </div>
-          
-          <button
-            type="button"
-            onClick={generateContent}
-            disabled={loading}
-            className="btn-nm btn-nm-primary"
-            style={{ 
-              height: "50px", 
-              borderRadius: "12px",
-              padding: "0 28px",
-              fontSize: "0.85rem",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              boxShadow: 'var(--nm-outer-raised-sm)',
-              marginLeft: 'auto'
-            }}
-          >
-            {loading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <Sparkles className="w-5 h-5" />
-            )}
-            <span style={{ fontWeight: 800 }}>
-              {loading ? "CRAFTING..." : `GENERATE ${fieldLabels[field].toUpperCase()}`}
-            </span>
-          </button>
-        </div>
+        {/* Compact Pro Button */}
+        <button
+          type="button"
+          onClick={generateContent}
+          disabled={loading}
+          className="flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all hover:opacity-80 active:scale-95 disabled:opacity-50"
+          style={{ 
+            color: 'var(--primary)',
+            background: 'transparent',
+            borderRadius: '10px'
+          }}
+        >
+          {loading ? (
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          ) : (
+            <Wand2 className="w-3.5 h-3.5" />
+          )}
+          {loading ? "WIRTING..." : "GENERATE"}
+        </button>
+      </div>
+      
+      {/* Very Subtle Footer */}
+      <div className="mt-1 px-3 flex items-center justify-between opacity-40">
+        <span className="text-[9px] font-bold uppercase tracking-tighter">AI Assistant v2.0</span>
+        {customPrompt && (
+          <span className="text-[9px] italic">Using custom instructions</span>
+        )}
       </div>
     </div>
   );
