@@ -10,6 +10,7 @@ const ProductSchema = new mongoose.Schema({
   name: { type: String, required: true },
   slug: { type: String, required: true, unique: true },
   description: { type: String, required: true },
+  shortDescription: { type: String },
   price: { type: Number, required: true },
   image: { type: String, required: true },
   gallery: [{ type: String }],

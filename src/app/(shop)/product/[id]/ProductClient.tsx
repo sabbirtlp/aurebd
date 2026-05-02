@@ -165,7 +165,7 @@ export default function ProductClient({ product, relatedProducts }: { product: a
             </div>
 
             <p className={styles.shortDesc}>
-              {t('product.short_desc')}
+              {product.shortDescription || t('product.short_desc')}
             </p>
 
             <div className={styles.actions}>

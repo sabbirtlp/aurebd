@@ -31,6 +31,7 @@ export default function EditProductClient({ product }: { product: any }) {
     discountPrice: product.discountPrice?.toString() || "",
     ingredients: product.ingredients || "",
     howToUse: product.howToUse || "",
+    shortDescription: product.shortDescription || "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -240,6 +241,30 @@ export default function EditProductClient({ product }: { product: any }) {
                   setForm({ ...form, howToUse: val });
                   setIsSaved(false);
                 }}
+              />
+            </div>
+
+            <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "0.5rem" }}>
+                <label className={styles.formLabel} style={{ marginBottom: 0 }}>Short Description</label>
+                <AIAssistant 
+                  productName={form.name} 
+                  category={form.category} 
+                  field="description" 
+                  onGenerate={(text) => {
+                    const shortText = text.split('.').slice(0, 2).join('.') + '.';
+                    setForm({ ...form, shortDescription: shortText });
+                    setIsSaved(false);
+                  }} 
+                />
+              </div>
+              <textarea 
+                name="shortDescription" 
+                value={form.shortDescription} 
+                onChange={handleChange} 
+                className={styles.formInput} 
+                rows={2} 
+                style={{ resize: "vertical" }} 
               />
             </div>
 

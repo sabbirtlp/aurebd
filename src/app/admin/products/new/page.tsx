@@ -29,6 +29,7 @@ export default function NewProductPage() {
     discountPrice: "",
     ingredients: "",
     howToUse: "",
+    shortDescription: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -233,6 +234,31 @@ export default function NewProductPage() {
                 label="How To Use"
                 value={form.howToUse}
                 onChange={(val) => setForm({ ...form, howToUse: val })}
+              />
+            </div>
+
+            <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "0.5rem" }}>
+                <label className={styles.formLabel} style={{ marginBottom: 0 }}>Short Description</label>
+                <AIAssistant 
+                  productName={form.name} 
+                  category={form.category} 
+                  field="description" // I'll use a specific field type for short desc in a moment
+                  onGenerate={(text) => {
+                    // Truncate to 2-3 sentences for short desc
+                    const shortText = text.split('.').slice(0, 2).join('.') + '.';
+                    setForm({ ...form, shortDescription: shortText });
+                  }} 
+                />
+              </div>
+              <textarea
+                name="shortDescription"
+                value={form.shortDescription}
+                onChange={handleChange}
+                className={styles.formInput}
+                rows={2}
+                placeholder="Catchy 2-sentence summary..."
+                style={{ resize: "vertical" }}
               />
             </div>
 

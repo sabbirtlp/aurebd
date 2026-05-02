@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     await dbConnect();
     const body = await req.json();
     const { 
-      name, description, price, discountPrice, image, gallery, 
+      name, description, shortDescription, price, discountPrice, image, gallery, 
       stock, category, isNewArrival, isBestSeller, isSpecialOffer, 
       isGiftSet, ingredients, howToUse 
     } = body;
@@ -43,6 +43,7 @@ export async function POST(req: Request) {
       name,
       slug,
       description,
+      shortDescription,
       price: Number(price),
       discountPrice: discountPrice ? Number(discountPrice) : undefined,
       image,
