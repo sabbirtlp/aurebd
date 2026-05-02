@@ -72,7 +72,11 @@ export async function POST(req: Request) {
         Category: ${category}
         Target Field: ${field}
 
-        ### BANGLA WRITING RULES (IF OUTPUT IS BANGLA):
+        ### DEFAULT LANGUAGE
+        CRITICAL RULE: You MUST write the output in ENGLISH by default. 
+        ONLY write in Bangla if the USER explicitly asks for Bangla in the "USER INSTRUCTIONS".
+
+        ### BANGLA WRITING RULES (ONLY IF BANGLA IS EXPLICITLY REQUESTED):
         1. NO LITERAL TRANSLATIONS: Do not use "জৈব মহাকর্য" for "organic masterpiece". Use natural phrases like "ত্বকের অসাধারণ যত্ন".
         2. NO ROBOTIC TERMS: Avoid dictionary-literal terms like "ফর্ম এবং সমতল". Use "ত্বক টানটান ও মসৃণ করে".
         3. TONE: Professional, sophisticated, and natural (যেমন একজন প্রফেশনাল কপিরাইটার লেখেন).
@@ -91,7 +95,7 @@ export async function POST(req: Request) {
           const groq = new OpenAI({ apiKey: groqKey, baseURL: "https://api.groq.com/openai/v1" });
           const chatCompletion = await groq.chat.completions.create({
             messages: [
-              { role: "system", content: "You are a Native Bangladeshi Luxury Copywriter for Aurea BD. You write elegant, natural, and non-robotic content in both English and Bangla. You avoid literal translations and prioritize professional marketing flow." },
+              { role: "system", content: "You are an Expert Luxury Copywriter for Aurea BD. You write elegant, natural, and highly professional content. You MUST write in English by default unless explicitly asked for Bangla." },
               { role: "user", content: prompt }
             ],
             model: model,
@@ -113,6 +117,8 @@ export async function POST(req: Request) {
       const genAI = new GoogleGenerativeAI(geminiKey);
       const prompt = `
         ACT AS A PROFESSIONAL SKINCARE COPYWRITER WITH BROWSING ACCESS.
+        CRITICAL RULE: You MUST write the output in ENGLISH by default. 
+        ONLY write in Bangla if the USER INSTRUCTION explicitly asks for Bangla.
         
         FACTS FROM LINK: ${browsingData || "None"}
         USER INSTRUCTION: ${customPrompt || "None"}
