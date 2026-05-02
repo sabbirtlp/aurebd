@@ -13,6 +13,7 @@ import HeaderSearch from "./HeaderSearch";
 import styles from "./navbar.module.css";
 import Editable from "@/components/cms/Editable";
 import EditableImage from "@/components/cms/EditableImage";
+import { useEditable } from "@/context/EditableContext";
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -42,11 +43,21 @@ export default function Navbar() {
     setLanguage(language === 'bn' ? 'en' : 'bn');
   };
 
+  const { content } = useEditable();
+  
+  const getUrl = (field: string, def: string) => {
+    const key = `navbar__mega__${field}__${language}`;
+    const fallback = `navbar__mega__${field}__en`;
+    return content[key] || content[fallback] || def;
+  };
+
   return (
     <>
       <header className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}>
         <div className={styles.topBar}>
-          <span className={styles.topBarContent}>{tr('topbar.shipping')}</span>
+          <span className={styles.topBarContent}>
+            <Editable page="navbar" section="topbar" field="content" defaultText={tr('topbar.shipping')} />
+          </span>
         </div>
 
         <div className={`container ${styles.navMain}`}>
@@ -65,21 +76,49 @@ export default function Navbar() {
           </div>
 
           <nav className={styles.desktopNav}>
-            <Link href="/" className={styles.navLink}><span suppressHydrationWarning>{tr('nav.home')}</span></Link>
+            <Link href="/" className={styles.navLink}>
+              <span suppressHydrationWarning>
+                <Editable page="navbar" section="links" field="home" defaultText={tr('nav.home')} />
+              </span>
+            </Link>
 
             <div className={styles.navItem}>
-              <Link href="/shop" className={styles.navLink}><span suppressHydrationWarning>{tr('nav.shop')}</span></Link>
+              <Link href="/shop" className={styles.navLink}>
+                <span suppressHydrationWarning>
+                  <Editable page="navbar" section="links" field="shop" defaultText={tr('nav.shop')} />
+                </span>
+              </Link>
               <div className={styles.megaMenu}>
                 <div className={styles.megaCol}>
                   <h3 className={styles.megaTitle}>
                     <Editable page="navbar" section="mega" field="cat_title" defaultText={language === 'bn' ? 'ক্যাটাগরি' : 'Categories'} />
                   </h3>
                   <ul className={styles.megaList}>
-                    <li><Link href="/shop?category=Radiance%20Serums" className={styles.megaLink}><Editable page="navbar" section="mega" field="cat_1" defaultText={tr('cat.serums')} /></Link></li>
-                    <li><Link href="/shop?category=Hydration%20Creams" className={styles.megaLink}><Editable page="navbar" section="mega" field="cat_2" defaultText={tr('cat.creams')} /></Link></li>
-                    <li><Link href="/shop?category=UV%20Protection" className={styles.megaLink}><Editable page="navbar" section="mega" field="cat_3" defaultText={tr('cat.uv')} /></Link></li>
-                    <li><Link href="/shop?category=Skin%20Essentials" className={styles.megaLink}><Editable page="navbar" section="mega" field="cat_4" defaultText={tr('cat.essentials')} /></Link></li>
-                    <li><Link href="/shop?category=Cleansers" className={styles.megaLink}><Editable page="navbar" section="mega" field="cat_5" defaultText={language === 'bn' ? 'ক্লিনজার' : 'Cleansers'} /></Link></li>
+                    <li>
+                      <Link href={getUrl('cat_1_url', '/shop?category=Radiance%20Serums')} className={styles.megaLink}>
+                        <Editable page="navbar" section="mega" field="cat_1" defaultText={tr('cat.serums')} />
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href={getUrl('cat_2_url', '/shop?category=Hydration%20Creams')} className={styles.megaLink}>
+                        <Editable page="navbar" section="mega" field="cat_2" defaultText={tr('cat.creams')} />
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href={getUrl('cat_3_url', '/shop?category=UV%20Protection')} className={styles.megaLink}>
+                        <Editable page="navbar" section="mega" field="cat_3" defaultText={tr('cat.uv')} />
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href={getUrl('cat_4_url', '/shop?category=Skin%20Essentials')} className={styles.megaLink}>
+                        <Editable page="navbar" section="mega" field="cat_4" defaultText={tr('cat.essentials')} />
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href={getUrl('cat_5_url', '/shop?category=Cleansers')} className={styles.megaLink}>
+                        <Editable page="navbar" section="mega" field="cat_5" defaultText={language === 'bn' ? 'ক্লিনজার' : 'Cleansers'} />
+                      </Link>
+                    </li>
                   </ul>
                 </div>
 
@@ -117,8 +156,16 @@ export default function Navbar() {
               </div>
             </div>
 
-            <Link href="/about" className={styles.navLink}><span suppressHydrationWarning>{tr('nav.about')}</span></Link>
-            <Link href="/contact" className={styles.navLink}><span suppressHydrationWarning>{tr('nav.contact')}</span></Link>
+            <Link href="/about" className={styles.navLink}>
+              <span suppressHydrationWarning>
+                <Editable page="navbar" section="links" field="about" defaultText={tr('nav.about')} />
+              </span>
+            </Link>
+            <Link href="/contact" className={styles.navLink}>
+              <span suppressHydrationWarning>
+                <Editable page="navbar" section="links" field="contact" defaultText={tr('nav.contact')} />
+              </span>
+            </Link>
           </nav>
 
           <div className={styles.actions}>

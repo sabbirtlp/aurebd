@@ -7,6 +7,7 @@ import styles from "./mobileMenu.module.css";
 
 import { useLanguageStore } from "@/store/languageStore";
 import { useSession } from "next-auth/react";
+import { useEditable } from "@/context/EditableContext";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -16,7 +17,14 @@ interface MobileMenuProps {
 export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   const { data: session } = useSession();
   const { t, language } = useLanguageStore();
+  const { content } = useEditable();
   const [mounted, setMounted] = useState(false);
+
+  const getCms = (page: string, section: string, field: string, def: string) => {
+    const key = `${page}__${section}__${field}__${language}`;
+    const fallback = `${page}__${section}__${field}__en`;
+    return content[key] || content[fallback] || def;
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -48,18 +56,18 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           {/* NAVIGATION LINKS */}
           <nav className={styles.nav}>
             <Link href="/" className={styles.navLink} onClick={onClose}>
-              <span className={styles.icon}>🏠</span> <span suppressHydrationWarning>{tr('nav.home')}</span>
+              <span className={styles.icon}>🏠</span> <span suppressHydrationWarning>{mounted ? getCms('navbar', 'links', 'home', tr('nav.home')) : tr('nav.home')}</span>
             </Link>
 
             <Link href="/shop" className={styles.navLink} onClick={onClose}>
-              <span className={styles.icon}>🛍️</span> <span suppressHydrationWarning>{tr('nav.shop')}</span>
+              <span className={styles.icon}>🛍️</span> <span suppressHydrationWarning>{mounted ? getCms('navbar', 'links', 'shop', tr('nav.shop')) : tr('nav.shop')}</span>
             </Link>
 
             <Link href="/about" className={styles.navLink} onClick={onClose}>
-              <span className={styles.icon}>🌿</span> <span suppressHydrationWarning>{tr('nav.about')}</span>
+              <span className={styles.icon}>🌿</span> <span suppressHydrationWarning>{mounted ? getCms('navbar', 'links', 'about', tr('nav.about')) : tr('nav.about')}</span>
             </Link>
             <Link href="/contact" className={styles.navLink} onClick={onClose}>
-              <span className={styles.icon}>📞</span> <span suppressHydrationWarning>{tr('nav.contact')}</span>
+              <span className={styles.icon}>📞</span> <span suppressHydrationWarning>{mounted ? getCms('navbar', 'links', 'contact', tr('nav.contact')) : tr('nav.contact')}</span>
             </Link>
           </nav>
 

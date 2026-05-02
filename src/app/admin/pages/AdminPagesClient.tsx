@@ -203,6 +203,56 @@ const PAGE_SECTIONS: PageGroup[] = [
       },
     ],
   },
+  {
+    page: "navbar",
+    label: "Navigation",
+    sections: [
+      {
+        section: "topbar",
+        label: "Top Bar Notice",
+        fields: [
+          { key: "content", label: "Notice Text", type: "text", placeholder: "e.g. Free Shipping on orders over..." },
+        ],
+      },
+      {
+        section: "links",
+        label: "Main Navigation",
+        fields: [
+          { key: "home", label: "Home Link Text", type: "text" },
+          { key: "shop", label: "Shop Link Text", type: "text" },
+          { key: "about", label: "About Link Text", type: "text" },
+          { key: "contact", label: "Contact Link Text", type: "text" },
+        ],
+      },
+      {
+        section: "mega",
+        label: "Mega Menu Content",
+        fields: [
+          { key: "cat_title", label: "Categories Title", type: "text" },
+          { key: "cat_1", label: "Category 1 Label", type: "text" },
+          { key: "cat_1_url", label: "Category 1 URL", type: "text", placeholder: "/shop?category=..." },
+          { key: "cat_2", label: "Category 2 Label", type: "text" },
+          { key: "cat_2_url", label: "Category 2 URL", type: "text" },
+          { key: "cat_3", label: "Category 3 Label", type: "text" },
+          { key: "cat_3_url", label: "Category 3 URL", type: "text" },
+          { key: "cat_4", label: "Category 4 Label", type: "text" },
+          { key: "cat_4_url", label: "Category 4 URL", type: "text" },
+          { key: "cat_5", label: "Category 5 Label", type: "text" },
+          { key: "cat_5_url", label: "Category 5 URL", type: "text" },
+          { key: "col_title", label: "Collections Title", type: "text" },
+          { key: "col_1", label: "Collection 1 Label", type: "text" },
+          { key: "col_2", label: "Collection 2 Label", type: "text" },
+          { key: "col_3", label: "Collection 3 Label", type: "text" },
+          { key: "col_4", label: "Collection 4 Label", type: "text" },
+          { key: "featured_img", label: "Featured Image", type: "image" },
+          { key: "featured_badge", label: "Featured Badge", type: "text" },
+          { key: "featured_title", label: "Featured Title", type: "text" },
+          { key: "featured_desc", label: "Featured Description", type: "textarea" },
+          { key: "featured_btn", label: "Featured Button Text", type: "text" },
+        ],
+      },
+    ],
+  },
 ];
 
 export default function AdminPagesClient({ initialContent }: { initialContent: any[] }) {
@@ -307,6 +357,7 @@ export default function AdminPagesClient({ initialContent }: { initialContent: a
       <div className={styles.tabGroup} style={{ width: "100%", maxWidth: "none", justifyContent: "flex-start", marginBottom: "2rem" }}>
         {[
           { id: "home", label: "Home Page", icon: <Home size={18} /> },
+          { id: "navbar", label: "Mega Menu", icon: <Layout size={18} /> },
           { id: "about", label: "About Page", icon: <BookOpen size={18} /> },
           { id: "contact", label: "Contact Page", icon: <Mail size={18} /> },
           { id: "footer", label: "Footer", icon: <Layout size={18} /> },
