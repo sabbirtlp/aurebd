@@ -89,49 +89,51 @@ export default function Navbar() {
                 </span>
               </Link>
               <div className={styles.megaMenu}>
-                <div className={styles.megaCol}>
-                  <h3 className={styles.megaTitle}>
-                    <Editable page="navbar" section="mega" field="cat_title" defaultText={language === 'bn' ? 'ক্যাটাগরি' : 'Categories'} />
-                  </h3>
-                  <ul className={styles.megaList}>
-                    <li>
-                      <Link href={getUrl('cat_1_url', '/shop?category=Radiance%20Serums')} className={styles.megaLink}>
-                        <Editable page="navbar" section="mega" field="cat_1" defaultText={tr('cat.serums')} />
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href={getUrl('cat_2_url', '/shop?category=Hydration%20Creams')} className={styles.megaLink}>
-                        <Editable page="navbar" section="mega" field="cat_2" defaultText={tr('cat.creams')} />
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href={getUrl('cat_3_url', '/shop?category=UV%20Protection')} className={styles.megaLink}>
-                        <Editable page="navbar" section="mega" field="cat_3" defaultText={tr('cat.uv')} />
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href={getUrl('cat_4_url', '/shop?category=Skin%20Essentials')} className={styles.megaLink}>
-                        <Editable page="navbar" section="mega" field="cat_4" defaultText={tr('cat.essentials')} />
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href={getUrl('cat_5_url', '/shop?category=Cleansers')} className={styles.megaLink}>
-                        <Editable page="navbar" section="mega" field="cat_5" defaultText={language === 'bn' ? 'ক্লিনজার' : 'Cleansers'} />
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
+                <div className={styles.megaLinksCol}>
+                  <div className={styles.megaLinksSection}>
+                    <h3 className={styles.megaTitle}>
+                      <Editable page="navbar" section="mega" field="cat_title" defaultText={language === 'bn' ? 'ক্যাটাগরি' : 'Categories'} />
+                    </h3>
+                    <ul className={styles.megaList}>
+                      <li>
+                        <Link href={getUrl('cat_1_url', '/shop?category=Radiance%20Serums')} className={styles.megaLink}>
+                          <Editable page="navbar" section="mega" field="cat_1" defaultText={tr('cat.serums')} />
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href={getUrl('cat_2_url', '/shop?category=Hydration%20Creams')} className={styles.megaLink}>
+                          <Editable page="navbar" section="mega" field="cat_2" defaultText={tr('cat.creams')} />
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href={getUrl('cat_3_url', '/shop?category=UV%20Protection')} className={styles.megaLink}>
+                          <Editable page="navbar" section="mega" field="cat_3" defaultText={tr('cat.uv')} />
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href={getUrl('cat_4_url', '/shop?category=Skin%20Essentials')} className={styles.megaLink}>
+                          <Editable page="navbar" section="mega" field="cat_4" defaultText={tr('cat.essentials')} />
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href={getUrl('cat_5_url', '/shop?category=Cleansers')} className={styles.megaLink}>
+                          <Editable page="navbar" section="mega" field="cat_5" defaultText={language === 'bn' ? 'ক্লিনজার' : 'Cleansers'} />
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
 
-                <div className={styles.megaCol}>
-                  <h3 className={styles.megaTitle}>
-                    <Editable page="navbar" section="mega" field="col_title" defaultText={language === 'bn' ? 'কালেকশন' : 'Collections'} />
-                  </h3>
-                  <ul className={styles.megaList}>
-                    <li><Link href="/shop" className={styles.megaLink}><Editable page="navbar" section="mega" field="col_1" defaultText={language === 'bn' ? 'নতুন পণ্য' : 'New Arrivals'} /></Link></li>
-                    <li><Link href="/shop" className={styles.megaLink}><Editable page="navbar" section="mega" field="col_2" defaultText={language === 'bn' ? 'সেরা বিক্রয়' : 'Best Sellers'} /></Link></li>
-                    <li><Link href="/shop" className={styles.megaLink}><Editable page="navbar" section="mega" field="col_3" defaultText={language === 'bn' ? 'গিফট সেট' : 'Gift Sets'} /></Link></li>
-                    <li><Link href="/shop" className={styles.megaLink}><Editable page="navbar" section="mega" field="col_4" defaultText={language === 'bn' ? 'অফারসমূহ' : 'Special Offers'} /></Link></li>
-                  </ul>
+                  <div className={styles.megaLinksSection}>
+                    <h3 className={styles.megaTitle}>
+                      <Editable page="navbar" section="mega" field="col_title" defaultText={language === 'bn' ? 'কালেকশন' : 'Collections'} />
+                    </h3>
+                    <ul className={styles.megaList}>
+                      <li><Link href="/shop" className={styles.megaLink}><Editable page="navbar" section="mega" field="col_1" defaultText={language === 'bn' ? 'নতুন পণ্য' : 'New Arrivals'} /></Link></li>
+                      <li><Link href="/shop" className={styles.megaLink}><Editable page="navbar" section="mega" field="col_2" defaultText={language === 'bn' ? 'সেরা বিক্রয়' : 'Best Sellers'} /></Link></li>
+                      <li><Link href="/shop" className={styles.megaLink}><Editable page="navbar" section="mega" field="col_3" defaultText={language === 'bn' ? 'গিফট সেট' : 'Gift Sets'} /></Link></li>
+                      <li><Link href="/shop" className={styles.megaLink}><Editable page="navbar" section="mega" field="col_4" defaultText={language === 'bn' ? 'অফারসমূহ' : 'Special Offers'} /></Link></li>
+                    </ul>
+                  </div>
                 </div>
 
                 <div className={styles.megaFeatured}>
