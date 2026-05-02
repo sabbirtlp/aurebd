@@ -24,6 +24,7 @@ export default function EditProductClient({ product }: { product: any }) {
     category: product.category || CATEGORIES[0],
     isNewArrival: product.isNewArrival || false,
     isBestSeller: product.isBestSeller || false,
+    discountPrice: product.discountPrice?.toString() || "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -109,6 +110,11 @@ export default function EditProductClient({ product }: { product: any }) {
             <div className={styles.formGroup}>
               <label className={styles.formLabel}>Price (৳)</label>
               <input type="number" name="price" value={form.price} onChange={handleChange} className={styles.formInput} required />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Discount Price (৳) - Optional</label>
+              <input type="number" name="discountPrice" value={form.discountPrice} onChange={handleChange} className={styles.formInput} />
             </div>
 
             <div className={styles.formGroup}>

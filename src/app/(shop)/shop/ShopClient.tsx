@@ -34,11 +34,21 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
   const filteredAndSortedProducts = useMemo(() => {
     let result = [...initialProducts];
 
-    // Filter by Category or Promotional Flag
+    // Smart Automatic Filtering for Promotional Collections
+    const FOURTEEN_DAYS_MS = 14 * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+
     if (activeCategory === "New Arrivals") {
-      result = result.filter(p => p.isNewArrival);
+      result = result.filter(p => {
+        const isRecent = p.createdAt && (now - new Date(p.createdAt).getTime() < FOURTEEN_DAYS_MS);
+        return p.isNewArrival || isRecent;
+      });
     } else if (activeCategory === "Best Sellers") {
-      result = result.filter(p => p.isBestSeller);
+      result = result.filter(p => p.isBestSeller || (p.soldCount && p.soldCount >= 20));
+    } else if (activeCategory === "Special Offers" || activeCategory === "Offers") {
+      result = result.filter(p => p.discountPrice && p.discountPrice < p.price);
+    } else if (activeCategory === "Gift Sets") {
+      result = result.filter(p => p.category === "Sets");
     } else if (activeCategory !== "All") {
       const categoryMap: any = {
         "Skin Essentials": ["Sets"],

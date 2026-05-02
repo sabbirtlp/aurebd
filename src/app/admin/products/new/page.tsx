@@ -22,6 +22,7 @@ export default function NewProductPage() {
     category: CATEGORIES[0],
     isNewArrival: false,
     isBestSeller: false,
+    discountPrice: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -110,6 +111,18 @@ export default function NewProductPage() {
                 className={styles.formInput}
                 placeholder="e.g. 450"
                 required
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Discount Price (৳) - Optional</label>
+              <input
+                type="number"
+                name="discountPrice"
+                value={form.discountPrice}
+                onChange={handleChange}
+                className={styles.formInput}
+                placeholder="e.g. 399"
               />
             </div>
 
