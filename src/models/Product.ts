@@ -15,6 +15,8 @@ const ProductSchema = new mongoose.Schema({
   gallery: [{ type: String }],
   stock: { type: Number, required: true, default: 0 },
   category: { type: String, required: true },
+  isNewArrival: { type: Boolean, default: false },
+  isBestSeller: { type: Boolean, default: false },
   reviews: [ReviewSchema],
   rating: { type: Number, default: 0 },
   numReviews: { type: Number, default: 0 },

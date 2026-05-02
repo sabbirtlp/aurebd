@@ -20,6 +20,8 @@ export default function NewProductPage() {
     gallery: [] as string[],
     stock: "",
     category: CATEGORIES[0],
+    isNewArrival: false,
+    isBestSeller: false,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -140,6 +142,31 @@ export default function NewProductPage() {
                 onChange={(images) => setForm({ ...form, gallery: images })}
                 maxImages={10}
               />
+            </div>
+
+            <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
+              <div style={{ display: "flex", gap: "2rem", padding: "1rem", background: "rgba(0,0,0,0.05)", borderRadius: "12px" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
+                  <input 
+                    type="checkbox" 
+                    name="isNewArrival" 
+                    checked={form.isNewArrival} 
+                    onChange={(e) => setForm({ ...form, isNewArrival: e.target.checked })}
+                    style={{ width: "1.2rem", height: "1.2rem" }}
+                  />
+                  <span>Mark as New Arrival</span>
+                </label>
+                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
+                  <input 
+                    type="checkbox" 
+                    name="isBestSeller" 
+                    checked={form.isBestSeller} 
+                    onChange={(e) => setForm({ ...form, isBestSeller: e.target.checked })}
+                    style={{ width: "1.2rem", height: "1.2rem" }}
+                  />
+                  <span>Mark as Best Seller</span>
+                </label>
+              </div>
             </div>
 
             <div className={`${styles.formGroup} ${styles.formGroupFull}`}>

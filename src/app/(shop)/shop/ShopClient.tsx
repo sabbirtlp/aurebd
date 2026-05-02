@@ -34,8 +34,12 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
   const filteredAndSortedProducts = useMemo(() => {
     let result = [...initialProducts];
 
-    // Filter by Category
-    if (activeCategory !== "All") {
+    // Filter by Category or Promotional Flag
+    if (activeCategory === "New Arrivals") {
+      result = result.filter(p => p.isNewArrival);
+    } else if (activeCategory === "Best Sellers") {
+      result = result.filter(p => p.isBestSeller);
+    } else if (activeCategory !== "All") {
       const categoryMap: any = {
         "Skin Essentials": ["Sets"],
         "Radiance Serums": ["Serums"],

@@ -22,6 +22,8 @@ export default function EditProductClient({ product }: { product: any }) {
     gallery: product.gallery || [],
     stock: product.stock?.toString() || "",
     category: product.category || CATEGORIES[0],
+    isNewArrival: product.isNewArrival || false,
+    isBestSeller: product.isBestSeller || false,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -130,6 +132,37 @@ export default function EditProductClient({ product }: { product: any }) {
                 onChange={handleGalleryChange}
                 maxImages={10}
               />
+            </div>
+
+            <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
+              <div style={{ display: "flex", gap: "2rem", padding: "1rem", background: "rgba(0,0,0,0.05)", borderRadius: "12px" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
+                  <input 
+                    type="checkbox" 
+                    name="isNewArrival" 
+                    checked={form.isNewArrival} 
+                    onChange={(e) => {
+                      setForm({ ...form, isNewArrival: e.target.checked });
+                      setIsSaved(false);
+                    }}
+                    style={{ width: "1.2rem", height: "1.2rem" }}
+                  />
+                  <span>Mark as New Arrival</span>
+                </label>
+                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
+                  <input 
+                    type="checkbox" 
+                    name="isBestSeller" 
+                    checked={form.isBestSeller} 
+                    onChange={(e) => {
+                      setForm({ ...form, isBestSeller: e.target.checked });
+                      setIsSaved(false);
+                    }}
+                    style={{ width: "1.2rem", height: "1.2rem" }}
+                  />
+                  <span>Mark as Best Seller</span>
+                </label>
+              </div>
             </div>
 
             <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
