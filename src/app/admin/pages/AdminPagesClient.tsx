@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import styles from "../admin.module.css";
 import ImageUpload from "@/components/admin/ImageUpload";
+import AIAssistant from "@/components/admin/AIAssistant";
 
 // Define types for CMS sections
 interface Field {
@@ -392,7 +393,8 @@ export default function AdminPagesClient({ initialContent }: { initialContent: a
                   <div key={field.key} className={styles.contentField}>
                     <div className={styles.contentFieldLabel}>{field.label}</div>
                     {field.type === "textarea" ? (
-                      <textarea
+                      <>
+                        <textarea
                         value={getValue(pageGroup.page, sec.section, field.key)}
                         onChange={(e) => setValue(pageGroup.page, sec.section, field.key, e.target.value)}
                         className={styles.formInput}
@@ -400,7 +402,17 @@ export default function AdminPagesClient({ initialContent }: { initialContent: a
                         placeholder={field.placeholder}
                         style={{ resize: "vertical" }}
                       />
-                    ) : field.type === "image" ? (
+                      <div style={{ marginTop: '0.5rem' }}>
+                        <AIAssistant 
+                          productName={`${pageGroup.label} - ${sec.label}`}
+                          category="CMS Content"
+                          field={field.label}
+                          existingContent={getValue(pageGroup.page, sec.section, field.key)}
+                          onGenerate={(text) => setValue(pageGroup.page, sec.section, field.key, text)}
+                        />
+                      </div>
+                    </>
+                  ) : field.type === "image" ? (
                       <div style={{ marginTop: "0.5rem" }}>
                         <ImageUpload
                           label={""}
@@ -410,14 +422,25 @@ export default function AdminPagesClient({ initialContent }: { initialContent: a
                         />
                       </div>
                     ) : (
-                      <input
+                      <>
+                        <input
                         type="text"
                         value={getValue(pageGroup.page, sec.section, field.key)}
                         onChange={(e) => setValue(pageGroup.page, sec.section, field.key, e.target.value)}
                         className={styles.formInput}
                         placeholder={field.placeholder}
                       />
-                    )}
+                      <div style={{ marginTop: '0.5rem' }}>
+                        <AIAssistant 
+                          productName={`${pageGroup.label} - ${sec.label}`}
+                          category="CMS Content"
+                          field={field.label}
+                          existingContent={getValue(pageGroup.page, sec.section, field.key)}
+                          onGenerate={(text) => setValue(pageGroup.page, sec.section, field.key, text)}
+                        />
+                      </div>
+                    </>
+                  )}
                   </div>
                 ))}
               </div>

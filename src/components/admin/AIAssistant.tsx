@@ -6,8 +6,8 @@ import { toast } from "react-toastify";
 
 interface AIAssistantProps {
   productName: string;
-  category: string;
-  field: "description" | "ingredients" | "howToUse";
+  category?: string;
+  field: string;
   existingContent?: string;
   onGenerate: (text: string) => void;
 }
@@ -94,7 +94,7 @@ export default function AIAssistant({ productName, category, field, existingCont
           type="text"
           value={customPrompt}
           onChange={(e) => setCustomPrompt(e.target.value)}
-          placeholder={`Custom instructions for ${fieldLabels[field]}...`}
+          placeholder={`Custom instructions for ${fieldLabels[field] || field}...`}
           style={{
             flex: 1,
             background: 'transparent',
