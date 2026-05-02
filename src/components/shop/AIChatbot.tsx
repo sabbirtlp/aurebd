@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { MessageSquare, X, Send, Sparkles, Loader2, Minimize2 } from "lucide-react";
+import { MessageSquare, X, Send, Sparkles, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import styles from "./AIChatbot.module.css";
 
 interface Message {
   role: "user" | "assistant";
@@ -60,102 +61,79 @@ export default function AIChatbot() {
   };
 
   return (
-    <div className="fixed z-[9999] font-sans" style={{ bottom: '24px', right: '24px' }}>
+    <div className={styles.chatbotContainer}>
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="nm-card flex flex-col overflow-hidden"
-            style={{ 
-              marginBottom: '1rem', 
-              width: '380px', 
-              maxWidth: '90vw', 
-              height: '550px',
-              border: '1px solid var(--border)',
-              background: 'var(--bg-color)'
-            }}
+            className={styles.chatWindow}
           >
             {/* Header */}
-            <div className="p-5 flex items-center justify-between" style={{ background: 'var(--primary)', color: 'white' }}>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md">
-                  <Sparkles className="w-5 h-5 text-white" />
+            <div className={styles.header}>
+              <div className={styles.headerInfo}>
+                <div className={styles.avatar}>
+                  <Sparkles className="w-5 h-5" />
                 </div>
-                <div>
-                  <h3 className="font-bold text-sm tracking-wide uppercase m-0">Aurea Assistant</h3>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
-                    <span className="text-[10px] font-medium opacity-80 uppercase tracking-tighter">Online • Concierge</span>
+                <div className={styles.titleBox}>
+                  <h3>Aurea Assistant</h3>
+                  <div className={styles.status}>
+                    <span className={styles.statusDot}></span>
+                    ONLINE • CONCIERGE
                   </div>
                 </div>
               </div>
-              <button onClick={() => setIsOpen(false)} className="hover:rotate-90 transition-transform p-1 bg-transparent border-none text-white cursor-pointer">
+              <button onClick={() => setIsOpen(false)} className={styles.closeBtn}>
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Messages */}
-            <div 
-              ref={scrollRef}
-              className="flex-1 overflow-y-auto p-5 space-y-4"
-              style={{ background: 'var(--bg-color)' }}
-            >
+            <div ref={scrollRef} className={styles.messageArea}>
               {messages.map((m, i) => (
                 <motion.div
+                  key={i}
                   initial={{ opacity: 0, x: m.role === 'user' ? 10 : -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  key={i}
-                  className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`${styles.messageRow} ${m.role === 'user' ? styles.userRow : styles.assistantRow}`}
                 >
-                  <div className={`max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed ${
-                    m.role === 'user' 
-                      ? 'text-white rounded-tr-none' 
-                      : 'text-gray-800 shadow-sm border rounded-tl-none'
-                  }`}
-                  style={{
-                    background: m.role === 'user' ? 'var(--primary)' : 'var(--nm-light)',
-                    borderColor: m.role === 'assistant' ? 'var(--border)' : 'transparent',
-                    color: m.role === 'user' ? 'white' : 'var(--text-dark)'
-                  }}>
+                  <div className={`${styles.message} ${m.role === 'user' ? styles.userMessage : styles.assistantMessage}`}>
                     {m.content}
                   </div>
                 </motion.div>
               ))}
               {loading && (
-                <div className="flex justify-start">
-                  <div className="p-4 rounded-2xl rounded-tl-none border shadow-sm" style={{ background: 'var(--nm-light)', borderColor: 'var(--border)' }}>
-                    <Loader2 className="w-4 h-4 animate-spin" style={{ color: 'var(--primary)' }} />
+                <div className={styles.messageRow}>
+                  <div className={`${styles.message} ${styles.assistantMessage}`}>
+                    <Loader2 className={`${styles.loader} w-4 h-4`} />
                   </div>
                 </div>
               )}
             </div>
 
             {/* Input */}
-            <div className="p-4 border-t" style={{ background: 'var(--bg-color)', borderColor: 'var(--border)' }}>
-              <div className="flex items-center gap-2 rounded-2xl p-2 px-4 nm-inset transition-colors" style={{ borderColor: 'var(--border)' }}>
+            <div className={styles.inputArea}>
+              <div className={styles.inputWrapper}>
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                   placeholder="Ask me anything..."
-                  className="flex-1 bg-transparent border-none outline-none text-sm py-2"
-                  style={{ color: 'var(--text-dark)' }}
+                  className={styles.inputField}
                 />
                 <button 
                   onClick={handleSend}
                   disabled={!input.trim() || loading}
-                  className="p-2 border-none rounded-xl hover:opacity-90 disabled:opacity-30 transition-all cursor-pointer"
-                  style={{ background: 'var(--primary)', color: 'white' }}
+                  className={styles.sendBtn}
                 >
                   <Send className="w-4 h-4" />
                 </button>
               </div>
-              <p className="text-[9px] text-center mt-3 uppercase tracking-widest font-black opacity-30">
+              <div className={styles.footer}>
                 Powered by Aurea Intelligence
-              </p>
+              </div>
             </div>
           </motion.div>
         )}
@@ -166,21 +144,12 @@ export default function AIChatbot() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="btn-nm flex items-center justify-center p-0"
-        style={{ 
-          width: '64px', 
-          height: '64px', 
-          borderRadius: '50%',
-          background: isOpen ? 'var(--bg-color)' : 'var(--primary)',
-          color: isOpen ? 'var(--primary)' : 'white',
-          boxShadow: isOpen ? 'var(--nm-inner-pressed)' : 'var(--nm-outer-raised)',
-          border: '1px solid var(--border)'
-        }}
+        className={`${styles.toggleBtn} ${isOpen ? styles.toggleBtnOpen : ''}`}
       >
         {isOpen ? <X className="w-7 h-7" /> : (
           <div className="relative">
             <MessageSquare className="w-7 h-7" />
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2" style={{ borderColor: 'var(--primary)' }}></span>
+            <div className={styles.dot}></div>
           </div>
         )}
       </motion.button>
