@@ -208,7 +208,7 @@ export default function HomeClient({ products }: { products: any[] }) {
             <p className={styles.sectionSubtitle}><Editable page="home" section="new_arrivals" field="subtitle" defaultText={tr('prod.new_subtitle')} /></p>
           </header>
           <div className={styles.productGrid}>
-            {products.slice(0, 4).map((product: any, idx: number) => (
+            {products.slice(0, 3).map((product: any, idx: number) => (
               <motion.div 
                 key={product._id}
                 initial={{ opacity: 0, y: 20 }}
@@ -263,7 +263,7 @@ export default function HomeClient({ products }: { products: any[] }) {
             <p className={styles.sectionSubtitle}><Editable page="home" section="best_sellers" field="subtitle" defaultText={tr('prod.best_subtitle')} /></p>
           </header>
           <div className={styles.productGrid}>
-            {products.slice(4, 8).map((product: any, idx: number) => (
+            {products.slice(3, 6).map((product: any, idx: number) => (
               <motion.div 
                 key={product._id}
                 initial={{ opacity: 0, y: 20 }}
@@ -275,7 +275,7 @@ export default function HomeClient({ products }: { products: any[] }) {
                 <ProductCard product={product} />
               </motion.div>
             ))}
-            {products.length < 5 && products.slice(0, 4).map((product: any, idx: number) => (
+            {products.length < 4 && products.slice(0, 3).map((product: any, idx: number) => (
               <motion.div 
                 key={product._id + '-dup'}
                 initial={{ opacity: 0, y: 20 }}
