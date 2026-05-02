@@ -1,0 +1,50 @@
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions";
+import { NextResponse } from "next/server";
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+
+export async function POST(req: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== "admin") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    if (!process.env.GEMINI_API_KEY) {
+      return NextResponse.json({ message: "AI API Key not configured. Please add GEMINI_API_KEY to your environment variables." }, { status: 500 });
+    }
+
+    const { name, category, features, field } = await req.json();
+
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    let prompt = "";
+    if (field === "description") {
+      prompt = `Generate a luxury skincare product description for a product named "${name}" in the "${category}" category. 
+      Key features: ${features}. 
+      Style: Elegant, persuasive, and professional. 
+      Format: A single paragraph of about 100-150 words. Do not use markdown headers.`;
+    } else if (field === "ingredients") {
+      prompt = `Generate a list of ingredients for a luxury skincare product named "${name}" (${category}). 
+      Key features: ${features}. 
+      Style: Scientific yet accessible. 
+      Format: A clean bulleted list of premium ingredients. Use HTML <ul> and <li> tags.`;
+    } else if (field === "howToUse") {
+      prompt = `Generate "How To Use" instructions for a skincare product named "${name}" (${category}). 
+      Key features: ${features}. 
+      Style: Instructional and spa-like. 
+      Format: A numbered list of 3-5 steps. Use HTML <ol> and <li> tags.`;
+    }
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+
+    return NextResponse.json({ text });
+  } catch (error: any) {
+    console.error("AI Generation Error:", error);
+    return NextResponse.json({ message: "AI Generation failed" }, { status: 500 });
+  }
+}

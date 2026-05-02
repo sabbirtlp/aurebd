@@ -8,6 +8,7 @@ import Image from "next/image";
 import styles from "../../../admin.module.css";
 import ImageUpload from "@/components/admin/ImageUpload";
 import RichTextEditor from "@/components/admin/RichTextEditor";
+import AIAssistant from "@/components/admin/AIAssistant";
 
 const CATEGORIES = ["Sets", "Serums", "Creams", "Sunscreen", "Cleansers", "Radiance Serums", "Hydration Creams", "UV Protection", "Skin Essentials"];
 
@@ -203,6 +204,15 @@ export default function EditProductClient({ product }: { product: any }) {
             </div>
 
             <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
+              <AIAssistant 
+                productName={form.name} 
+                category={form.category} 
+                field="ingredients" 
+                onGenerate={(text) => {
+                  setForm({ ...form, ingredients: text });
+                  setIsSaved(false);
+                }} 
+              />
               <RichTextEditor 
                 label="Ingredients"
                 value={form.ingredients}
@@ -214,6 +224,15 @@ export default function EditProductClient({ product }: { product: any }) {
             </div>
 
             <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
+              <AIAssistant 
+                productName={form.name} 
+                category={form.category} 
+                field="howToUse" 
+                onGenerate={(text) => {
+                  setForm({ ...form, howToUse: text });
+                  setIsSaved(false);
+                }} 
+              />
               <RichTextEditor 
                 label="How To Use"
                 value={form.howToUse}
@@ -225,7 +244,18 @@ export default function EditProductClient({ product }: { product: any }) {
             </div>
 
             <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
-              <label className={styles.formLabel}>Description</label>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "0.5rem" }}>
+                <label className={styles.formLabel} style={{ marginBottom: 0 }}>Description</label>
+                <AIAssistant 
+                  productName={form.name} 
+                  category={form.category} 
+                  field="description" 
+                  onGenerate={(text) => {
+                    setForm({ ...form, description: text });
+                    setIsSaved(false);
+                  }} 
+                />
+              </div>
               <textarea name="description" value={form.description} onChange={handleChange} className={styles.formInput} rows={4} required style={{ resize: "vertical" }} />
             </div>
           </div>
