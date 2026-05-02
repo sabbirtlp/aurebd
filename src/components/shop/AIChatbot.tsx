@@ -10,6 +10,7 @@ interface Message {
 }
 
 export default function AIChatbot() {
+  const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     { role: "assistant", content: "Welcome to Aurea BD. I am your personal skincare concierge. How may I assist your beauty journey today? ✨" }
@@ -19,10 +20,16 @@ export default function AIChatbot() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, isOpen]);
+
+  if (!mounted) return null;
 
   const handleSend = async () => {
     if (!input.trim() || loading) return;
