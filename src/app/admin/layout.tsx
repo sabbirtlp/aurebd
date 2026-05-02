@@ -3,7 +3,9 @@ import { authOptions } from "@/lib/authOptions";
 import { redirect } from "next/navigation";
 import AdminSidebar from "./AdminSidebar";
 import styles from "./admin.module.css";
-import AIChatbot from "@/components/admin/AIChatbot";
+import dynamic from "next/dynamic";
+
+const AIChatbot = dynamic(() => import("@/components/admin/AIChatbot"), { ssr: false });
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
