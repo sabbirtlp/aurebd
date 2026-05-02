@@ -40,7 +40,7 @@ export async function seedDatabase() {
 
 async function _getFeaturedProducts() {
   await dbConnect();
-  return await Product.find({}).select("name slug price image category").limit(8).lean();
+  return await Product.find({}).select("name slug price image category stock").limit(8).lean();
 }
 
 export const getFeaturedProducts = unstable_cache(

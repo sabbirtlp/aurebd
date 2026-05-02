@@ -79,6 +79,13 @@ export default function ProductCard({ product }: ProductCardProps) {
           />
         </Link>
         
+        {/* Out of Stock Badge */}
+        {product.stock <= 0 && (
+          <div className={styles.stockBadge}>
+            {language === 'bn' ? 'স্টক নেই' : 'Out of Stock'}
+          </div>
+        )}
+        
         {/* Wishlist Button */}
         <button 
           className={`${styles.wishlistBtn} ${isWishlisted ? styles.wishlisted : ""}`} 
@@ -107,10 +114,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         onClick={handleAddToCart}
         disabled={product.stock <= 0}
       >
-        {product.stock > 0 
-          ? (language === 'bn' ? 'কার্টে যোগ করুন' : 'Quick Add') 
-          : (language === 'bn' ? 'স্টক নেই' : 'Out of Stock')
-        }
+        {language === 'bn' ? 'কার্টে যোগ করুন' : 'Add to Cart'}
       </button>
 
       <div className={styles.info}>
