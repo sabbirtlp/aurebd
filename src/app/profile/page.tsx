@@ -24,7 +24,10 @@ export default function DashboardPage() {
   const { data: session } = useSession();
   const [stats, setStats] = useState<Stat[]>([]);
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
+  const [hasPassword, setHasPassword] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [newPassword, setNewPassword] = useState("");
+  const [passwordLoading, setPasswordLoading] = useState(false);
 
   useEffect(() => {
     async function fetchStats() {
@@ -34,6 +37,7 @@ export default function DashboardPage() {
           const data = await res.json();
           setStats(data.stats);
           setRecentOrders(data.recentOrders);
+          setHasPassword(data.hasPassword);
         }
       } catch (err) {
         console.error("Failed to fetch profile stats");
@@ -43,6 +47,36 @@ export default function DashboardPage() {
     }
     fetchStats();
   }, []);
+
+  const handleSetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPassword.length < 6) {
+      alert("Password must be at least 6 characters");
+      return;
+    }
+
+    setPasswordLoading(true);
+    try {
+      const res = await fetch("/api/profile/password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: newPassword }),
+      });
+
+      if (res.ok) {
+        alert("Password set successfully!");
+        setHasPassword(true);
+        setNewPassword("");
+      } else {
+        const data = await res.json();
+        alert(data.message || "Failed to set password");
+      }
+    } catch (err) {
+      alert("Something went wrong");
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!loading) {
@@ -110,6 +144,43 @@ export default function DashboardPage() {
           </motion.div>
         ))}
       </div>
+
+      {/* SECURITY - SETUP PASSWORD */}
+      {!hasPassword && (
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className={styles.card}
+          style={{ marginBottom: '2rem', border: '1px solid var(--primary)', background: 'rgba(var(--primary-rgb), 0.05)' }}
+        >
+          <div className={styles.cardHeader}>
+            <div className={styles.cardTitleGroup}>
+              <h3>Setup Your Password</h3>
+              <p>You created this account during guest checkout. Set a password to log in easily next time.</p>
+            </div>
+          </div>
+          <form onSubmit={handleSetPassword} style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+            <input 
+              type="password" 
+              placeholder="New Password (min 6 characters)" 
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className={styles.nmInput}
+              style={{ flex: 1, minWidth: '250px' }}
+              required
+            />
+            <button 
+              type="submit" 
+              className="btn-nm btn-nm-primary" 
+              disabled={passwordLoading}
+              style={{ height: '48px', minWidth: '150px' }}
+            >
+              {passwordLoading ? 'Saving...' : 'Set Password'}
+            </button>
+          </form>
+        </motion.div>
+      )}
 
       {/* RECENT ORDERS */}
       <motion.div 

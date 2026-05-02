@@ -6,6 +6,7 @@ import { authOptions } from "@/lib/authOptions";
 import dbConnect from "@/lib/db";
 
 import Order from "@/models/Order";
+import User from "@/models/User";
 
 export async function GET() {
   try {
@@ -16,6 +17,10 @@ export async function GET() {
     }
 
     await dbConnect();
+
+    // Check if user has password
+    const user = await User.findById((session.user as any).id).select('password');
+    const hasPassword = !!user?.password;
 
     // Fetch stats
     const orders = await Order.find({ user: (session.user as any).id });
@@ -31,6 +36,7 @@ export async function GET() {
       .lean();
 
     return NextResponse.json({
+      hasPassword,
       stats: [
         { label: "Total Orders", value: totalOrders.toString().padStart(2, '0') },
         { label: "Pending", value: pendingOrders.toString().padStart(2, '0') },

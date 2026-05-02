@@ -1,5 +1,6 @@
 import dbConnect from "@/lib/db";
 import Order from "@/models/Order";
+import User from "@/models/User";
 import Product from "@/models/Product";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
@@ -8,18 +9,38 @@ import { sendAdminOrderNotification } from "@/lib/email";
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+    let userId;
+    let session = await getServerSession(authOptions);
 
     await dbConnect();
     const body = await req.json();
     const { items, totalAmount, shippingAddress, paymentMethod } = body;
 
+    if (session) {
+      userId = session.user.id;
+    } else {
+      // Guest Checkout - Create or find user
+      const { fullName, email, phone } = shippingAddress;
+      if (!email) {
+        return NextResponse.json({ message: "Email is required for checkout" }, { status: 400 });
+      }
+      
+      let user = await User.findOne({ email });
+      if (!user) {
+        // Create a new user without a password (they can set it later)
+        user = await User.create({
+          name: fullName,
+          email,
+          phone,
+          role: 'user'
+        });
+      }
+      userId = user._id;
+    }
+
     // Create the order
     const order = await Order.create({
-      user: session.user.id,
+      user: userId,
       items,
       totalAmount,
       shippingAddress,

@@ -1814,3 +1814,27 @@
     grid-template-columns: 1fr;
   }
 }
+
+.card {
+  background: var(--bg-color);
+  border-radius: 32px;
+  padding: var(--sp-8);
+  box-shadow: var(--nm-outer-raised);
+  border: 1px solid var(--border);
+}
+
+.nmInput {
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  background: var(--bg-color);
+  box-shadow: var(--nm-inner-pressed);
+  outline: none;
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  transition: all 0.3s ease;
+}
+
+.nmInput:focus {
+  box-shadow: var(--nm-inner-pressed), 0 0 0 2px rgba(203, 163, 148, 0.3);
+}

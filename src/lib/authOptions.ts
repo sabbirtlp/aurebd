@@ -27,7 +27,7 @@ export const authOptions: NextAuthOptions = {
           throw new Error("User not found");
         }
         if (!user.password) {
-          throw new Error("Please login with Google for this account");
+          throw new Error("This account has no password set (likely created during guest checkout). Please use 'Forgot Password' or login with Google if you linked your account.");
         }
         const isMatch = await bcrypt.compare(credentials.password, user.password);
         if (!isMatch) {

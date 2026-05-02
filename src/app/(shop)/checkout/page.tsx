@@ -30,8 +30,8 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = async () => {
     // Basic Validation
-    if (!formData.fullName || !formData.phone || !formData.address) {
-      toast.error("Please fill in all required fields (Name, Phone, Address)");
+    if (!formData.fullName || !formData.email || !formData.phone || !formData.address) {
+      toast.error("Please fill in all required fields (Name, Email, Phone, Address)");
       return;
     }
 
@@ -112,7 +112,7 @@ export default function CheckoutPage() {
                 />
               </div>
               <div className={styles.inputField}>
-                <label>Email Address</label>
+                <label>Email Address *</label>
                 <input 
                   type="email" 
                   name="email"
@@ -120,7 +120,11 @@ export default function CheckoutPage() {
                   className={styles.nmInput} 
                   value={formData.email}
                   onChange={handleInputChange}
+                  required
                 />
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-light)', marginTop: '4px' }}>
+                  An account will be created for you automatically to track your order.
+                </p>
               </div>
               <div className={styles.inputField}>
                 <label>Phone Number *</label>
