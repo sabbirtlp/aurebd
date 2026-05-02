@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useEditable } from "@/context/EditableContext";
 import { useLanguageStore } from "@/store/languageStore";
-import { Edit2, Check, X } from "lucide-react";
+import { Edit2, Check, X, Link as LinkIcon } from "lucide-react";
+import LinkAutocomplete from "@/components/admin/LinkAutocomplete";
 
 interface EditableProps {
   page: string;
@@ -12,9 +13,10 @@ interface EditableProps {
   defaultText: string;
   className?: string;
   multiline?: boolean;
+  isLink?: boolean;
 }
 
-export default function Editable({ page, section, field, defaultText, className = "", multiline = false }: EditableProps) {
+export default function Editable({ page, section, field, defaultText, className = "", multiline = false, isLink = false }: EditableProps) {
   const { isEditMode, content, updateContent, isAdmin } = useEditable();
   const { language } = useLanguageStore();
   const [isEditing, setIsEditing] = useState(false);
@@ -54,13 +56,19 @@ export default function Editable({ page, section, field, defaultText, className 
   };
 
   if (!isEditMode || !isAdmin) {
-    return <span className={className}>{currentValue}</span>;
+    return isLink && !currentValue ? null : <span className={className}>{currentValue}</span>;
   }
 
   if (isEditing) {
     return (
-      <div className="editable-input-container" style={{ position: "relative", display: "inline-block", width: "100%", zIndex: 50 }}>
-        {multiline ? (
+      <div className="editable-input-container" style={{ position: "relative", display: "inline-block", width: "100%", zIndex: 50, minWidth: isLink ? "300px" : "auto" }}>
+        {isLink ? (
+          <LinkAutocomplete 
+            value={tempValue} 
+            onChange={(val) => setTempValue(val)} 
+            placeholder="Search for internal link..."
+          />
+        ) : multiline ? (
           <textarea
             ref={inputRef as any}
             value={tempValue}
@@ -102,6 +110,8 @@ export default function Editable({ page, section, field, defaultText, className 
     );
   }
 
+  const displayValue = isLink ? (currentValue || "Add Link") : currentValue;
+
   return (
     <span 
       className={`${className} editable-highlight`}
@@ -109,14 +119,17 @@ export default function Editable({ page, section, field, defaultText, className 
       style={{ 
         cursor: "pointer", 
         position: "relative",
-        border: "1px dashed var(--primary)",
+        border: isLink ? "1px solid var(--primary)" : "1px dashed var(--primary)",
         borderRadius: "4px",
-        padding: "2px 4px",
+        padding: "2px 8px",
         display: "inline-block",
-        transition: "all 0.2s"
+        transition: "all 0.2s",
+        background: isLink ? "rgba(203, 163, 148, 0.1)" : "transparent",
+        fontSize: isLink ? "0.8em" : "inherit"
       }}
     >
-      {currentValue}
+      {isLink && <LinkIcon size={10} className="inline mr-1 opacity-60" />}
+      {displayValue}
       <span style={{ position: "absolute", top: "-10px", right: "-10px", background: "var(--primary)", color: "white", borderRadius: "50%", padding: "2px", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}>
         <Edit2 size={8} />
       </span>

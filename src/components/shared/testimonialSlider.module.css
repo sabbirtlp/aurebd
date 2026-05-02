@@ -8,17 +8,22 @@
 }
 
 .slider {
-  display: grid;
-  grid-template-areas: "slide";
+  display: block;
   width: 100%;
 }
 
+.track {
+  cursor: grab;
+}
+
+.track:active {
+  cursor: grabbing;
+}
+
 .slide {
-  grid-area: slide;
-  width: 33.3333%;
+  flex-shrink: 0;
   height: auto;
-  transition: transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
-  padding: var(--sp-2); /* Reduced from sp-4 (32px to 16px) */
+  padding: var(--sp-2);
 }
 
 .card {
@@ -117,12 +122,10 @@
 }
 
 @media (max-width: 1024px) {
-  .slide { width: 50%; }
   .card { padding: var(--sp-4); }
 }
 
 @media (max-width: 768px) {
-  .slide { width: 100%; }
   .card { padding: var(--sp-4); }
   .avatarRow { flex-direction: column; text-align: center; gap: var(--sp-2); }
   .text { font-size: 1.1rem; text-align: center; }

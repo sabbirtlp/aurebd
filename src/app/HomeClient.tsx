@@ -20,7 +20,7 @@ const MotionLink = motion(Link);
 
 export default function HomeClient({ products }: { products: any[] }) {
   const { t, language } = useLanguageStore();
-  const { content } = useEditable();
+  const { content, isEditMode } = useEditable();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -150,58 +150,121 @@ export default function HomeClient({ products }: { products: any[] }) {
             <p className={styles.sectionSubtitle}><Editable page="home" section="categories" field="subtitle" defaultText={tr('cat.subtitle')} /></p>
           </header>
           <div className={styles.categoryGrid}>
-            <MotionLink 
-              href={getCmsLink("serums_url", "/shop?category=Radiance%20Serums")} 
-              className={styles.categoryCard}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-            >
-              <div className={styles.categoryImgWrapper}>
-                <EditableImage page="home" section="categories" field="serums_img" defaultSrc="/images/sakura-serum.webp" alt="Serums" fill className={styles.categoryImg} sizes="(max-width: 768px) 50vw, 250px" />
-              </div>
-              <h3 className={styles.categoryName}><Editable page="home" section="categories" field="serums" defaultText={tr('cat.serums')} /></h3>
-            </MotionLink>
-            <MotionLink 
-              href={getCmsLink("creams_url", "/shop?category=Hydration%20Creams")} 
-              className={styles.categoryCard}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-            >
-              <div className={styles.categoryImgWrapper}>
-                <EditableImage page="home" section="categories" field="creams_img" defaultSrc="/images/sakura-cream.webp" alt="Creams" fill className={styles.categoryImg} sizes="(max-width: 768px) 50vw, 250px" />
-              </div>
-              <h3 className={styles.categoryName}><Editable page="home" section="categories" field="creams" defaultText={tr('cat.creams')} /></h3>
-            </MotionLink>
-            <MotionLink 
-              href={getCmsLink("uv_url", "/shop?category=UV%20Protection")} 
-              className={styles.categoryCard}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-            >
-              <div className={styles.categoryImgWrapper}>
-                <EditableImage page="home" section="categories" field="uv_img" defaultSrc="/images/sakura-sunscreen.webp" alt="UV" fill className={styles.categoryImg} sizes="(max-width: 768px) 50vw, 250px" />
-              </div>
-              <h3 className={styles.categoryName}><Editable page="home" section="categories" field="uv" defaultText={tr('cat.uv')} /></h3>
-            </MotionLink>
-            <MotionLink 
-              href={getCmsLink("essentials_url", "/shop?category=Skin%20Essentials")} 
-              className={styles.categoryCard}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4 }}
-            >
-              <div className={styles.categoryImgWrapper}>
-                <EditableImage page="home" section="categories" field="essentials_img" defaultSrc="/images/sakura-set.webp" alt="Essentials" fill className={styles.categoryImg} sizes="(max-width: 768px) 50vw, 250px" />
-              </div>
-              <h3 className={styles.categoryName}><Editable page="home" section="categories" field="essentials" defaultText={tr('cat.essentials')} /></h3>
-            </MotionLink>
+            <div className="relative group/cat">
+              <MotionLink 
+                href={getCmsLink("serums_url", "/shop?category=Radiance%20Serums")} 
+                className={styles.categoryCard}
+                style={{ overflow: isEditMode ? 'visible' : 'hidden' }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 }}
+              >
+                <div className={styles.categoryImgWrapper}>
+                  <EditableImage page="home" section="categories" field="serums_img" defaultSrc="/images/sakura-serum.webp" alt="Serums" fill className={styles.categoryImg} sizes="(max-width: 768px) 50vw, 250px" />
+                </div>
+                <h3 className={styles.categoryName}><Editable page="home" section="categories" field="serums" defaultText={tr('cat.serums')} /></h3>
+              </MotionLink>
+              {isEditMode && (
+                <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 100 }}>
+                  <Editable 
+                    page="home" 
+                    section="categories" 
+                    field="serums_url" 
+                    defaultText="/shop?category=Radiance%20Serums" 
+                    isLink={true} 
+                    className="text-[9px] bg-black/80 text-white rounded-full px-3 py-1 shadow-xl border border-white/20" 
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="relative group/cat">
+              <MotionLink 
+                href={getCmsLink("creams_url", "/shop?category=Hydration%20Creams")} 
+                className={styles.categoryCard}
+                style={{ overflow: isEditMode ? 'visible' : 'hidden' }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+              >
+                <div className={styles.categoryImgWrapper}>
+                  <EditableImage page="home" section="categories" field="creams_img" defaultSrc="/images/sakura-cream.webp" alt="Creams" fill className={styles.categoryImg} sizes="(max-width: 768px) 50vw, 250px" />
+                </div>
+                <h3 className={styles.categoryName}><Editable page="home" section="categories" field="creams" defaultText={tr('cat.creams')} /></h3>
+              </MotionLink>
+              {isEditMode && (
+                <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 100 }}>
+                  <Editable 
+                    page="home" 
+                    section="categories" 
+                    field="creams_url" 
+                    defaultText="/shop?category=Hydration%20Creams" 
+                    isLink={true} 
+                    className="text-[9px] bg-black/80 text-white rounded-full px-3 py-1 shadow-xl border border-white/20" 
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="relative group/cat">
+              <MotionLink 
+                href={getCmsLink("uv_url", "/shop?category=UV%20Protection")} 
+                className={styles.categoryCard}
+                style={{ overflow: isEditMode ? 'visible' : 'hidden' }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 }}
+              >
+                <div className={styles.categoryImgWrapper}>
+                  <EditableImage page="home" section="categories" field="uv_img" defaultSrc="/images/sakura-sunscreen.webp" alt="UV" fill className={styles.categoryImg} sizes="(max-width: 768px) 50vw, 250px" />
+                </div>
+                <h3 className={styles.categoryName}><Editable page="home" section="categories" field="uv" defaultText={tr('cat.uv')} /></h3>
+              </MotionLink>
+              {isEditMode && (
+                <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 100 }}>
+                  <Editable 
+                    page="home" 
+                    section="categories" 
+                    field="uv_url" 
+                    defaultText="/shop?category=UV%20Protection" 
+                    isLink={true} 
+                    className="text-[9px] bg-black/80 text-white rounded-full px-3 py-1 shadow-xl border border-white/20" 
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="relative group/cat">
+              <MotionLink 
+                href={getCmsLink("essentials_url", "/shop?category=Skin%20Essentials")} 
+                className={styles.categoryCard}
+                style={{ overflow: isEditMode ? 'visible' : 'hidden' }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.4 }}
+              >
+                <div className={styles.categoryImgWrapper}>
+                  <EditableImage page="home" section="categories" field="essentials_img" defaultSrc="/images/sakura-set.webp" alt="Essentials" fill className={styles.categoryImg} sizes="(max-width: 768px) 50vw, 250px" />
+                </div>
+                <h3 className={styles.categoryName}><Editable page="home" section="categories" field="essentials" defaultText={tr('cat.essentials')} /></h3>
+              </MotionLink>
+              {isEditMode && (
+                <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 100 }}>
+                  <Editable 
+                    page="home" 
+                    section="categories" 
+                    field="essentials_url" 
+                    defaultText="/shop?category=Skin%20Essentials" 
+                    isLink={true} 
+                    className="text-[9px] bg-black/80 text-white rounded-full px-3 py-1 shadow-xl border border-white/20" 
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>

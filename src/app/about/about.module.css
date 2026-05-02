@@ -1,8 +1,9 @@
 .aboutHero {
   position: relative;
-  height: 55vh;
+  padding-top: 140px;
+  height: auto;
   min-height: 450px;
-  max-height: 700px;
+  max-height: 800px;
   display: flex;
   align-items: center;
   justify-content: center;

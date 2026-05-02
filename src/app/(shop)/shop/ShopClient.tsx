@@ -9,9 +9,9 @@ import { useLanguageStore } from "@/store/languageStore";
 export default function ShopClient({ initialProducts }: { initialProducts: any[] }) {
   const { t, language } = useLanguageStore();
   const [mounted, setMounted] = useState(false);
-  const [dbCategories, setDbCategories] = useState<{en: string, bn: string}[]>([]);
+  const [dbCategories, setDbCategories] = useState<{en: string, bn: string, slug: string}[]>([]);
   const searchParams = useSearchParams();
-  const [activeCategory, setActiveCategory] = useState(searchParams.get('category') || "All");
+  const [activeCategorySlug, setActiveCategorySlug] = useState(searchParams.get('category') || "all");
   
   useEffect(() => {
     fetch("/api/admin/categories")
@@ -19,15 +19,32 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
       .then(data => {
         if (Array.isArray(data)) {
           const cats = [
-            { en: "All", bn: "সব পণ্য" },
-            ...data.map((c: any) => ({ en: c.name, bn: c.name })) // BN translation could be added to DB later
+            { en: "All", bn: "সব পণ্য", slug: "all" },
+            ...data.map((c: any) => ({ en: c.name, bn: c.name, slug: c.slug })) 
           ];
           setDbCategories(cats);
         }
       });
   }, []);
+
+  // Find the active category name from the slug
+  const activeCategoryName = useMemo(() => {
+    const cat = dbCategories.find(c => c.slug === activeCategorySlug);
+    return cat ? cat.en : "All";
+  }, [activeCategorySlug, dbCategories]);
+
+  const maxPrice = useMemo(() => {
+    if (!initialProducts || initialProducts.length === 0) return 15000;
+    return Math.max(...initialProducts.map(p => p.price || 0), 500);
+  }, [initialProducts]);
+
   const [sortBy, setSortBy] = useState("newest");
-  const [priceRange, setPriceRange] = useState(15000);
+  const [priceRange, setPriceRange] = useState(maxPrice);
+  
+  // Update priceRange if maxPrice changes (e.g. after initial mount)
+  useEffect(() => {
+    setPriceRange(maxPrice);
+  }, [maxPrice]);
   const [currentPage, setCurrentPage] = useState(Number(searchParams.get('page')) || 1);
   const itemsPerPage = 6;
 
@@ -44,30 +61,49 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
     const FOURTEEN_DAYS_MS = 14 * 24 * 60 * 60 * 1000;
     const now = Date.now();
 
-    if (activeCategory === "New Arrivals") {
+    if (activeCategoryName === "New Arrivals") {
       result = result.filter(p => {
         const isRecent = p.createdAt && (now - new Date(p.createdAt).getTime() < FOURTEEN_DAYS_MS);
         return p.isNewArrival || isRecent;
       });
-    } else if (activeCategory === "Best Sellers") {
+    } else if (activeCategoryName === "Best Sellers") {
       result = result.filter(p => p.isBestSeller || (p.soldCount && p.soldCount >= 20));
-    } else if (activeCategory === "Special Offers" || activeCategory === "Offers") {
+    } else if (activeCategoryName === "Special Offers" || activeCategoryName === "Offers") {
       result = result.filter(p => p.isSpecialOffer || (p.discountPrice && p.discountPrice < p.price));
-    } else if (activeCategory === "Gift Sets") {
+    } else if (activeCategoryName === "Gift Sets") {
       result = result.filter(p => p.isGiftSet || p.category === "Sets");
-    } else if (activeCategory !== "All") {
+    } else if (activeCategoryName !== "All") {
       const categoryMap: any = {
         "Skin Essentials": ["Sets"],
-        "Radiance Serums": ["Serums"],
-        "Hydration Creams": ["Creams"],
-        "UV Protection": ["Sunscreen"],
-        "Cleansers": ["Cleansers"]
+        "Skincare Set": ["Sets", "Skin Essentials", "skincare-set"],
+        "Radiance Serums": ["Serums", "Serum", "radiance-serums"],
+        "Serum": ["Serums", "Serum", "serum"],
+        "Hydration Creams": ["Creams", "Cream", "Essence Cream", "hydration-creams", "essence-cream"],
+        "Essence Cream": ["Creams", "Cream", "Essence Cream", "essence-cream"],
+        "UV Protection": ["Sunscreen", "UV", "uv-protection"],
+        "Sunscreen": ["Sunscreen", "UV", "sunscreen"],
+        "Cleansers": ["Cleansers", "Cleanser", "cleansers"]
       };
-      const targetCategories = categoryMap[activeCategory] || [activeCategory];
-      result = result.filter(p => 
-        targetCategories.includes(p.category) || 
-        (p.categories && p.categories.some((c: string) => targetCategories.includes(c)))
-      );
+      
+      const targetCategories = categoryMap[activeCategoryName] || [activeCategoryName];
+      // Also always include the slug itself in target categories to ensure direct matching
+      if (!targetCategories.includes(activeCategorySlug)) {
+        targetCategories.push(activeCategorySlug);
+      }
+      
+      result = result.filter(p => {
+        const pCat = p.category;
+        const pCats = p.categories || [];
+        
+        return targetCategories.some((tc: string) => {
+          const tcLower = tc.toLowerCase();
+          return (
+            (pCat && pCat.toLowerCase() === tcLower) ||
+            pCats.some((c: string) => c.toLowerCase() === tcLower) ||
+            (pCat && pCat === tc)
+          );
+        });
+      });
     }
 
     // Filter by Price
@@ -79,11 +115,11 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
     } else if (sortBy === "highToLow") {
       result.sort((a, b) => b.price - a.price);
     } else if (sortBy === "newest") {
-      result.reverse(); // Assume initial order is oldest first or just reverse for "newest" feel
+      result.reverse(); 
     }
 
     return result;
-  }, [activeCategory, sortBy, priceRange, initialProducts]);
+  }, [activeCategoryName, sortBy, priceRange, initialProducts]);
 
   const totalPages = Math.ceil(filteredAndSortedProducts.length / itemsPerPage);
   const currentProducts = filteredAndSortedProducts.slice(
@@ -96,8 +132,8 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
     const page = Number(searchParams.get('page')) || 1;
     setCurrentPage(page);
     
-    const cat = searchParams.get('category') || "All";
-    setActiveCategory(cat);
+    const catSlug = searchParams.get('category') || "all";
+    setActiveCategorySlug(catSlug);
   }, [searchParams]);
 
   // Reset to page 1 when filters change (except price)
@@ -105,14 +141,14 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
     setCurrentPage(1);
     const params = new URLSearchParams(window.location.search);
     params.set('page', '1');
-    if (activeCategory !== "All") {
-      params.set('category', activeCategory);
+    if (activeCategorySlug !== "all") {
+      params.set('category', activeCategorySlug);
     } else {
       params.delete('category');
     }
     window.history.pushState({}, '', `${window.location.pathname}?${params.toString()}`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [activeCategory, sortBy]);
+  }, [activeCategorySlug, sortBy]);
 
   return (
     <div className={`animate-fade-in ${styles.shopPage}`}>
@@ -134,9 +170,9 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
             <div className={styles.categoryGroup}>
               {dbCategories.map(cat => (
                 <button 
-                  key={cat.en}
-                  className={`${styles.categoryPill} ${activeCategory === cat.en ? styles.active : ""}`}
-                  onClick={() => setActiveCategory(cat.en)}
+                  key={cat.slug}
+                  className={`${styles.categoryPill} ${activeCategorySlug === cat.slug ? styles.active : ""}`}
+                  onClick={() => setActiveCategorySlug(cat.slug)}
                 >
                   {language === 'bn' ? cat.bn : cat.en}
                 </button>
@@ -147,20 +183,25 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
             <div className={styles.filterControls}>
               
               {/* Price Slider */}
-              <div className={styles.priceSliderContainer}>
-                <span>{language === 'bn' ? 'মূল্য: ' : 'Price: '}</span>
-                <input 
-                  type="range" 
-                  min="500" 
-                  max="15000" 
-                  step="500" 
-                  value={priceRange} 
-                  onChange={(e) => setPriceRange(Number(e.target.value))}
-                  className={styles.priceRange}
-                  aria-label="Price range"
-                />
-                <span>{language === 'bn' ? `সর্বোচ্চ ৳${priceRange.toLocaleString()}` : `Up to ৳${priceRange.toLocaleString()}`}</span>
-              </div>
+                <div className={styles.priceSliderContainer}>
+                  <span>{language === 'bn' ? 'মূল্য: ' : 'Price: '}</span>
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max={maxPrice} 
+                    step="100" 
+                    value={priceRange} 
+                    onChange={(e) => setPriceRange(Number(e.target.value))}
+                    className={styles.priceRange}
+                    style={{
+                      background: `linear-gradient(to right, var(--primary) 0%, var(--primary) ${(priceRange / maxPrice) * 100}%, var(--nm-inner-pressed) ${(priceRange / maxPrice) * 100}%, var(--nm-inner-pressed) 100%)`
+                    }}
+                    aria-label="Price range"
+                  />
+                  <span className="font-bold text-[var(--primary)] whitespace-nowrap">
+                    {language === 'bn' ? `৳${priceRange.toLocaleString()}` : `Up to ৳${priceRange.toLocaleString()}`}
+                  </span>
+                </div>
 
               {/* Sort Dropdown */}
               <select 
@@ -189,8 +230,8 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
                 <h3>{language === 'bn' ? 'দুঃখিত, কোনো পণ্য পাওয়া যায়নি' : 'Oops! No products found'}</h3>
                 <p>
                   {language === 'bn' ? 
-                    `আমরা '${activeCategory}' ক্যাটাগরিতে এই মুহূর্তে কোনো পণ্য খুঁজে পাইনি।` : 
-                    `We couldn't find any products in the '${activeCategory}' category right now.`
+                    `আমরা '${activeCategoryName}' ক্যাটাগরিতে এই মুহূর্তে কোনো পণ্য খুঁজে পাইনি।` : 
+                    `We couldn't find any products in the '${activeCategoryName}' category right now.`
                   }
                 </p>
                 <p className={styles.noResultsHint}>
@@ -199,7 +240,7 @@ export default function ShopClient({ initialProducts }: { initialProducts: any[]
                 <button 
                   className="btn-nm" 
                   onClick={() => {
-                    setActiveCategory("All");
+                    setActiveCategorySlug("all");
                     setPriceRange(15000);
                   }}
                 >

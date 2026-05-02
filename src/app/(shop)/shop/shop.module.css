@@ -1,6 +1,7 @@
 .shopPage {
   background-color: var(--bg-color);
   min-height: 100vh;
+  padding-top: 140px;
   padding-bottom: var(--sp-12);
   overflow: hidden;
   /* Very subtle noise/grain texture */
@@ -131,20 +132,26 @@
 .priceRange::-webkit-slider-runnable-track {
   width: 100%;
   height: 6px;
-  background: var(--nm-inner-pressed);
+  background: transparent;
   border-radius: 3px;
 }
 
 .priceRange::-webkit-slider-thumb {
   -webkit-appearance: none;
-  height: 16px;
-  width: 16px;
+  height: 18px;
+  width: 18px;
   border-radius: 50%;
   background: var(--bg-color);
   box-shadow: var(--nm-outer-raised-sm);
-  margin-top: -5px;
+  margin-top: -6px;
   cursor: pointer;
-  border: 1px solid var(--border);
+  border: 2px solid var(--primary);
+  transition: all 0.2s ease;
+}
+
+.priceRange::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: var(--nm-outer-raised);
 }
 
 /* Sort Dropdown */

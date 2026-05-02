@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useLanguageStore } from "@/store/languageStore";
+import { motion, useMotionValue, useSpring, useTransform, animate } from "framer-motion";
 import styles from "./testimonialSlider.module.css";
 
 const testimonialsBn = [
@@ -38,9 +39,9 @@ export default function TestimonialSlider({ items, title }: TestimonialSliderPro
   const [visibleCount, setVisibleCount] = useState(3);
   const [mounted, setMounted] = useState(false);
   const [dbTestimonials, setDbTestimonials] = useState<any[]>([]);
+  const constraintsRef = useRef(null);
 
   const staticItems = language === 'bn' ? testimonialsBn : testimonialsEn;
-  // Map static items to the database format
   const formattedStatic = staticItems.map(s => ({
     name: s.name,
     content: s.text,
@@ -79,11 +80,41 @@ export default function TestimonialSlider({ items, title }: TestimonialSliderPro
 
   const maxIndex = Math.max(0, displayItems.length - visibleCount);
 
+  const x = useMotionValue(0);
+  const xPercentage = useTransform(x, (val) => `${val}%`);
+
+  useEffect(() => {
+    // Snap to current index
+    const width = 100 / visibleCount;
+    animate(x, -current * width, {
+      type: "spring",
+      stiffness: 300,
+      damping: 30
+    });
+  }, [current, visibleCount, x]);
+
+  const handleDragEnd = (event: any, info: any) => {
+    const threshold = 50; // pixels to trigger slide
+    if (info.offset.x < -threshold && current < maxIndex) {
+      setCurrent(current + 1);
+    } else if (info.offset.x > threshold && current > 0) {
+      setCurrent(current - 1);
+    } else {
+      // Re-animate to current
+      const width = 100 / visibleCount;
+      animate(x, -current * width, {
+        type: "spring",
+        stiffness: 300,
+        damping: 30
+      });
+    }
+  };
+
   useEffect(() => {
     if (displayItems.length === 0) return;
     const timer = setInterval(() => {
       setCurrent((prev) => (prev >= maxIndex ? 0 : prev + 1));
-    }, 5000);
+    }, 8000); // Increased time for better readability
     return () => clearInterval(timer);
   }, [maxIndex, displayItems.length]);
 
@@ -92,28 +123,40 @@ export default function TestimonialSlider({ items, title }: TestimonialSliderPro
   return (
     <div className={styles.sliderContainer}>
       <h2 className="section-title">{displayTitle}</h2>
-      <div className={styles.slider}>
-        {displayItems.map((t, i) => (
-          <div 
-            key={i} 
-            className={styles.slide}
-            style={{ transform: `translateX(${(i - current) * 100}%)` }}
-          >
-            <div className={`${styles.card} nm-card`}>
-              <div className={styles.avatarRow}>
-                <div className={styles.avatar}>{t.initial || t.name.charAt(0)}</div>
-                <div className={styles.authorInfo}>
-                  <h4>{t.name}</h4>
-                  <span>{t.role || t.location}</span>
+      <div className={styles.slider} ref={constraintsRef}>
+        <motion.div 
+          className={styles.track}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }} // We handle constraints manually via snap
+          onDragEnd={handleDragEnd}
+          style={{ 
+            x: xPercentage,
+            display: "flex",
+            width: `${(displayItems.length / visibleCount) * 100}%`
+          }}
+        >
+          {displayItems.map((t, i) => (
+            <div 
+              key={i} 
+              className={styles.slide}
+              style={{ width: `${(1 / displayItems.length) * 100}%` }}
+            >
+              <div className={`${styles.card} nm-card`}>
+                <div className={styles.avatarRow}>
+                  <div className={styles.avatar}>{t.initial || t.name.charAt(0)}</div>
+                  <div className={styles.authorInfo}>
+                    <h4>{t.name}</h4>
+                    <span>{t.role || t.location}</span>
+                  </div>
+                  <div className={styles.stars}>
+                    {"★".repeat(t.rating || 5)}{"☆".repeat(5 - (t.rating || 5))}
+                  </div>
                 </div>
-                <div className={styles.stars}>
-                  {"★".repeat(t.rating || 5)}{"☆".repeat(5 - (t.rating || 5))}
-                </div>
+                <p className={styles.text}>&quot;{t.content || t.text}&quot;</p>
               </div>
-              <p className={styles.text}>&quot;{t.content || t.text}&quot;</p>
             </div>
-          </div>
-        ))}
+          ))}
+        </motion.div>
       </div>
       {maxIndex > 0 && (
         <div className={styles.dots}>
