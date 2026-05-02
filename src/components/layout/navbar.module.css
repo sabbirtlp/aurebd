@@ -529,10 +529,7 @@
   background: white;
 }
 
-.megaFeatured:hover .featuredImg {
-  transform: scale(1.03);
-  box-shadow: var(--nm-outer-raised);
-}
+
 
 .featuredInfo {
   display: flex;
