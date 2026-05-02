@@ -5,7 +5,7 @@ import "react-quill/dist/quill.snow.css";
 
 const ReactQuill = dynamic(() => import("react-quill"), {
   ssr: false,
-  loading: () => <div style={{ height: "200px", background: "#f0f0f0", borderRadius: "8px", animate: "pulse" }} />
+  loading: () => <div style={{ height: "200px", background: "#f0f0f0", borderRadius: "8px", opacity: 0.6 }} />
 });
 
 interface RichTextEditorProps {
