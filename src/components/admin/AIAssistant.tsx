@@ -13,9 +13,10 @@ interface AIAssistantProps {
   onGenerate: (text: string) => void;
 }
 
-export default function AIAssistant({ productName, category, field, existingContent, language = "en", onGenerate }: AIAssistantProps) {
+export default function AIAssistant({ productName, category, field, existingContent, language: initialLanguage = "en", onGenerate }: AIAssistantProps) {
   const [loading, setLoading] = useState(false);
   const [customPrompt, setCustomPrompt] = useState("");
+  const [selectedLang, setSelectedLang] = useState<string>(initialLanguage);
 
   const generateContent = async () => {
     if (!productName) {
@@ -35,14 +36,14 @@ export default function AIAssistant({ productName, category, field, existingCont
           field,
           customPrompt,
           existingContent,
-          language
+          language: selectedLang
         })
       });
 
       const data = await res.json();
       if (res.ok) {
         onGenerate(data.text);
-        toast.success(`AI ${field} generated!`);
+        toast.success(`AI ${field} generated in ${selectedLang === 'bn' ? 'Bangla' : 'English'}!`);
       } else {
         toast.error(data.message || "Failed to generate content");
       }
@@ -72,13 +73,56 @@ export default function AIAssistant({ productName, category, field, existingCont
         boxShadow: 'var(--nm-inner-pressed-sm)',
         transition: 'all 0.3s ease',
       }}>
+        {/* Language Selection Toggle */}
+        <div style={{
+          display: 'flex',
+          gap: '2px',
+          padding: '2px',
+          background: 'var(--bg-color)',
+          borderRadius: '8px',
+          boxShadow: 'var(--nm-inner-pressed-sm)',
+          marginRight: '8px',
+          borderRight: '1px solid var(--border)',
+          paddingRight: '8px'
+        }}>
+          <button
+            type="button"
+            onClick={() => setSelectedLang("en")}
+            style={{
+              padding: '4px 8px',
+              fontSize: '0.65rem',
+              fontWeight: 800,
+              borderRadius: '6px',
+              border: 'none',
+              cursor: 'pointer',
+              background: selectedLang === "en" ? 'var(--primary)' : 'transparent',
+              color: selectedLang === "en" ? 'white' : 'var(--text-light)',
+              transition: 'all 0.2s ease'
+            }}
+          >EN</button>
+          <button
+            type="button"
+            onClick={() => setSelectedLang("bn")}
+            style={{
+              padding: '4px 8px',
+              fontSize: '0.65rem',
+              fontWeight: 800,
+              borderRadius: '6px',
+              border: 'none',
+              cursor: 'pointer',
+              background: selectedLang === "bn" ? 'var(--primary)' : 'transparent',
+              color: selectedLang === "bn" ? 'white' : 'var(--text-light)',
+              transition: 'all 0.2s ease'
+            }}
+          >BN</button>
+        </div>
+
         {/* AI Icon */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
           paddingRight: '10px',
-          borderRight: '1px solid var(--border)',
           flexShrink: 0,
         }}>
           <Sparkles style={{ width: '14px', height: '14px', color: 'var(--primary)' }} />

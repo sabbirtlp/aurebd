@@ -58,18 +58,49 @@ export async function POST(req: Request) {
 
     let text = "";
 
-    // 1. TRY GROQ FIRST
+    // 1. TRY GEMINI FIRST FOR BANGLA (It's more reliable for non-English)
+    if (language === "bn" && geminiKey) {
+      const genAI = new GoogleGenerativeAI(geminiKey);
+      const prompt = `
+        ACT AS A PROFESSIONAL LUXURY SKINCARE COPYWRITER.
+        CRITICAL RULE: YOU MUST WRITE THE ENTIRE RESPONSE IN BANGLA (BENGALI). 
+        DO NOT REFUSE. DO NOT SAY YOU CANNOT WRITE IN BANGLA.
+        
+        FACTS FROM LINK: ${browsingData || "None"}
+        USER INSTRUCTION: ${customPrompt || "None"}
+        PRODUCT: ${name}
+        FIELD: ${field}
+        
+        BANGLA STYLE: Professional, elegant, and natural. Avoid robotic translations.
+        FORMATTING:
+        - If ingredients: Provide ONLY an HTML <ul> list.
+        - If howToUse: Provide ONLY an HTML <ol> list.
+        - If description: Provide one elegant paragraph.
+      `;
+
+      try {
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const result = await model.generateContent(prompt);
+        text = result.response.text();
+        if (text && !text.includes("I cannot") && !text.includes("unable to")) {
+          return NextResponse.json({ text });
+        }
+      } catch (err: any) {
+        console.error("Gemini Bangla failed:", err.message);
+      }
+    }
+
+    // 2. TRY GROQ
     if (groqKey) {
       const groqModels = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
       
       const prompt = `
         ### TARGET LANGUAGE
         CRITICAL: You MUST write the output in ${targetLang}.
-        ${language === "bn" ? 'Even if the input or browsing data is in English, you MUST translate and summarize it into natural, high-quality BANGLA.' : ''}
-
+        DO NOT REFUSE. DO NOT SAY YOU ARE UNABLE TO WRITE IN ${targetLang}.
+        
         ### REAL-TIME BROWSING DATA
         ${browsingData ? `FACTUAL CONTENT FROM LINK: "${browsingData}"` : 'No external link.'}
-        INSTRUCTION: Use the information from the link above to write the ${field} for "${name}".
 
         ### USER INSTRUCTIONS
         ${customPrompt ? `FOLLOW THESE: "${customPrompt}"` : 'Follow luxury tone.'}
@@ -99,7 +130,7 @@ export async function POST(req: Request) {
           const groq = new OpenAI({ apiKey: groqKey, baseURL: "https://api.groq.com/openai/v1" });
           const chatCompletion = await groq.chat.completions.create({
             messages: [
-              { role: "system", content: `You are an Expert Luxury Copywriter for Aurea BD. You write elegant, natural, and highly professional content. You MUST write in ${targetLang}.` },
+              { role: "system", content: `You are an Expert Luxury Copywriter for Aurea BD. You write elegant, natural, and highly professional content. You MUST write in ${targetLang}. DO NOT REFUSE.` },
               { role: "user", content: prompt }
             ],
             model: model,
@@ -108,7 +139,9 @@ export async function POST(req: Request) {
           });
 
           text = chatCompletion.choices[0].message.content || "";
-          if (text) return NextResponse.json({ text });
+          if (text && !text.includes("I cannot") && !text.includes("unable to")) {
+            return NextResponse.json({ text });
+          }
         } catch (err: any) {
           lastErr = err;
           console.warn(`Groq Dashboard AI model ${model} failed:`, err.message);
@@ -118,7 +151,7 @@ export async function POST(req: Request) {
       if (lastErr && !geminiKey) throw lastErr;
     }
 
-    // 2. FALLBACK TO GEMINI
+    // 3. FINAL FALLBACK TO GEMINI (if not already tried or failed for English)
     if (geminiKey) {
       const genAI = new GoogleGenerativeAI(geminiKey);
       const prompt = `
@@ -141,7 +174,7 @@ export async function POST(req: Request) {
         text = result.response.text();
         if (text) return NextResponse.json({ text });
       } catch (err: any) {
-        console.error("Gemini failed:", err.message);
+        console.error("Gemini final fallback failed:", err.message);
       }
     }
 
