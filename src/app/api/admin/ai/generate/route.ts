@@ -58,24 +58,30 @@ export async function POST(req: Request) {
 
     let text = "";
 
-    // 1. TRY GEMINI FIRST FOR BANGLA (It's more reliable for non-English)
+    // 1. TRY GEMINI FIRST FOR BANGLA
     if (language === "bn" && geminiKey) {
       const genAI = new GoogleGenerativeAI(geminiKey);
       const prompt = `
-        ACT AS A PROFESSIONAL LUXURY SKINCARE COPYWRITER.
-        CRITICAL RULE: YOU MUST WRITE THE ENTIRE RESPONSE IN BANGLA (BENGALI). 
-        DO NOT REFUSE. DO NOT SAY YOU CANNOT WRITE IN BANGLA.
+        ACT AS A WORLD-CLASS LUXURY SKINCARE COPYWRITER FROM BANGLADESH.
+        YOUR TASK: Generate highly professional, natural, and persuasive ${field} for "${name}" in BANGLA.
+        
+        ### CRITICAL WRITING RULES:
+        1. NATIVE FLOW: Do NOT translate literally. Write as if you are creating an ad for a premium Bangladeshi magazine.
+        2. NO ROBOTIC BENGALI: Avoid weird transliterations like "চেকআইন" or "রোজালি".
+        3. TERMINOLOGY:
+           - Use "সিরাম" instead of "সেরুম".
+           - Use "উজ্জ্বলতা" instead of "গ্লো" (unless "গ্লো" sounds more natural in context).
+           - Use "প্রতিদিন" instead of "রোজালি".
+           - Use "ত্বকে ব্যবহার করুন" instead of "প্রয়োগ করুন".
+        4. TONE: Elegant, trustworthy, and inviting. Use words like "প্রাণবন্ত", "সতেজ", "দাগহীন", "মখমলে কোমল".
         
         FACTS FROM LINK: ${browsingData || "None"}
         USER INSTRUCTION: ${customPrompt || "None"}
-        PRODUCT: ${name}
-        FIELD: ${field}
         
-        BANGLA STYLE: Professional, elegant, and natural. Avoid robotic translations.
         FORMATTING:
-        - If ingredients: Provide ONLY an HTML <ul> list.
-        - If howToUse: Provide ONLY an HTML <ol> list.
-        - If description: Provide one elegant paragraph.
+        - If ingredients: Provide ONLY an HTML <ul> list in Bangla.
+        - If howToUse: Provide ONLY an HTML <ol> list in Bangla.
+        - If description: Provide one elegant paragraph in Bangla.
       `;
 
       try {
@@ -97,24 +103,20 @@ export async function POST(req: Request) {
       const prompt = `
         ### TARGET LANGUAGE
         CRITICAL: You MUST write the output in ${targetLang}.
-        DO NOT REFUSE. DO NOT SAY YOU ARE UNABLE TO WRITE IN ${targetLang}.
         
-        ### REAL-TIME BROWSING DATA
-        ${browsingData ? `FACTUAL CONTENT FROM LINK: "${browsingData}"` : 'No external link.'}
-
-        ### USER INSTRUCTIONS
-        ${customPrompt ? `FOLLOW THESE: "${customPrompt}"` : 'Follow luxury tone.'}
-
         ### CONTEXT
         Product: ${name}
         Category: ${category}
         Target Field: ${field}
+        Browsing Data: ${browsingData || 'None'}
 
-        ### BANGLA WRITING RULES (IF BANGLA):
-        1. NO LITERAL TRANSLATIONS: Use natural phrases like "ত্বকের অসাধারণ যত্ন" instead of "জৈব মহাকর্য".
-        2. NO ROBOTIC TERMS: Use "ত্বক টানটান ও মসৃণ করে" instead of "ফর্ম এবং সমতল".
-        3. TONE: Professional, sophisticated, and natural.
-        4. FLOW: The text must flow naturally like native Bangladeshi advertising.
+        ### BANGLA COPYWRITING RULES (ONLY IF BANGLA):
+        - ACT AS A NATIVE BENGALI COPYWRITER.
+        - DO NOT TRANSLATE FROM ENGLISH WORD-FOR-WORD.
+        - USE NATURAL PHRASES: "ত্বকের সজীবতা ফিরিয়ে আনতে" (To bring back skin's radiance).
+        - AVOID: "প্রয়োগ করুন", "সেরুম", "রোজালি".
+        - USE: "ব্যবহার করুন", "সিরাম", "নিয়মিত".
+        - TONE: Sophisticated luxury (যেমন ল্যানকম বা শ্যানেল-এর বিজ্ঞাপনে থাকে).
 
         ### REQUIREMENTS
         - Style: Professional luxury skincare brand tone.
@@ -130,11 +132,11 @@ export async function POST(req: Request) {
           const groq = new OpenAI({ apiKey: groqKey, baseURL: "https://api.groq.com/openai/v1" });
           const chatCompletion = await groq.chat.completions.create({
             messages: [
-              { role: "system", content: `You are an Expert Luxury Copywriter for Aurea BD. You write elegant, natural, and highly professional content. You MUST write in ${targetLang}. DO NOT REFUSE.` },
+              { role: "system", content: `You are an Expert Luxury Copywriter for Aurea BD. You write elegant, natural, and highly professional content in ${targetLang}.` },
               { role: "user", content: prompt }
             ],
             model: model,
-            temperature: 0.6,
+            temperature: 0.5,
             max_tokens: 1500,
           });
 
@@ -151,7 +153,7 @@ export async function POST(req: Request) {
       if (lastErr && !geminiKey) throw lastErr;
     }
 
-    // 3. FINAL FALLBACK TO GEMINI (if not already tried or failed for English)
+    // 3. FINAL FALLBACK TO GEMINI
     if (geminiKey) {
       const genAI = new GoogleGenerativeAI(geminiKey);
       const prompt = `
