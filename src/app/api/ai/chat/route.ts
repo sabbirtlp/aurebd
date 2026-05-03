@@ -36,14 +36,24 @@ async function callProvider(url: string, apiKey: string, body: any): Promise<str
   } catch { return ""; }
 }
 
-async function callGemini(apiKey: string, systemPrompt: string, lastMessage: string): Promise<string> {
+async function callGemini(apiKey: string, systemPrompt: string, messages: any[]): Promise<string> {
   try {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+    
+    // Map OpenAI-style messages to Gemini-style contents
+    const contents = messages.map((m: any) => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: m.content }]
+    }));
+
     const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: `SYSTEM: ${systemPrompt}\n\nUSER: ${lastMessage}` }] }],
+        contents: [
+          { role: "user", parts: [{ text: `SYSTEM_INSTRUCTION: ${systemPrompt}` }] },
+          ...contents
+        ],
         generationConfig: { temperature: 0.3, maxOutputTokens: 800 },
         safetySettings: [{ category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }]
       }),
@@ -59,23 +69,20 @@ async function callGemini(apiKey: string, systemPrompt: string, lastMessage: str
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
-    const lastMsg = messages[messages.length - 1].content;
     const { productList, knowledgeSummary } = await getSiteKnowledge();
 
     const systemPrompt = `You are Aurea AI, a Senior Skincare Expert at AureaBD. 
-Target Language: BANGLA (বাংলা).
+Target Language: BANGLA (বাংলা)।
 
-STRICT RULES (বিপদজনক ভুল এড়াতে):
-1. NO ROBOTIC REPETITION: Do not repeat phrases like "আমাদের ওয়েবসাইটে পণ্য আছে". 
-2. NATURAL TONE: Speak like a real human skincare expert in Dhaka. 
-3. NO "SASTA" (সস্তা): Never use the word "সস্তা". Use "সাশ্রয়ী" (Affordable) or "বাজেট ফ্রেন্ডলি".
-4. SALAAM: Only give Salaam in the first greeting.
-5. ORDERING: Select Product -> Add to Cart -> View Cart -> Checkout. Don't say "we will call you to take order".
-6. GRAMMAR: Use "এসেছেন" not "আসেছেন". Use "কোনটি কিনতে চান?" not "আপনি কিনতে চান যে পণ্যটি?".
+✨ কথা বলার নিয়ম:
+১. সালাম: সালাম শুধুমাত্র কথোপকথনের একদম শুরুতে (প্রথম মেসেজে) দিবেন। একবার কথা শুরু হয়ে গেলে আর সালাম দিবেন না।
+২. প্রাকৃতিক বাংলা: একদম মানুষের মতো কথা বলুন। কোনো যান্ত্রিক ভাষা ব্যবহার করবেন না। 
+৩. নো "সস্তা": "সস্তা" শব্দের বদলে "সাশ্রয়ী" বা "বাজেট ফ্রেন্ডলি" বলুন।
+৪. সরাসরি উত্তর: কাস্টমার যা জানতে চেয়েছে আগে সেটির উত্তর দিন।
 
 SKINCARE EXPERTISE:
 - Shipping: Dhaka (৳70), Outside (৳130).
-- Authentication: 100% Original Imports.
+- Authentication: 100% Original.
 - Routine: Cleanser -> Toner -> Serum -> Eye Cream -> Moisturizer -> SPF.
 
 PRODUCTS:
@@ -84,17 +91,20 @@ ${productList || "Check our shop for details."}
 SITE INFO:
 ${knowledgeSummary.substring(0, 800)}
 
-TONE: Premium, Helpful, Native. Ask one question at a time.`;
+লক্ষ্য: আপনি গ্রাহকের একজন নির্ভরযোগ্য বন্ধু এবং বিশেষজ্ঞ।`;
 
     const groqKey = process.env.GROQ_API_KEY;
     const openRouterKey = process.env.OPENROUTER_API_KEY;
     const geminiKey = process.env.GEMINI_API_KEY;
 
-    // RESILIENT PROVIDER CHAIN (Try Groq First for Speed, then OpenRouter, then Gemini)
+    // Limit history to last 10 messages for context window stability
+    const contextMessages = messages.slice(-10);
+
+    // RESILIENT PROVIDER CHAIN
     if (groqKey) {
       const res = await callProvider("https://api.groq.com/openai/v1/chat/completions", groqKey, {
         model: "llama-3.3-70b-versatile",
-        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: lastMsg }],
+        messages: [{ role: "system", content: systemPrompt }, ...contextMessages],
         temperature: 0.3
       });
       if (res) return NextResponse.json({ text: res });
@@ -103,14 +113,14 @@ TONE: Premium, Helpful, Native. Ask one question at a time.`;
     if (openRouterKey) {
       const res = await callProvider("https://openrouter.ai/api/v1/chat/completions", openRouterKey, {
         model: "google/gemini-2.0-flash-exp:free",
-        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: lastMsg }],
+        messages: [{ role: "system", content: systemPrompt }, ...contextMessages],
         temperature: 0.3
       });
       if (res) return NextResponse.json({ text: res });
     }
 
     if (geminiKey) {
-      const res = await callGemini(geminiKey, systemPrompt, lastMsg);
+      const res = await callGemini(geminiKey, systemPrompt, contextMessages);
       if (res) return NextResponse.json({ text: res });
     }
 
