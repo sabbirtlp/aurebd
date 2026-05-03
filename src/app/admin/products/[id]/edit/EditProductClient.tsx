@@ -246,13 +246,14 @@ export default function EditProductClient({ product }: { product: any }) {
                     setIsSaved(false);
                   }} 
                 />
-                <textarea 
-                  name={activeLang === "en" ? "shortDescription" : "shortDescription_bn"} 
-                  value={activeLang === "en" ? form.shortDescription : form.shortDescription_bn} 
-                  onChange={handleChange} 
-                  className={styles.formInput} 
-                  rows={2} 
-                  placeholder="A catchy summary for the product header..."
+                <RichTextEditor 
+                  label=""
+                  value={activeLang === "en" ? form.shortDescription : form.shortDescription_bn}
+                  onChange={(val) => {
+                    const fieldName = activeLang === "en" ? "shortDescription" : "shortDescription_bn";
+                    setForm(prev => ({ ...prev, [fieldName]: val }));
+                    setIsSaved(false);
+                  }}
                 />
               </div>
 
@@ -323,14 +324,14 @@ export default function EditProductClient({ product }: { product: any }) {
                     setIsSaved(false);
                   }} 
                 />
-                <textarea 
-                  name={activeLang === "en" ? "description" : "description_bn"} 
-                  value={activeLang === "en" ? form.description : form.description_bn} 
-                  onChange={handleChange} 
-                  className={styles.formInput} 
-                  rows={6} 
-                  placeholder="Describe the science and benefits of this product..." 
-                  required={activeLang === "en"} 
+                <RichTextEditor 
+                  label=""
+                  value={activeLang === "en" ? form.description : form.description_bn}
+                  onChange={(val) => {
+                    const fieldName = activeLang === "en" ? "description" : "description_bn";
+                    setForm(prev => ({ ...prev, [fieldName]: val }));
+                    setIsSaved(false);
+                  }}
                 />
               </div>
             </div>

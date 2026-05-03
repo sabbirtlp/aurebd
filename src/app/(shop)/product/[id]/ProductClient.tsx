@@ -173,9 +173,10 @@ export default function ProductClient({ product, relatedProducts }: { product: a
               )}
             </div>
 
-            <p className={styles.shortDesc}>
-              {localizedShortDesc || t('product.short_desc')}
-            </p>
+            <div 
+              className={`${styles.shortDesc} ${styles.richText}`}
+              dangerouslySetInnerHTML={{ __html: localizedShortDesc || t('product.short_desc') }}
+            />
 
             <div className={styles.actions}>
               <div className={styles.quantityStepper}>
