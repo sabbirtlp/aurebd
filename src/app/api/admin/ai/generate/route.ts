@@ -94,32 +94,47 @@ async function callGroq(apiKey: string, systemPrompt: string, userPrompt: string
 
 // Direct OpenRouter API call (free models, great for Bangla)
 async function callOpenRouter(apiKey: string, systemPrompt: string, userPrompt: string): Promise<string> {
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-      "HTTP-Referer": "https://aureabd.vercel.app",
-      "X-Title": "Aurea BD Admin",
-    },
-    body: JSON.stringify({
-      model: "nvidia/llama-3.3-70b-instruct:free",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt },
-      ],
-      temperature: 0.4,
-      max_tokens: 1500,
-    }),
-  });
+  const models = [
+    "google/gemma-2-9b-it:free",
+    "meta-llama/llama-3.1-8b-instruct:free",
+    "nvidia/llama-3.1-nemotron-70b-instruct:free"
+  ];
 
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`OpenRouter ${response.status}: ${errText.substring(0, 200)}`);
+  for (const model of models) {
+    try {
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://aureabd.vercel.app",
+          "X-Title": "Aurea BD Admin",
+        },
+        body: JSON.stringify({
+          model: model,
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPrompt },
+          ],
+          temperature: 0.4,
+          max_tokens: 1500,
+        }),
+      });
+
+      if (!response.ok) {
+        console.warn(`OpenRouter ${model} failed: ${response.status}`);
+        continue;
+      }
+
+      const data = await response.json();
+      const text = data.choices?.[0]?.message?.content || "";
+      if (text && text.length > 10) return text;
+    } catch (err: any) {
+      console.warn(`OpenRouter ${model} error:`, err.message);
+      continue;
+    }
   }
-
-  const data = await response.json();
-  return data.choices?.[0]?.message?.content || "";
+  return "";
 }
 
 // Direct Gemini API call
@@ -243,39 +258,34 @@ Output ONLY the final content. No explanations, no code fences, no "Here is..." 
 
     const errors: string[] = [];
 
-    // ---- PROVIDER 1: Groq (fast, reliable) ----
-    if (groqKey) {
-      try {
-        let result = await callGroq(groqKey, systemPrompt, userPrompt);
-        result = result.replace(/```html|```/g, "").trim();
-        if (result) return NextResponse.json({ text: result });
-        errors.push("Groq returned empty");
-      } catch (err: any) {
-        errors.push(`Groq: ${err.message}`);
-      }
-    }
+    // Define priority based on language
+    const providers = isBangla 
+      ? [
+          { name: 'gemini', key: geminiKey, call: () => callGemini(geminiKey!, `${systemPrompt}\n\n${userPrompt}`) },
+          { name: 'openrouter', key: openRouterKey, call: () => callOpenRouter(openRouterKey!, systemPrompt, userPrompt) },
+          { name: 'groq', key: groqKey, call: () => callGroq(groqKey!, systemPrompt, userPrompt) }
+        ]
+      : [
+          { name: 'groq', key: groqKey, call: () => callGroq(groqKey!, systemPrompt, userPrompt) },
+          { name: 'gemini', key: geminiKey, call: () => callGemini(geminiKey!, `${systemPrompt}\n\n${userPrompt}`) },
+          { name: 'openrouter', key: openRouterKey, call: () => callOpenRouter(openRouterKey!, systemPrompt, userPrompt) }
+        ];
 
-    // ---- PROVIDER 2: OpenRouter (free tier, many models) ----
-    if (openRouterKey) {
-      try {
-        let result = await callOpenRouter(openRouterKey, systemPrompt, userPrompt);
-        result = result.replace(/```html|```/g, "").trim();
-        if (result) return NextResponse.json({ text: result });
-        errors.push("OpenRouter returned empty");
-      } catch (err: any) {
-        errors.push(`OpenRouter: ${err.message}`);
-      }
-    }
-
-    // ---- PROVIDER 3: Gemini (if configured) ----
-    if (geminiKey) {
-      try {
-        let result = await callGemini(geminiKey, `${systemPrompt}\n\n${userPrompt}`);
-        result = result.replace(/```html|```/g, "").trim();
-        if (result) return NextResponse.json({ text: result });
-        errors.push("Gemini returned empty");
-      } catch (err: any) {
-        errors.push(`Gemini: ${err.message}`);
+    for (const provider of providers) {
+      if (provider.key) {
+        try {
+          let result = await provider.call();
+          if (result) {
+            result = result.replace(/```html|```/g, "").trim();
+            if (result.length > 5) {
+              return NextResponse.json({ text: result });
+            }
+          }
+          errors.push(`${provider.name} returned empty`);
+        } catch (err: any) {
+          errors.push(`${provider.name}: ${err.message}`);
+          console.error(`${provider.name} failed:`, err.message);
+        }
       }
     }
 
