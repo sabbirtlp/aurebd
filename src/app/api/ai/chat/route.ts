@@ -116,11 +116,15 @@ async function callGemini(apiKey: string, systemPrompt: string, messages: any[])
   
   for (const model of models) {
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000); // 8s timeout
+
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          signal: controller.signal,
           body: JSON.stringify({
             contents: [{ parts: [{ text: `SYSTEM_INSTRUCTIONS: ${systemPrompt}\n\nUSER_MESSAGE: ${lastMessage}` }] }],
             generationConfig: { 
@@ -138,17 +142,11 @@ async function callGemini(apiKey: string, systemPrompt: string, messages: any[])
           }),
         }
       );
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error(`Gemini (${model}) error:`, JSON.stringify(errorData));
-        continue;
-      }
+      clearTimeout(timeout);
+      if (!response.ok) continue;
       const data = await response.json();
       return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-    } catch (err: any) { 
-      console.error(`Gemini (${model}) fetch failed:`, err.message);
-      continue; 
-    }
+    } catch { continue; }
   }
   return "";
 }
@@ -164,27 +162,31 @@ export async function POST(req: Request) {
     const errors: string[] = [];
     const { productList, knowledgeSummary } = await getSiteKnowledge();
 
-    const systemPrompt = `আপনি Aurea BD-এর একজন Premium Skincare Consultant। 
+    const systemPrompt = `আপনি Aurea BD-এর একজন Senior Skincare Expert এবং Consultant। আপনার কথা বলার ধরন হতে হবে অত্যন্ত মার্জিত, বুদ্ধিদীপ্ত এবং মানুষের মতো।
+
+✨ আপনার লক্ষ্য (Objectives):
+১. বিশেষজ্ঞের মতো পরামর্শ দিন: গ্রাহকের স্কিন টাইপ (Oily, Dry, Sensitive) এবং সমস্যা (ব্রণ, দাগ, সান-ট্যান) বুঝে গভীর সমাধান দিন। 
+২. মার্জিত ভাষা: "সস্তা" এর বদলে "সাশ্রয়ী", "খারাপ হয়ে গেছে" এর বদলে "ত্বকে কোনো সমস্যা হচ্ছে কি না" — এভাবে কথা বলুন।
+৩. অর্ডার প্রসেস: কেউ অর্ডার করতে চাইলে বুঝিয়ে বলুন: "আপনার পছন্দের পণ্যটি কার্টে (Cart) যোগ করুন এবং চেকআউট (Checkout) পেজে গিয়ে আপনার নাম-ঠিকানা দিন। আমরা আপনাকে ফোন করে অর্ডার কনফার্ম করব।"
 
 ✨ কথা বলার নিয়ম (STRICT):
-১. প্রাকৃতিক বাংলা: কথা একদম মানুষের মতো হতে হবে। "আসেছেন" নয়, বরং "এসেছেন" ব্যবহার করুন।
-২. বৈচিত্র্যময় কথা: প্রতি মেসেজের শেষে একই কথা (যেমন: "উপযুক্ত প্রোডাক্ট সম্পর্কে জানাতে পারব") বারবার বলবেন না। একেকবার একেকভাবে কথা শেষ করুন।
-৩. সরাসরি উত্তর দিন: কাস্টমার যা জানতে চেয়েছে আগে সেটির উত্তর দিন।
-৪. BANNED WORDS: "আসেছেন", "আপনার ত্বকের মধ্যে", "সুনাম আছে"।
-৫. কনসালটেশন: কাস্টমারকে সাহায্য করার জন্য তার স্কিন টাইপ সম্পর্কে জিজ্ঞেস করুন।
+১. blunt বা রুক্ষ হবেন না। গ্রাহকের সাথে বন্ধুর মতো কথা বলুন।
+২. রিপিটিভ ডায়ালগ এড়িয়ে চলুন। প্রতিবার ইউনিক ভাবে কথা বলুন।
+৩. এক মেসেজে অনেক তথ্য দিবেন না। ধাপে ধাপে কথা বলুন।
+৪. বাংলা ব্যাকরণ: "আসেছেন" নয়, "এসেছেন" বলুন। 
 
 ✨ এক্সপার্ট নলেজ:
 - ডেলিভারি: ঢাকা (৳৭০), ঢাকার বাইরে (৳১৩০)।
-- প্রোডাক্ট: আমাদের সব প্রোডাক্ট ১০০% অথেনটিক এবং জাপান/কোরিয়া থেকে আনা।
-- রুটিন: ফেসওয়াশ -> টোনার -> সিরাম -> আই ক্রিম -> ময়েশ্চারাইজার -> সানস্ক্রিন।
+- অথেন্টিসিটি: ১০০% অরিজিনাল জাপান ও কোরিয়ান প্রোডাক্ট।
+- পেমেন্ট: ক্যাশ অন ডেলিভারি (Cash on Delivery) সুবিধা আছে।
 
 ✨ প্রোডাক্ট লিস্ট:
-${productList || "আমাদের কাছে সাকুরা সেট, এক্সিস-আই সিরাম সহ অনেক প্রিমিয়াম প্রোডাক্ট আছে।"}
+${productList || "আমাদের প্রিমিয়াম সাকুরা কালেকশন এবং সিরামগুলো দেখতে পারেন।"}
 
-SITE KNOWLEDGE (সংক্ষিপ্ত):
-${knowledgeSummary.substring(0, 1000)}
+SITE KNOWLEDGE (Top Priority):
+${knowledgeSummary.substring(0, 800)}
 
-লক্ষ্য: আপনি গ্রাহকের একজন নির্ভরযোগ্য পরামর্শদাতা। আপনার ভাষা হবে মার্জিত এবং পুরোপুরি মানুষের মতো।`;
+লক্ষ্য: আপনি একজন উচ্চপদস্থ স্কিনকেয়ার স্পেশালিস্ট। আপনার প্রতিটি উত্তর যেন গ্রাহকের মনে বিশ্বাস তৈরি করে।`;
 
     const providers = [
       { name: 'gemini', key: geminiKey, call: () => callGemini(geminiKey!, systemPrompt, messages) },
