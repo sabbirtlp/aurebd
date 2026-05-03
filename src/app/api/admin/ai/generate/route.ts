@@ -104,10 +104,10 @@ async function callGroq(apiKey: string, systemPrompt: string, userPrompt: string
 // Direct OpenRouter API call
 async function callOpenRouter(apiKey: string, systemPrompt: string, userPrompt: string): Promise<string> {
   const models = [
+    "google/gemini-2.0-flash-exp:free",
     "google/gemma-2-9b-it:free",
     "meta-llama/llama-3.1-8b-instruct:free",
-    "mistralai/mistral-7b-instruct:free",
-    "openrouter/auto-free"
+    "mistralai/mistral-7b-instruct:free"
   ];
 
   for (const model of models) {
@@ -142,47 +142,7 @@ async function callOpenRouter(apiKey: string, systemPrompt: string, userPrompt: 
   return "";
 }
 
-// Direct Gemini API call
-async function callGemini(apiKey: string, prompt: string): Promise<string> {
-  const models = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-flash-latest"];
-  for (const model of models) {
-    try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { 
-              temperature: 0.4, 
-              maxOutputTokens: 1500,
-              topP: 0.95,
-              topK: 40
-            },
-            safetySettings: [
-              { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-              { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-              { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-              { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
-            ]
-          }),
-        }
-      );
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error(`Gemini Admin (${model}) error:`, JSON.stringify(errorData));
-        continue;
-      }
-      const data = await response.json();
-      return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-    } catch (err: any) {
-      console.error(`Gemini Admin (${model}) fetch failed:`, err.message);
-      continue;
-    }
-  }
-  return "";
-}
+// Note: Direct Gemini API removed — using OpenRouter's free Gemini model instead
 
 // ---- PROMPT BUILDERS ----
 function buildSystemPrompt(isBangla: boolean): string {
@@ -347,7 +307,6 @@ export async function POST(req: Request) {
     }
 
     const groqKey = process.env.GROQ_API_KEY;
-    const geminiKey = process.env.GEMINI_API_KEY;
     const openRouterKey = process.env.OPENROUTER_API_KEY;
 
     const { name, category, field, customPrompt, language } = await req.json();
@@ -369,13 +328,11 @@ export async function POST(req: Request) {
     const providers = isBangla
       ? [
         { name: 'openrouter', key: openRouterKey, call: () => callOpenRouter(openRouterKey!, systemPrompt, userPrompt) },
-        { name: 'groq', key: groqKey, call: () => callGroq(groqKey!, systemPrompt, userPrompt) },
-        { name: 'gemini', key: geminiKey, call: () => callGemini(geminiKey!, `${systemPrompt}\n\n${userPrompt}`) }
+        { name: 'groq', key: groqKey, call: () => callGroq(groqKey!, systemPrompt, userPrompt) }
       ]
       : [
         { name: 'groq', key: groqKey, call: () => callGroq(groqKey!, systemPrompt, userPrompt) },
-        { name: 'openrouter', key: openRouterKey, call: () => callOpenRouter(openRouterKey!, systemPrompt, userPrompt) },
-        { name: 'gemini', key: geminiKey, call: () => callGemini(geminiKey!, `${systemPrompt}\n\n${userPrompt}`) }
+        { name: 'openrouter', key: openRouterKey, call: () => callOpenRouter(openRouterKey!, systemPrompt, userPrompt) }
       ];
 
     for (const provider of providers) {

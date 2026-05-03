@@ -1,4 +1,3 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import OpenAI from "openai";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
@@ -18,18 +17,17 @@ export async function POST(req: Request) {
     }
 
     const groqKey = process.env.GROQ_API_KEY;
-    const geminiKey = process.env.GEMINI_API_KEY;
+    const openRouterKey = process.env.OPENROUTER_API_KEY;
 
-    if (!groqKey && !geminiKey) {
+    if (!groqKey && !openRouterKey) {
       return NextResponse.json({ message: "No AI API Key configured." }, { status: 500 });
     }
 
     const { messages } = await req.json();
-    let text = "";
 
     // 1. TRY GROQ FIRST
     if (groqKey) {
-      const groqModels = ["llama-3.1-70b-versatile", "llama-3.1-8b-instant", "llama3-70b-8192", "llama3-8b-8192"];
+      const groqModels = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
       
       for (const model of groqModels) {
         try {
@@ -49,7 +47,7 @@ export async function POST(req: Request) {
             model: model,
           });
 
-          text = chatCompletion.choices[0].message.content || "";
+          const text = chatCompletion.choices[0].message.content || "";
           if (text) return NextResponse.json({ text });
         } catch (err: any) {
           console.warn(`Groq chat model ${model} failed:`, err.message);
@@ -58,16 +56,38 @@ export async function POST(req: Request) {
       }
     }
 
-    // 2. TRY GEMINI
-    if (geminiKey) {
-      const genAI = new GoogleGenerativeAI(geminiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      const lastMessage = messages[messages.length - 1].content;
+    // 2. TRY OPENROUTER (Gemini via OpenRouter - no card needed)
+    if (openRouterKey) {
+      try {
+        const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${openRouterKey}`,
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://aureabd.com",
+            "X-Title": "AureaBD",
+          },
+          body: JSON.stringify({
+            model: "google/gemini-2.0-flash-exp:free",
+            messages: [
+              { role: "system", content: SYSTEM_CONTEXT },
+              ...messages.map((m: any) => ({
+                role: m.role === "ai" ? "assistant" : "user",
+                content: m.content
+              }))
+            ],
+            temperature: 0.3,
+          }),
+        });
 
-      const result = await model.generateContent(lastMessage);
-      const response = await result.response;
-      text = response.text();
-      if (text) return NextResponse.json({ text });
+        if (res.ok) {
+          const data = await res.json();
+          const text = data.choices?.[0]?.message?.content || "";
+          if (text) return NextResponse.json({ text });
+        }
+      } catch (err: any) {
+        console.warn("OpenRouter admin chat failed:", err.message);
+      }
     }
 
     throw new Error("AI Chat failed");
