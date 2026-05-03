@@ -172,14 +172,16 @@ async function callGemini(apiKey: string, prompt: string): Promise<string> {
 function buildSystemPrompt(isBangla: boolean): string {
   const skincareKnowledge = `
   CORE DERMATOLOGY RULES (STRICT):
-  1. ROUTINE ORDER: Cleanser → Toner → Essence/Serum → Moisturizer → Sunscreen.
+  1. ROUTINE ORDER: Cleanser → Toner → Essence/Serum → Eye Cream → Moisturizer → Sunscreen.
   2. SPF RULE: Sunscreen is ALWAYS the final morning step.
   3. TONER RULE: Used immediately after cleansing.
-  4. SERUM RULE: Apply before moisturizer (thin → thick layering).
-  5. QUANTITY GUIDE:
+  4. SERUM RULE: Apply before heavier creams (thin → thick layering).
+  5. EYE CREAM RULE: Apply gently around the eyes after serum, before moisturizer.
+  6. QUANTITY GUIDE:
      - Cleanser: coin-sized
      - Toner: few drops
      - Serum: 2–3 drops
+     - Eye Cream: rice-grain amount (each eye)
      - Moisturizer: pea-sized
      - Sunscreen: 2-finger rule
 
@@ -192,16 +194,13 @@ function buildSystemPrompt(isBangla: boolean): string {
   - Snail Mucin → regeneration + hydration
   - Rice Extract → brightening + smoothing
 
-  PRODUCT AWARENESS:
-  - Japan Sakura Set (Laikou): glow + hydration + smooth texture
-  - Axis-Y Dark Spot Serum: dark spot care with Niacinamide
-  - COSRX Snail Mucin: deep repair + hydration
-
   E-COMMERCE RULES:
   - Focus on RESULTS (glow, brightening, acne control, hydration)
-  - Use sensory words: lightweight, দ্রুত শোষিত হয়, non-greasy
+  - Use sensory words: lightweight, fast-absorbing, non-greasy
   - Mention skin type (oily / dry / combination / sensitive)
-  - Avoid medical claims (use “helps”, “improves appearance”)
+  - Avoid repeating same phrases
+  - Each benefit must feel unique and real
+  - Write like a human expert, NOT a translator
   `;
 
   if (isBangla) {
@@ -209,40 +208,37 @@ function buildSystemPrompt(isBangla: boolean): string {
 
     ${skincareKnowledge}
 
-    ✨ লেখার স্টাইল (অত্যন্ত গুরুত্বপূর্ণ):
-    - বাংলা হবে সম্পূর্ণ প্রাকৃতিক, সাবলীল এবং মানুষের মতো—কোনোভাবেই ট্রান্সলেটেড বা শক্ত শোনানো যাবে না।
-    - টোন হবে elegant, clean এবং high-end skincare brand-এর মতো।
-    - গ্রাহকের সাথে সরাসরি কথা বলার মতো করে লিখুন (friendly but premium)।
-    - ছোট ছোট বাক্য ব্যবহার করুন, যাতে পড়তে সহজ লাগে।
+    ✨ লেখার স্টাইল:
+    - বাংলা হবে একদম natural, সাবলীল এবং মানুষের মতো
+    - কোনোভাবেই ট্রান্সলেটেড মনে হওয়া যাবে না
+    - একই ধরনের বাক্য বা শব্দ বারবার ব্যবহার করা যাবে না
+
+    ✨ টোন:
+    - Premium ও elegant
+    - সহজ কিন্তু professional
+    - গ্রাহকের সাথে সরাসরি কথা বলার মতো
 
     ✨ ভাষার নিয়ম:
-    - ব্র্যান্ড নাম ও ইনগ্রেডিয়েন্ট English-এ লিখবেন (Niacinamide, Hyaluronic Acid)
-    - বাংলা শব্দ ব্যবহার করুন: ফেসওয়াশ, টোনার, সিরাম, ময়েশ্চারাইজার, সানস্ক্রিন
+    - Ingredient ও brand নাম English-এ থাকবে (Niacinamide, Vitamin C)
+    - বাংলা শব্দ ব্যবহার করুন: ফেসওয়াশ, টোনার, সিরাম, আই ক্রিম, ময়েশ্চারাইজার, সানস্ক্রিন
 
     ✨ বাংলাদেশি কাস্টমার ফোকাস:
-    - ত্বক কালচে হয়ে যাওয়া (sun tan)
+    - রোদে ত্বক কালচে হওয়া
     - ব্রণ ও দাগ
     - তেলতেলে ত্বক
-    - উজ্জ্বলতা কমে যাওয়া
+    - চোখের নিচে কালচে ভাব / ফোলা ভাব
 
-    ✨ লেখায় অবশ্যই থাকবে:
-    - Glow / Brightening / Fresh look
-    - Lightweight feel
-    - দ্রুত কাজ করে এমন অনুভূতি
-    - Real-life benefit (ত্বক মসৃণ লাগে, ফ্রেশ লাগে)
-
-    ✨ স্কিনকেয়ার স্টেপ (সঠিক ক্রম):
+    ✨ স্কিনকেয়ার স্টেপ:
     স্টেপ ১: ফেসওয়াশ  
     স্টেপ ২: টোনার  
     স্টেপ ৩: সিরাম  
-    স্টেপ ৪: ময়েশ্চারাইজার  
-    স্টেপ ৫: সানস্ক্রিন (শুধু দিনের জন্য)
+    স্টেপ ৪: আই ক্রিম  
+    স্টেপ ৫: ময়েশ্চারাইজার  
+    স্টেপ ৬: সানস্ক্রিন (শুধু দিনের জন্য)
 
-    ✨ টোন:
-    - Trustworthy  
-    - Premium  
-    - Natural Bangla  
-    - Conversion-focused  
+    ✨ IMPORTANT:
+    - কোনো generic লাইন ব্যবহার করা যাবে না
+    - প্রতিটি benefit আলাদা ভাবে explain করতে হবে
     `;
   }
 
@@ -252,12 +248,11 @@ function buildSystemPrompt(isBangla: boolean): string {
 
   STYLE:
   - Premium, clean, persuasive
-  - Focus on results + ingredients
-  - High-conversion product page tone
+  - Non-repetitive and human-like
+  - Focus on real benefits
 
   TARGET:
   - Bangladesh skincare audience
-  - Concerns: acne, dull skin, oiliness, sun damage
   `;
 }
 
@@ -269,30 +264,32 @@ function buildFormatGuide(field: string, isBangla: boolean): string {
 
 নিয়ম:
 - Ingredient name English-এ থাকবে
-- Benefit হবে প্রাকৃতিক, আকর্ষণীয় বাংলায়
-- খুব বেশি কঠিন বা বইয়ের ভাষা ব্যবহার করবেন না
+- Benefit হবে natural Bangla-তে
+- প্রতিটি লাইনে আলাদা benefit থাকবে
+- কোনো repetition থাকবে না
 
 Example tone:
-<li><strong>Niacinamide</strong> – ত্বকের দাগ কমাতে সাহায্য করে এবং স্কিনকে পরিষ্কার ও উজ্জ্বল দেখাতে সাহায্য করে</li>
-
-Focus:
-Glow, hydration, acne care, smooth skin`
-      : `Return a premium HTML <ul> list with 6–8 ingredients and benefits.`;
+<li><strong>Hyaluronic Acid</strong> – ত্বকের গভীরে আর্দ্রতা ধরে রেখে স্কিনকে নরম ও ভরাট দেখাতে সাহায্য করে</li>`
+      : `Return a premium HTML <ul> list with 6–8 ingredients.`;
   }
 
   if (field === "howToUse") {
     return isBangla
-      ? `Return a COMPLETE HTML <ol> list (step-by-step usage).
+      ? `Return a COMPLETE HTML <ol> list (step-by-step routine).
 
 নিয়ম:
-- সবসময় সঠিক স্কিনকেয়ার অর্ডার ফলো করতে হবে
-- সহজ ও স্বাভাবিক বাংলায় লিখতে হবে
-- যেন নতুন কেউও বুঝতে পারে
+- সঠিক skincare order follow করতে হবে
+- Eye Cream অবশ্যই include করতে হবে (Serum-এর পরে)
+- সহজ ও natural Bangla ব্যবহার করতে হবে
 
 Example tone:
-<li>প্রথমে ফেসওয়াশ দিয়ে মুখ পরিষ্কার করে নিন</li>
-<li>এরপর টোনার ব্যবহার করুন</li>`
-      : `Return a structured HTML <ol> with correct steps.`;
+<li>প্রথমে ফেসওয়াশ দিয়ে মুখ পরিষ্কার করুন</li>
+<li>এরপর টোনার ব্যবহার করুন</li>
+<li>তারপর সিরাম লাগান</li>
+<li>চোখের চারপাশে হালকাভাবে আই ক্রিম ব্যবহার করুন</li>
+<li>ময়েশ্চারাইজার দিয়ে স্কিন লক করুন</li>
+<li>দিনে হলে সানস্ক্রিন দিয়ে শেষ করুন</li>`
+      : `Return structured HTML <ol> with correct routine including eye cream.`;
   }
 
   if (field === "shortDescription") {
@@ -300,33 +297,30 @@ Example tone:
       ? `Write 2টি আকর্ষণীয় Bangla sentence।
 
 নিয়ম:
-- খুব catchy হতে হবে
-- Glow / Bright look ফোকাস থাকবে
-- ছোট ও শক্তিশালী বাক্য
+- ছোট, catchy এবং powerful হতে হবে
+- Glow / fresh look focus থাকবে
 
-Example tone:
-ত্বকে নিয়ে আসবে প্রাকৃতিক উজ্জ্বলতা।
-ব্যবহারের পরই ত্বক দেখাবে ফ্রেশ ও মসৃণ।`
+Example:
+ত্বককে দেখাবে ফ্রেশ ও উজ্জ্বল।
+ব্যবহারের পরই পাবেন নরম ও স্মুথ ফিল।`
       : `Write 2 high-conversion sentences.`;
   }
 
   return isBangla
-    ? `৪–৬ লাইনের একটি প্রিমিয়াম Bangla description লিখুন।
+    ? `৪–৬ লাইনের একটি premium Bangla description লিখুন।
 
 অবশ্যই থাকতে হবে:
-- মূল উপকারিতা (Glow, Brightening, Acne control)
-- Ingredient highlight
-- কোন স্কিন টাইপের জন্য ভালো
-- কেমন ফিল দেয় (lightweight, non-greasy)
+- Glow / Brightening / Hydration
+- Key ingredient mention
+- Skin type suitability
+- Lightweight feel
 
-ভাষা হবে:
-- স্বাভাবিক
-- সুন্দর
-- পড়তে আরামদায়ক
-- একদমই ট্রান্সলেটেড মনে হওয়া যাবে না`
-    : `Write a premium 4–6 sentence product description.`;
+ভাষা:
+- Natural
+- Smooth
+- Human-like`
+    : `Write a premium 4–6 sentence description.`;
 }
-
 // ---- MAIN HANDLER ----
 
 export async function POST(req: Request) {
