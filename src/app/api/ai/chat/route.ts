@@ -153,10 +153,14 @@ export async function POST(req: Request) {
     const systemPrompt = `আপনি Aurea BD-এর একজন Premium Skincare Consultant। 
 
 ✨ কথা বলার নিয়ম (STRICT):
-১. প্রাকৃতিক বাংলা: কথা একদম মানুষের মতো হতে হবে। "সালিশ", "ক্রিয়াকলাপ", "আপনার ত্বক কীভাবে আছে" — এই ধরনের যান্ত্রিক বা ভুল শব্দ ব্যবহার করা যাবে না। 
-২. মার্জিত শব্দ চয়ন: "সাজেশন", "পরামর্শ", "আপনার ত্বকের ধরন" — এই শব্দগুলো ব্যবহার করুন।
-৩. সরাসরি উত্তর + কনসালটেশন: যদি ইউজার সরাসরি জানতে চায় "কী কী প্রোডাক্ট আছে", তবে শুরুতেই ১-২টি জনপ্রিয় প্রোডাক্টের নাম (যেমন: Japan Sakura Set বা Axis-Y Serum) বলে তারপর তার ত্বকের সমস্যা সম্পর্কে জিজ্ঞেস করুন। 
-৪. ছোট বাক্য: বড় কোনো প্যারাগ্রাফ দিবেন না। অল্প কথায় সুন্দর করে বুঝিয়ে বলুন।
+১. প্রাকৃতিক বাংলা: কথা একদম মানুষের মতো হতে হবে। 
+২. BANNED PHRASES (কখনো বলবেন না):
+   - "আমার আপনার জন্য" (ভুল ব্যাকরণ)
+   - "কি আপনার ত্বকের সাথে ভালো হওয়ার বিষয়ে" (ভুল)
+   - "আমাদের সুনাম আছে" (অপ্রাসঙ্গিক)
+   - "আপনার ত্বক কীভাবে আছে" (যান্ত্রিক)
+৩. রিপিটেশন বন্ধ: একই প্রশ্ন বা কথা বারবার বলবেন না। একটি মেসেজে কেবল একবারই প্রশ্ন করুন। 
+৪. কনসালটেশন: গ্রাহকের ত্বকের সমস্যার কথা শুনুন এবং সেই অনুযায়ী ১-২টি সেরা সাজেশান দিন।
 ৫. সালাম: সালাম শুধুমাত্র শুরুতে একবার দিবেন।
 
 ✨ এক্সপার্ট নলেজ:
@@ -173,9 +177,9 @@ ${knowledgeSummary.substring(0, 1500)}
 লক্ষ্য: আপনি একজন বিশেষজ্ঞের মতো গ্রাহকের ত্বকের সমস্যার সমাধান দিবেন, কোনো রোবটের মতো তথ্য দিবেন না।`;
 
     const providers = [
-      { name: 'groq', key: groqKey, call: () => callGroq(groqKey!, systemPrompt, messages) },
+      { name: 'gemini', key: geminiKey, call: () => callGemini(geminiKey!, systemPrompt, messages) },
       { name: 'openrouter', key: openRouterKey, call: () => callOpenRouter(openRouterKey!, systemPrompt, messages) },
-      { name: 'gemini', key: geminiKey, call: () => callGemini(geminiKey!, systemPrompt, messages) }
+      { name: 'groq', key: groqKey, call: () => callGroq(groqKey!, systemPrompt, messages) }
     ];
 
     for (const provider of providers) {
@@ -183,6 +187,10 @@ ${knowledgeSummary.substring(0, 1500)}
         try {
           const text = await provider.call();
           if (text && text.length > 2) {
+            // Final check to prevent obvious robotic/broken Bangla
+            if (text.includes("আমার আপনার জন্য") || text.includes("কি আপনার ত্বকের সাথে ভালো")) {
+              continue; 
+            }
             return NextResponse.json({ text });
           }
         } catch (err: any) {
