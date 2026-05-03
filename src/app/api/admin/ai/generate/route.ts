@@ -88,25 +88,17 @@ async function callGroq(apiKey: string, systemPrompt: string, userPrompt: string
         }),
       });
 
-      if (response.status === 429) {
-        console.warn(`Groq ${model} rate limited, trying next...`);
-        continue;
-      }
-
-      if (!response.ok) {
-        const errText = await response.text();
-        throw new Error(`Groq ${model} ${response.status}: ${errText.substring(0, 100)}`);
-      }
+      if (response.status === 429) continue;
+      if (!response.ok) throw new Error(`Groq ${response.status}`);
 
       const data = await response.json();
       return data.choices?.[0]?.message?.content || "";
     } catch (err: any) {
       lastErr = err;
-      console.warn(`Groq ${model} failed:`, err.message);
       continue;
     }
   }
-  throw lastErr || new Error("All Groq models failed");
+  throw lastErr || new Error("Groq failed");
 }
 
 // Direct OpenRouter API call
@@ -138,17 +130,12 @@ async function callOpenRouter(apiKey: string, systemPrompt: string, userPrompt: 
         }),
       });
 
-      if (!response.ok) {
-        const err = await response.text();
-        console.warn(`OpenRouter ${model} failed: ${response.status} - ${err.substring(0, 50)}`);
-        continue;
-      }
+      if (!response.ok) continue;
 
       const data = await response.json();
       const text = data.choices?.[0]?.message?.content || data.choices?.[0]?.text || "";
       if (text && text.trim().length > 10) return text.trim();
-    } catch (err: any) {
-      console.warn(`OpenRouter ${model} error:`, err.message);
+    } catch {
       continue;
     }
   }
@@ -158,7 +145,6 @@ async function callOpenRouter(apiKey: string, systemPrompt: string, userPrompt: 
 // Direct Gemini API call
 async function callGemini(apiKey: string, prompt: string): Promise<string> {
   const models = ["gemini-2.0-flash", "gemini-1.5-flash-latest"];
-  
   for (const model of models) {
     try {
       const response = await fetch(
@@ -172,9 +158,7 @@ async function callGemini(apiKey: string, prompt: string): Promise<string> {
           }),
         }
       );
-
       if (!response.ok) continue;
-
       const data = await response.json();
       return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
     } catch {
@@ -187,43 +171,53 @@ async function callGemini(apiKey: string, prompt: string): Promise<string> {
 // ---- PROMPT BUILDERS ----
 
 function buildSystemPrompt(isBangla: boolean): string {
+  const skincareKnowledge = `
+    CORE SKINCARE RULES (NEVER VIOLATE):
+    1. ROUTINE ORDER: Cleanser -> Toner -> Essence/Serum -> Moisturizer -> Sunscreen (SPF).
+    2. SPF RULE: Sunscreen is ALWAYS the final step of a morning routine. Never apply it first.
+    3. TONER RULE: Toner is used immediately after washing the face to prep skin.
+    4. SERUM RULE: Serums are applied before moisturizers.
+    5. QUANTITY: Serum (2-3 drops), Moisturizer (pea-sized), Sunscreen (generous amount).
+  `;
+
   if (isBangla) {
-    return `You are a professional Bangladeshi beauty copywriter for Aurea BD — a premium Japanese & Korean skincare brand in Bangladesh.
+    return `You are a Lead Dermatological Consultant & Copywriter for Aurea BD.
+    ${skincareKnowledge}
 
-WRITING STYLE:
-- Write fluent, natural Bangla as spoken by educated urban Bangladeshi women.
-- Warm, trustworthy, and premium tone — like a popular beauty influencer.
-- NEVER translate literally from English. Write original Bangla.
-
-VOCABULARY:
-- Brand names stay in English: "Axis-y", "Laikou", "COSRX"
-- Ingredient names stay in English: "Niacinamide", "Vitamin C", "Hyaluronic Acid"  
-- Product types: সিরাম, টোনার, ময়েশ্চারাইজার, সানস্ক্রিন, ক্রিম, ফেসওয়াশ
-- Use: "ব্যবহার করুন", "মুখে লাগান", "ত্বকে দিন", "মালিশ করুন"
-- NEVER use: "প্রয়োগ করুন", "মুখমণ্ডল", "স্ফীত করুন"
-
-EXAMPLE GOOD BANGLA:
-- "পরিষ্কার মুখে ২-৩ ফোঁটা সিরাম নিয়ে আলতোভাবে মালিশ করুন"
-- "এই সিরাম ত্বকের কালো দাগ হালকা করে এবং উজ্জ্বলতা বাড়ায়"
-- "প্রতিদিন সকালে ও রাতে ব্যবহার করুন সেরা ফলাফলের জন্য"`;
+    WRITING STYLE:
+    - Write professional, natural Bangla for high-end skincare customers.
+    - Keep brand names and ingredients in English characters (e.g., Axis-y, Niacinamide).
+    - Use natural terms: সিরাম, টোনার, ময়েশ্চারাইজার, সানস্ক্রিন, ফেসওয়াশ।
+    
+    SKINCARE ROUTINE STEPS (BANGLA):
+    - স্টেপ ১: ফেসওয়াশ (ত্বক পরিষ্কার করুন)
+    - স্টেপ ২: টোনার (ত্বক প্রস্তুত করুন)
+    - স্টেপ ৩: সিরাম (ত্বকের পুষ্টি যোগান)
+    - স্টেপ ৪: ময়েশ্চারাইজার (আর্দ্রতা ধরে রাখুন)
+    - স্টেপ ৫: সানস্ক্রিন (ত্বক রক্ষা করুন - শুধুমাত্র দিনে)
+    
+    - NEVER suggest Sunscreen as step 1.
+    - NEVER suggest Serum after Moisturizer.
+    - TONE: Professional, trustworthy, and native.`;
   }
 
-  return `You are a professional luxury skincare copywriter for Aurea BD — a premium Japanese & Korean skincare brand. Write elegant, persuasive English. Focus on radiance, hydration, and real benefits. Never invent ingredients.`;
+  return `You are a professional luxury skincare copywriter and dermatological expert for Aurea BD.
+  ${skincareKnowledge}
+  Ensure routines follow the thin-to-thick principle. SPF is always the final daytime step.`;
 }
 
 function buildFormatGuide(field: string, isBangla: boolean): string {
   if (field === "ingredients") {
     return isBangla
       ? `Return ONLY an HTML <ul> list. Ingredient names in English, benefits in Bangla.
-Example: <ul><li><strong>Niacinamide</strong> — ত্বকের দাগ কমায় ও উজ্জ্বলতা বাড়ায়</li></ul>`
-      : `Return ONLY an HTML <ul> list of key ingredients with benefits.
-Example: <ul><li><strong>Niacinamide</strong> — Reduces dark spots and enhances radiance</li></ul>`;
+Example: <ul><li><strong>Niacinamide</strong> — ত্বকের দাগ কমায় ও উজ্জ্বলতা বাড়ায়</li></ul>`
+      : `Return ONLY an HTML <ul> list of key ingredients with benefits.`;
   }
   if (field === "howToUse") {
     return isBangla
-      ? `Return ONLY an HTML <ol> list in natural Bangla.
-Example: <ol><li>পরিষ্কার মুখে ২-৩ ফোঁটা সিরাম নিন</li><li>আলতোভাবে ত্বকে মালিশ করুন</li></ol>`
-      : `Return ONLY an HTML <ol> list of usage steps.`;
+      ? `Return ONLY an HTML <ol> list of the CORRECT skincare steps.
+Example: <ol><li>প্রথমে ফেসওয়াশ দিয়ে মুখ পরিষ্কার করে নিন।</li><li>এরপর টোনার ব্যবহার করুন।</li></ol>`
+      : `Return ONLY an HTML <ol> list of correct usage steps.`;
   }
   if (field === "shortDescription") {
     return "Return ONLY 1-2 catchy marketing sentences.";
@@ -244,15 +238,8 @@ export async function POST(req: Request) {
     const geminiKey = process.env.GEMINI_API_KEY;
     const openRouterKey = process.env.OPENROUTER_API_KEY;
 
-    if (!groqKey && !geminiKey && !openRouterKey) {
-      return NextResponse.json({ 
-        message: "No AI API Key configured. Add GROQ_API_KEY, OPENROUTER_API_KEY, or GEMINI_API_KEY to environment." 
-      }, { status: 500 });
-    }
-
     const { name, category, field, customPrompt, language } = await req.json();
     
-    // Extract URL content if present
     let browsingData = "";
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const foundUrls = customPrompt?.match(urlRegex);
@@ -264,19 +251,9 @@ export async function POST(req: Request) {
     const systemPrompt = buildSystemPrompt(isBangla);
     const formatGuide = buildFormatGuide(field, isBangla);
 
-    const userPrompt = `Product: "${name}"
-Category: ${category || "Skincare"}
-Field: ${field}
-${browsingData ? `\nREFERENCE DATA FROM PRODUCT LINK:\n${browsingData}\n\nUse the real product info from the link above.` : ""}
-${customPrompt ? `\nInstructions: ${customPrompt}` : ""}
-
-FORMAT: ${formatGuide}
-
-Output ONLY the final content. No explanations, no code fences, no "Here is..." prefix.`;
+    const userPrompt = `Product: "${name}"\nField: ${field}\n${browsingData ? `\nLink Data: ${browsingData}\n` : ""}${customPrompt ? `\nInstructions: ${customPrompt}\n` : ""}\nFORMAT: ${formatGuide}\nOutput ONLY content.`;
 
     const errors: string[] = [];
-
-    // Define priority based on language
     const providers = isBangla 
       ? [
           { name: 'gemini', key: geminiKey, call: () => callGemini(geminiKey!, `${systemPrompt}\n\n${userPrompt}`) },
@@ -295,24 +272,16 @@ Output ONLY the final content. No explanations, no code fences, no "Here is..." 
           let result = await provider.call();
           if (result) {
             result = result.replace(/```html|```/g, "").trim();
-            if (result.length > 5) {
-              return NextResponse.json({ text: result });
-            }
+            if (result.length > 5) return NextResponse.json({ text: result });
           }
-          errors.push(`${provider.name} returned empty`);
         } catch (err: any) {
           errors.push(`${provider.name}: ${err.message}`);
-          console.error(`${provider.name} failed:`, err.message);
         }
       }
     }
 
-    return NextResponse.json({ 
-      message: `AI generation failed. ${errors.join(" | ")}` 
-    }, { status: 500 });
-
+    return NextResponse.json({ message: `AI failed. ${errors.join(" | ")}` }, { status: 500 });
   } catch (error: any) {
-    console.error("API Error:", error.message);
-    return NextResponse.json({ message: error.message || "Failed to generate content" }, { status: 500 });
+    return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }
