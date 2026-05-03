@@ -14,7 +14,7 @@ export default function AIChatbot() {
   const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: "assistant", content: "Welcome to Aurea BD. I am your personal skincare concierge. How may I assist your beauty journey today? ✨" }
+    { role: "assistant", content: "আসসালামু আলাইকুম! আমি অরিয়া বিডি-র স্কিনকেয়ার কনসাল্টেন্ট। আজকে আপনার ত্বকের যত্নে আমি কীভাবে সাহায্য করতে পারি? ✨" }
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
