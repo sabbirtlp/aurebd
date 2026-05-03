@@ -13,10 +13,14 @@ async function getSiteKnowledge() {
     const products = await Product.find({ stock: { $gt: 0 } })
       .sort({ updatedAt: -1 })
       .limit(100)
-      .select('name price category slug')
+      .select('name price discountPrice isSpecialOffer category slug')
       .lean();
     
-    const productList = products.map(p => `- ${p.name} (৳${p.price}) -> /product/${p.slug}`).join('\n');
+    const productList = products.map(p => {
+      const priceText = p.discountPrice ? `৳${p.discountPrice} (Original: ৳${p.price})` : `৳${p.price}`;
+      const offerText = p.isSpecialOffer ? " [SPECIAL OFFER!]" : "";
+      return `- ${p.name} (${priceText})${offerText} -> /product/${p.slug}`;
+    }).join('\n');
 
     // 2. Get CMS Data
     const cmsData = await SiteContent.find({}).limit(100).lean();
