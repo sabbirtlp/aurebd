@@ -35,10 +35,10 @@ export default function EditProductClient({ product }: { product: any }) {
     description_bn: product.description_bn || "",
     price: product.price?.toString() || "",
     image: product.image || "",
-    gallery: product.gallery || [],
+    gallery: Array.isArray(product.gallery) ? product.gallery : (product.gallery ? [product.gallery] : []),
     stock: product.stock?.toString() || "",
     category: product.category || "",
-    categories: product.categories || [product.category].filter(Boolean) || [],
+    categories: Array.isArray(product.categories) ? product.categories : (product.categories ? [product.categories] : [product.category].filter(Boolean) || []),
     isNewArrival: product.isNewArrival || false,
     isBestSeller: product.isBestSeller || false,
     isSpecialOffer: product.isSpecialOffer || false,
@@ -242,7 +242,7 @@ export default function EditProductClient({ product }: { product: any }) {
                   existingContent={activeLang === "en" ? form.shortDescription : form.shortDescription_bn}
                   onGenerate={(text) => {
                     const fieldName = activeLang === "en" ? "shortDescription" : "shortDescription_bn";
-                    setForm({ ...form, [fieldName]: text });
+                    setForm(prev => ({ ...prev, [fieldName]: text }));
                     setIsSaved(false);
                   }} 
                 />
@@ -267,7 +267,7 @@ export default function EditProductClient({ product }: { product: any }) {
                   existingContent={activeLang === "en" ? form.ingredients : form.ingredients_bn}
                   onGenerate={(text) => {
                     const fieldName = activeLang === "en" ? "ingredients" : "ingredients_bn";
-                    setForm({ ...form, [fieldName]: text });
+                    setForm(prev => ({ ...prev, [fieldName]: text }));
                     setIsSaved(false);
                   }} 
                 />
@@ -276,7 +276,7 @@ export default function EditProductClient({ product }: { product: any }) {
                   value={activeLang === "en" ? form.ingredients : form.ingredients_bn}
                   onChange={(val) => {
                     const fieldName = activeLang === "en" ? "ingredients" : "ingredients_bn";
-                    setForm({ ...form, [fieldName]: val });
+                    setForm(prev => ({ ...prev, [fieldName]: val }));
                     setIsSaved(false);
                   }}
                 />
@@ -293,7 +293,7 @@ export default function EditProductClient({ product }: { product: any }) {
                   existingContent={activeLang === "en" ? form.howToUse : form.howToUse_bn}
                   onGenerate={(text) => {
                     const fieldName = activeLang === "en" ? "howToUse" : "howToUse_bn";
-                    setForm({ ...form, [fieldName]: text });
+                    setForm(prev => ({ ...prev, [fieldName]: text }));
                     setIsSaved(false);
                   }} 
                 />
@@ -302,7 +302,7 @@ export default function EditProductClient({ product }: { product: any }) {
                   value={activeLang === "en" ? form.howToUse : form.howToUse_bn}
                   onChange={(val) => {
                     const fieldName = activeLang === "en" ? "howToUse" : "howToUse_bn";
-                    setForm({ ...form, [fieldName]: val });
+                    setForm(prev => ({ ...prev, [fieldName]: val }));
                     setIsSaved(false);
                   }}
                 />
@@ -319,7 +319,7 @@ export default function EditProductClient({ product }: { product: any }) {
                   existingContent={activeLang === "en" ? form.description : form.description_bn}
                   onGenerate={(text) => {
                     const fieldName = activeLang === "en" ? "description" : "description_bn";
-                    setForm({ ...form, [fieldName]: text });
+                    setForm(prev => ({ ...prev, [fieldName]: text }));
                     setIsSaved(false);
                   }} 
                 />
@@ -371,7 +371,7 @@ export default function EditProductClient({ product }: { product: any }) {
                 label="Primary Visual"
                 images={form.image ? [form.image] : []}
                 onChange={(images) => {
-                  setForm({ ...form, image: images[0] || "" });
+                  setForm(prev => ({ ...prev, image: images[0] || "" }));
                   setIsSaved(false);
                 }}
                 maxImages={1}
@@ -381,7 +381,7 @@ export default function EditProductClient({ product }: { product: any }) {
                   label="Gallery Collection"
                   images={form.gallery}
                   onChange={(images) => {
-                    setForm({ ...form, gallery: images });
+                    setForm(prev => ({ ...prev, gallery: images }));
                     setIsSaved(false);
                   }}
                   maxImages={10}
