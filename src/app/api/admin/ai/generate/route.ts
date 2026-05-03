@@ -215,12 +215,11 @@ function buildSystemPrompt(isBangla: boolean): string {
 function buildFormatGuide(field: string, isBangla: boolean): string {
   if (field === "ingredients") {
     return isBangla
-      ? `Return a COMPREHENSIVE HTML <ul> list (5-8 key items). 
+      ? `Return a COMPREHENSIVE HTML <ul> list. YOU MUST LIST AT LEAST 6-8 UNIQUE ACTIVE INGREDIENTS.
+         DO NOT provide a short list. Focus on variety (Extracts, Acids, Vitamins, Oils).
          Ingredient names in English, benefits in professional, catchy Bangla.
-         STYLE EXAMPLE: 
-         <li><strong>Cherry Blossom Extract</strong> — অক্সিজেন নিরোধক এবং ত্বকের শোষণ ক্ষমতা বৃদ্ধি করে</li>
-         <li><strong>Niacinamide</strong> — ত্বকের দাগ কমায় ও উজ্জ্বলতা বাড়ায়</li>`
-      : `Return a COMPREHENSIVE HTML <ul> list of 5-8 key active ingredients with their specific skin benefits.`;
+         Tone should be like a high-end luxury skincare brand.`
+      : `Return a COMPREHENSIVE HTML <ul> list of AT LEAST 6-8 unique active ingredients with their specific skin benefits.`;
   }
   if (field === "howToUse") {
     return isBangla
@@ -261,7 +260,7 @@ export async function POST(req: Request) {
     const systemPrompt = buildSystemPrompt(isBangla);
     const formatGuide = buildFormatGuide(field, isBangla);
 
-    const userPrompt = `Product: "${name}"\nField: ${field}\n${browsingData ? `\nLink Data: ${browsingData}\n` : ""}${customPrompt ? `\nInstructions: ${customPrompt}\n` : ""}\nFORMAT: ${formatGuide}\nOutput ONLY content.`;
+    const userPrompt = `Product: "${name}"\nField: ${field}\n${browsingData ? `\nLink Data: ${browsingData}\n` : ""}${customPrompt ? `\nInstructions: ${customPrompt}\n` : ""}\nFORMAT: ${formatGuide}\n\nSTRICT REQUIREMENT: If this is for "ingredients", YOU MUST LIST AT LEAST 6 UNIQUE ACTIVE INGREDIENTS. NEVER provide a short or lazy list. Be exhaustive and professional. Output ONLY content.`;
 
     const errors: string[] = [];
     const providers = isBangla 
