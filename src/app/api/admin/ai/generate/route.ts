@@ -215,20 +215,24 @@ function buildSystemPrompt(isBangla: boolean): string {
 function buildFormatGuide(field: string, isBangla: boolean): string {
   if (field === "ingredients") {
     return isBangla
-      ? `Return ONLY an HTML <ul> list. Ingredient names in English, benefits in Bangla.
-Example: <ul><li><strong>Niacinamide</strong> — ত্বকের দাগ কমায় ও উজ্জ্বলতা বাড়ায়</li></ul>`
-      : `Return ONLY an HTML <ul> list of key ingredients with benefits.`;
+      ? `Return a COMPREHENSIVE HTML <ul> list (5-8 key items). 
+         Ingredient names in English, benefits in professional, catchy Bangla.
+         STYLE EXAMPLE: 
+         <li><strong>Cherry Blossom Extract</strong> — অক্সিজেন নিরোধক এবং ত্বকের শোষণ ক্ষমতা বৃদ্ধি করে</li>
+         <li><strong>Niacinamide</strong> — ত্বকের দাগ কমায় ও উজ্জ্বলতা বাড়ায়</li>`
+      : `Return a COMPREHENSIVE HTML <ul> list of 5-8 key active ingredients with their specific skin benefits.`;
   }
   if (field === "howToUse") {
     return isBangla
-      ? `Return ONLY an HTML <ol> list of the CORRECT skincare steps.
-Example: <ol><li>প্রথমে ফেসওয়াশ দিয়ে মুখ পরিষ্কার করে নিন।</li><li>এরপর টোনার ব্যবহার করুন।</li></ol>`
-      : `Return ONLY an HTML <ol> list of correct usage steps.`;
+      ? `Return a detailed HTML <ol> list of the CORRECT skincare steps. 
+         For SETS (e.g. 5pcs set), list the order for ALL items in the set.
+         Example: <ol><li>প্রথমে ফেসওয়াশ দিয়ে মুখ পরিষ্কার করে নিন।</li><li>এরপর টোনার ব্যবহার করুন...</li></ol>`
+      : `Return a detailed HTML <ol> list of correct usage steps. For sets, include the sequence for all products.`;
   }
   if (field === "shortDescription") {
-    return "Return ONLY 1-2 catchy marketing sentences.";
+    return "Return 2 punchy, high-conversion marketing sentences.";
   }
-  return "Return a compelling 3-5 sentence marketing paragraph.";
+  return "Return a compelling, luxurious 4-6 sentence detailed description focusing on results and science.";
 }
 
 // ---- MAIN HANDLER ----
