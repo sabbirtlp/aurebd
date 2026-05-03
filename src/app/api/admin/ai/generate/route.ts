@@ -11,9 +11,9 @@ async function fetchUrlContent(url: string): Promise<string> {
         'Accept': 'text/html,application/xhtml+xml',
       },
     });
-    
+
     if (!response.ok) return "";
-    
+
     const html = await response.text();
     const parts: string[] = [];
 
@@ -34,7 +34,7 @@ async function fetchUrlContent(url: string): Promise<string> {
     // 2. Extract meta tags
     const metaDesc = html.match(/<meta[^>]*name="description"[^>]*content="([^"]*)"[^>]*>/i);
     if (metaDesc) parts.push(`META: ${metaDesc[1]}`);
-    
+
     const ogDesc = html.match(/<meta[^>]*property="og:description"[^>]*content="([^"]*)"[^>]*>/i);
     if (ogDesc) parts.push(`OG: ${ogDesc[1]}`);
 
@@ -50,11 +50,11 @@ async function fetchUrlContent(url: string): Promise<string> {
     bodyText = bodyText.replace(/<[^>]+>/g, " ");
     bodyText = bodyText.replace(/&nbsp;|&amp;|&lt;|&gt;/g, " ");
     bodyText = bodyText.replace(/\s+/g, " ").trim();
-    
+
     if (bodyText.length > 100) {
       parts.push(`CONTENT: ${bodyText.substring(0, 3000)}`);
     }
-    
+
     return parts.join("\n") || "";
   } catch (err) {
     console.error("URL Fetch error:", err);
@@ -169,69 +169,162 @@ async function callGemini(apiKey: string, prompt: string): Promise<string> {
 }
 
 // ---- PROMPT BUILDERS ----
-
 function buildSystemPrompt(isBangla: boolean): string {
   const skincareKnowledge = `
-    CORE SKINCARE RULES (NEVER VIOLATE):
-    1. ROUTINE ORDER: Cleanser -> Toner -> Essence/Serum -> Moisturizer -> Sunscreen (SPF).
-    2. SPF RULE: Sunscreen is ALWAYS the final step of a morning routine. Never apply it first.
-    3. TONER RULE: Toner is used immediately after washing the face to prep skin.
-    4. SERUM RULE: Serums are applied before moisturizers.
-    5. QUANTITY: Serum (2-3 drops), Moisturizer (pea-sized), Sunscreen (generous amount).
+  CORE DERMATOLOGY RULES (STRICT):
+  1. ROUTINE ORDER: Cleanser → Toner → Essence/Serum → Moisturizer → Sunscreen.
+  2. SPF RULE: Sunscreen is ALWAYS the final morning step.
+  3. TONER RULE: Used immediately after cleansing.
+  4. SERUM RULE: Apply before moisturizer (thin → thick layering).
+  5. QUANTITY GUIDE:
+     - Cleanser: coin-sized
+     - Toner: few drops
+     - Serum: 2–3 drops
+     - Moisturizer: pea-sized
+     - Sunscreen: 2-finger rule
 
-    POPULAR PRODUCT KNOWLEDGE BASE:
-    - Japan Sakura Skincare Set (Laikou): Contains Cherry Blossom Extract (antioxidant), Niacinamide (brightening), Rice Water (smoothing), and Hyaluronic Acid (hydration).
-    - Axis-Y Dark Spot Serum: Contains 5% Niacinamide and Squalane.
-    - COSRX Snail Mucin: Focuses on skin repair and deep hydration.
-    - Rice Skincare: Focuses on enzyme-based brightening and smoothing.
+  INGREDIENT KNOWLEDGE:
+  - Niacinamide → brightening + oil control + barrier repair
+  - Hyaluronic Acid → deep hydration + plumping
+  - Salicylic Acid → acne control + pore cleansing
+  - Vitamin C → glow + antioxidant protection
+  - Centella Asiatica → soothing + repair
+  - Snail Mucin → regeneration + hydration
+  - Rice Extract → brightening + smoothing
+
+  PRODUCT AWARENESS:
+  - Japan Sakura Set (Laikou): glow + hydration + smooth texture
+  - Axis-Y Dark Spot Serum: dark spot care with Niacinamide
+  - COSRX Snail Mucin: deep repair + hydration
+
+  E-COMMERCE RULES:
+  - Focus on RESULTS (glow, brightening, acne control, hydration)
+  - Use sensory words: lightweight, দ্রুত শোষিত হয়, non-greasy
+  - Mention skin type (oily / dry / combination / sensitive)
+  - Avoid medical claims (use “helps”, “improves appearance”)
   `;
 
   if (isBangla) {
-    return `You are a Lead Dermatological Consultant & Copywriter for Aurea BD. 
+    return `আপনি Aurea BD-এর জন্য একজন Lead Skincare Consultant এবং Premium Copywriter।
+
     ${skincareKnowledge}
 
-    WRITING STYLE:
-    - You have "Web Research" capabilities. Even without a link, use your training data to provide ACTUAL facts for famous products like "Japan Sakura Set".
-    - Write professional, natural Bangla for high-end skincare customers.
-    - Keep brand names and ingredients in English characters (e.g., Axis-y, Niacinamide).
-    - Use natural terms: সিরাম, টোনার, ময়েশ্চারাইজার, সানস্ক্রিন, ফেসওয়াশ।
-    
-    SKINCARE ROUTINE STEPS (BANGLA):
-    - স্টেপ ১: ফেসওয়াশ (ত্বক পরিষ্কার করুন)
-    - স্টেপ ২: টোনার (ত্বক প্রস্তুত করুন)
-    - স্টেপ ৩: সিরাম (ত্বকের পুষ্টি যোগান)
-    - স্টেপ ৪: ময়েশ্চারাইজার (আর্দ্রতা ধরে রাখুন)
-    - স্টেপ ৫: সানস্ক্রিন (ত্বক রক্ষা করুন - শুধুমাত্র দিনে)
-    
-    - TONE: Professional, trustworthy, and native.`;
+    ✨ লেখার স্টাইল (অত্যন্ত গুরুত্বপূর্ণ):
+    - বাংলা হবে সম্পূর্ণ প্রাকৃতিক, সাবলীল এবং মানুষের মতো—কোনোভাবেই ট্রান্সলেটেড বা শক্ত শোনানো যাবে না।
+    - টোন হবে elegant, clean এবং high-end skincare brand-এর মতো।
+    - গ্রাহকের সাথে সরাসরি কথা বলার মতো করে লিখুন (friendly but premium)।
+    - ছোট ছোট বাক্য ব্যবহার করুন, যাতে পড়তে সহজ লাগে।
+
+    ✨ ভাষার নিয়ম:
+    - ব্র্যান্ড নাম ও ইনগ্রেডিয়েন্ট English-এ লিখবেন (Niacinamide, Hyaluronic Acid)
+    - বাংলা শব্দ ব্যবহার করুন: ফেসওয়াশ, টোনার, সিরাম, ময়েশ্চারাইজার, সানস্ক্রিন
+
+    ✨ বাংলাদেশি কাস্টমার ফোকাস:
+    - ত্বক কালচে হয়ে যাওয়া (sun tan)
+    - ব্রণ ও দাগ
+    - তেলতেলে ত্বক
+    - উজ্জ্বলতা কমে যাওয়া
+
+    ✨ লেখায় অবশ্যই থাকবে:
+    - Glow / Brightening / Fresh look
+    - Lightweight feel
+    - দ্রুত কাজ করে এমন অনুভূতি
+    - Real-life benefit (ত্বক মসৃণ লাগে, ফ্রেশ লাগে)
+
+    ✨ স্কিনকেয়ার স্টেপ (সঠিক ক্রম):
+    স্টেপ ১: ফেসওয়াশ  
+    স্টেপ ২: টোনার  
+    স্টেপ ৩: সিরাম  
+    স্টেপ ৪: ময়েশ্চারাইজার  
+    স্টেপ ৫: সানস্ক্রিন (শুধু দিনের জন্য)
+
+    ✨ টোন:
+    - Trustworthy  
+    - Premium  
+    - Natural Bangla  
+    - Conversion-focused  
+    `;
   }
 
-  return `You are a professional luxury skincare copywriter and dermatological expert for Aurea BD. 
+  return `You are a luxury skincare copywriter and dermatology expert for Aurea BD.
+
   ${skincareKnowledge}
-  You have "Web Research" capabilities. Even without a link, use your training data to provide ACTUAL facts for famous products like "Japan Sakura Set".
-  Ensure routines follow the thin-to-thick principle. SPF is always the final daytime step.`;
+
+  STYLE:
+  - Premium, clean, persuasive
+  - Focus on results + ingredients
+  - High-conversion product page tone
+
+  TARGET:
+  - Bangladesh skincare audience
+  - Concerns: acne, dull skin, oiliness, sun damage
+  `;
 }
 
 function buildFormatGuide(field: string, isBangla: boolean): string {
+
   if (field === "ingredients") {
     return isBangla
-      ? `Return a COMPREHENSIVE HTML <ul> list. YOU MUST LIST AT LEAST 6-8 UNIQUE ACTIVE INGREDIENTS.
-         DO NOT provide a short list. Focus on variety (Extracts, Acids, Vitamins, Oils).
-         Ingredient names in English, benefits in professional, catchy Bangla.
-         Tone should be like a high-end luxury skincare brand.`
-      : `Return a COMPREHENSIVE HTML <ul> list of AT LEAST 6-8 unique active ingredients with their specific skin benefits.`;
+      ? `Return a PREMIUM HTML <ul> list with 6–8 ingredients.
+
+নিয়ম:
+- Ingredient name English-এ থাকবে
+- Benefit হবে প্রাকৃতিক, আকর্ষণীয় বাংলায়
+- খুব বেশি কঠিন বা বইয়ের ভাষা ব্যবহার করবেন না
+
+Example tone:
+<li><strong>Niacinamide</strong> – ত্বকের দাগ কমাতে সাহায্য করে এবং স্কিনকে পরিষ্কার ও উজ্জ্বল দেখাতে সাহায্য করে</li>
+
+Focus:
+Glow, hydration, acne care, smooth skin`
+      : `Return a premium HTML <ul> list with 6–8 ingredients and benefits.`;
   }
+
   if (field === "howToUse") {
     return isBangla
-      ? `Return a detailed HTML <ol> list of the CORRECT skincare steps. 
-         For SETS (e.g. 5pcs set), list the order for ALL items in the set.
-         Example: <ol><li>প্রথমে ফেসওয়াশ দিয়ে মুখ পরিষ্কার করে নিন।</li><li>এরপর টোনার ব্যবহার করুন...</li></ol>`
-      : `Return a detailed HTML <ol> list of correct usage steps. For sets, include the sequence for all products.`;
+      ? `Return a COMPLETE HTML <ol> list (step-by-step usage).
+
+নিয়ম:
+- সবসময় সঠিক স্কিনকেয়ার অর্ডার ফলো করতে হবে
+- সহজ ও স্বাভাবিক বাংলায় লিখতে হবে
+- যেন নতুন কেউও বুঝতে পারে
+
+Example tone:
+<li>প্রথমে ফেসওয়াশ দিয়ে মুখ পরিষ্কার করে নিন</li>
+<li>এরপর টোনার ব্যবহার করুন</li>`
+      : `Return a structured HTML <ol> with correct steps.`;
   }
+
   if (field === "shortDescription") {
-    return "Return 2 punchy, high-conversion marketing sentences.";
+    return isBangla
+      ? `Write 2টি আকর্ষণীয় Bangla sentence।
+
+নিয়ম:
+- খুব catchy হতে হবে
+- Glow / Bright look ফোকাস থাকবে
+- ছোট ও শক্তিশালী বাক্য
+
+Example tone:
+ত্বকে নিয়ে আসবে প্রাকৃতিক উজ্জ্বলতা।
+ব্যবহারের পরই ত্বক দেখাবে ফ্রেশ ও মসৃণ।`
+      : `Write 2 high-conversion sentences.`;
   }
-  return "Return a compelling, luxurious 4-6 sentence detailed description focusing on results and science.";
+
+  return isBangla
+    ? `৪–৬ লাইনের একটি প্রিমিয়াম Bangla description লিখুন।
+
+অবশ্যই থাকতে হবে:
+- মূল উপকারিতা (Glow, Brightening, Acne control)
+- Ingredient highlight
+- কোন স্কিন টাইপের জন্য ভালো
+- কেমন ফিল দেয় (lightweight, non-greasy)
+
+ভাষা হবে:
+- স্বাভাবিক
+- সুন্দর
+- পড়তে আরামদায়ক
+- একদমই ট্রান্সলেটেড মনে হওয়া যাবে না`
+    : `Write a premium 4–6 sentence product description.`;
 }
 
 // ---- MAIN HANDLER ----
@@ -248,7 +341,7 @@ export async function POST(req: Request) {
     const openRouterKey = process.env.OPENROUTER_API_KEY;
 
     const { name, category, field, customPrompt, language } = await req.json();
-    
+
     let browsingData = "";
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const foundUrls = customPrompt?.match(urlRegex);
@@ -263,17 +356,17 @@ export async function POST(req: Request) {
     const userPrompt = `Product: "${name}"\nField: ${field}\n${browsingData ? `\nLink Data: ${browsingData}\n` : ""}${customPrompt ? `\nInstructions: ${customPrompt}\n` : ""}\nFORMAT: ${formatGuide}\n\nSTRICT REQUIREMENT: If this is for "ingredients", YOU MUST LIST AT LEAST 6 UNIQUE ACTIVE INGREDIENTS. NEVER provide a short or lazy list. Be exhaustive and professional. Output ONLY content.`;
 
     const errors: string[] = [];
-    const providers = isBangla 
+    const providers = isBangla
       ? [
-          { name: 'gemini', key: geminiKey, call: () => callGemini(geminiKey!, `${systemPrompt}\n\n${userPrompt}`) },
-          { name: 'openrouter', key: openRouterKey, call: () => callOpenRouter(openRouterKey!, systemPrompt, userPrompt) },
-          { name: 'groq', key: groqKey, call: () => callGroq(groqKey!, systemPrompt, userPrompt) }
-        ]
+        { name: 'gemini', key: geminiKey, call: () => callGemini(geminiKey!, `${systemPrompt}\n\n${userPrompt}`) },
+        { name: 'openrouter', key: openRouterKey, call: () => callOpenRouter(openRouterKey!, systemPrompt, userPrompt) },
+        { name: 'groq', key: groqKey, call: () => callGroq(groqKey!, systemPrompt, userPrompt) }
+      ]
       : [
-          { name: 'groq', key: groqKey, call: () => callGroq(groqKey!, systemPrompt, userPrompt) },
-          { name: 'gemini', key: geminiKey, call: () => callGemini(geminiKey!, `${systemPrompt}\n\n${userPrompt}`) },
-          { name: 'openrouter', key: openRouterKey, call: () => callOpenRouter(openRouterKey!, systemPrompt, userPrompt) }
-        ];
+        { name: 'groq', key: groqKey, call: () => callGroq(groqKey!, systemPrompt, userPrompt) },
+        { name: 'gemini', key: geminiKey, call: () => callGemini(geminiKey!, `${systemPrompt}\n\n${userPrompt}`) },
+        { name: 'openrouter', key: openRouterKey, call: () => callOpenRouter(openRouterKey!, systemPrompt, userPrompt) }
+      ];
 
     for (const provider of providers) {
       if (provider.key) {
