@@ -20,9 +20,9 @@ async function getSiteKnowledge() {
       .map((p) => `- ${p.name}: ৳${p.discountPrice || p.price}`)
       .join("\n");
 
-    const cmsData = await SiteContent.find({}).limit(5).lean();
+    const cmsData = await SiteContent.find({}).limit(8).lean();
     const knowledgeSummary = cmsData
-      .map((item) => `${item.key}: ${item.value.substring(0, 300)}`)
+      .map((item) => `${item.key}: ${item.value.substring(0, 400)}`)
       .join("\n");
 
     return { productList, knowledgeSummary };
@@ -32,46 +32,9 @@ async function getSiteKnowledge() {
   }
 }
 
-async function searchWeb(query: string): Promise<string> {
-  const apiKey = process.env.TAVILY_API_KEY;
-  if (!apiKey || query.length < 5) return "";
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 4000);
-
-  try {
-    const response = await fetch("https://api.tavily.com/search", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        api_key: apiKey,
-        query: query,
-        search_depth: "basic",
-        max_results: 3,
-      }),
-      signal: controller.signal
-    });
-
-    clearTimeout(timeoutId);
-    if (!response.ok) return "";
-    const data = await response.json();
-    return data.results.map((r: any) => `• ${r.title}: ${r.content}`).join("\n");
-  } catch { 
-    clearTimeout(timeoutId);
-    return ""; 
-  }
-}
-
-function shouldUseWeb(query: string) {
-  const q = query.toLowerCase();
-  const triggers = ["what is", "best", "compare", "review", "how to", "meaning", "why"];
-  const isProductIntent = q.includes("price") || q.includes("kinte") || q.includes("buy") || q.includes("product") || q.includes("দাম") || q.includes("কত");
-  return triggers.some((t) => q.includes(t)) && !isProductIntent;
-}
-
 async function callProvider(url: string, apiKey: string, body: any, isOpenRouter = false) {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
 
   try {
     const headers: any = {
@@ -110,37 +73,30 @@ export async function POST(req: Request) {
     const { messages } = await req.json();
     const { productList, knowledgeSummary } = await getSiteKnowledge();
 
-    const lastUserMsg = messages.filter((m: any) => m.role === "user").pop()?.content || "";
-    let webResults = "";
-    if (shouldUseWeb(lastUserMsg)) {
-      webResults = await searchWeb(lastUserMsg);
-    }
-
     const systemPrompt = `আপনি Aurea BD-এর একজন অভিজ্ঞ প্রিমিয়াম স্কিনকেয়ার বিশেষজ্ঞ। 
 
-পণ্য তালিকা:
+পণ্য তালিকা (DATABASE PRODUCTS):
 ${productList}
 
-সাইট তথ্য:
+সাইট ও কোম্পানি তথ্য (SITE INFO):
 ${knowledgeSummary}
 ঠিকানা: তিলকপুর, আক্কেলপুর, জয়পুরহাট।
 
 অর্ডার নিতে চাইলে: "ঠিক আছে 👍 আপনার নাম আর ডেলিভারি ঠিকানাটা দিন, আমরা দ্রুত পাঠিয়ে দিচ্ছি।"
 
-কঠোর নিয়মাবলী (অবশ্যই পালনীয়):
-১. সকল পণ্যের নাম ও ক্যাটাগরি (Face Wash, Toner, Serum, Cream, Mask, Moisturizer) অবশ্যই ENGLISH-এ লিখবেন। কোনোভাবেই বাংলা উচ্চারণ (যেমন: ফেস ওয়াশ, সারুম) ব্যবহার করবেন না।
-২. বাক্যগুলো সাবলীল, মার্জিত এবং পেশাদার হতে হবে। "সুপারসিক্রিট পরামর্শ" বা "আমি আপনাকে বলতে পারি" এই জাতীয় শিশুসুলভ কথা বলা যাবে না।
-৩. একই প্যারাগ্রাফে একই তথ্যের পুনরাবৃত্তি করবেন না।
-৪. কাস্টমারকে "আপনি" সম্বোধন করবেন এবং অত্যন্ত বিনয়ী থাকবেন।
+কঠোর নিয়মাবলী:
+১. শুধুমাত্র উপরের দেওয়া তথ্য (পণ্য তালিকা এবং সাইট তথ্য) ব্যবহার করে উত্তর দিন। এর বাইরের কোনো তথ্য বা কাল্পনিক তথ্য দেবেন না।
+২. সকল পণ্যের নাম ও ক্যাটাগরি (Face Wash, Toner, Serum, Cream, Mask, Moisturizer) অবশ্যই ENGLISH-এ লিখবেন। কোনোভাবেই বাংলা উচ্চারণ ব্যবহার করবেন না।
+৩. বাক্যগুলো সাবলীল, মার্জিত এবং পেশাদার হতে হবে। 
+৪. একই তথ্যের পুনরাবৃত্তি করবেন না এবং অত্যন্ত বিনয়ী থাকবেন।
 
-ভুল উদাহরণ: "আপনি এই সেটটি কিনতে চান কিনা?" (এটি অপেশাদার)
-সঠিক উদাহরণ: "আপনি চাইলে এই সেটটি অর্ডার করতে পারেন, আমরা দ্রুত ডেলিভারি করে দিব।"`;
+দ্রষ্টব্য: যদি কোনো তথ্য উপরের তালিকায় না থাকে, তবে বিনয়ের সাথে বলুন যে সেই তথ্যটি আপনার কাছে নেই।`;
 
     const contextMessages = messages.filter((m: any) => m.content).slice(-6);
     const groqKey = process.env.GROQ_API_KEY;
     const openRouterKey = process.env.OPENROUTER_API_KEY;
 
-    // 1. Try OpenRouter Gemini 2.0 (Best for Bangla & Steerability)
+    // 1. Try OpenRouter Gemini 2.0
     if (openRouterKey) {
       let res = await callProvider("https://openrouter.ai/api/v1/chat/completions", openRouterKey, {
         model: "google/gemini-2.0-flash-exp:free",
