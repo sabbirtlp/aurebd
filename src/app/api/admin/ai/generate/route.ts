@@ -66,49 +66,16 @@ async function fetchUrlContent(url: string): Promise<string> {
 
 // Direct Groq API call
 async function callGroq(apiKey: string, systemPrompt: string, userPrompt: string): Promise<string> {
-  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "llama-3.3-70b-versatile",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt },
-      ],
-      temperature: 0.4,
-      max_tokens: 1500,
-    }),
-  });
-
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`Groq ${response.status}: ${errText.substring(0, 200)}`);
-  }
-
-  const data = await response.json();
-  return data.choices?.[0]?.message?.content || "";
-}
-
-// Direct OpenRouter API call (free models, great for Bangla)
-async function callOpenRouter(apiKey: string, systemPrompt: string, userPrompt: string): Promise<string> {
-  const models = [
-    "google/gemma-2-9b-it:free",
-    "meta-llama/llama-3.1-8b-instruct:free",
-    "nvidia/llama-3.1-nemotron-70b-instruct:free"
-  ];
+  const models = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "llama3-8b-8192"];
+  let lastErr = null;
 
   for (const model of models) {
     try {
-      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${apiKey}`,
           "Content-Type": "application/json",
-          "HTTP-Referer": "https://aureabd.vercel.app",
-          "X-Title": "Aurea BD Admin",
         },
         body: JSON.stringify({
           model: model,
@@ -121,14 +88,65 @@ async function callOpenRouter(apiKey: string, systemPrompt: string, userPrompt: 
         }),
       });
 
+      if (response.status === 429) {
+        console.warn(`Groq ${model} rate limited, trying next...`);
+        continue;
+      }
+
       if (!response.ok) {
-        console.warn(`OpenRouter ${model} failed: ${response.status}`);
+        const errText = await response.text();
+        throw new Error(`Groq ${model} ${response.status}: ${errText.substring(0, 100)}`);
+      }
+
+      const data = await response.json();
+      return data.choices?.[0]?.message?.content || "";
+    } catch (err: any) {
+      lastErr = err;
+      console.warn(`Groq ${model} failed:`, err.message);
+      continue;
+    }
+  }
+  throw lastErr || new Error("All Groq models failed");
+}
+
+// Direct OpenRouter API call
+async function callOpenRouter(apiKey: string, systemPrompt: string, userPrompt: string): Promise<string> {
+  const models = [
+    "google/gemma-2-9b-it:free",
+    "meta-llama/llama-3.1-8b-instruct:free",
+    "mistralai/mistral-7b-instruct:free",
+    "openrouter/auto-free"
+  ];
+
+  for (const model of models) {
+    try {
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://aureabd.vercel.app",
+          "X-Title": "Aurea BD",
+        },
+        body: JSON.stringify({
+          model: model,
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPrompt },
+          ],
+          temperature: 0.4,
+        }),
+      });
+
+      if (!response.ok) {
+        const err = await response.text();
+        console.warn(`OpenRouter ${model} failed: ${response.status} - ${err.substring(0, 50)}`);
         continue;
       }
 
       const data = await response.json();
-      const text = data.choices?.[0]?.message?.content || "";
-      if (text && text.length > 10) return text;
+      const text = data.choices?.[0]?.message?.content || data.choices?.[0]?.text || "";
+      if (text && text.trim().length > 10) return text.trim();
     } catch (err: any) {
       console.warn(`OpenRouter ${model} error:`, err.message);
       continue;
@@ -139,7 +157,7 @@ async function callOpenRouter(apiKey: string, systemPrompt: string, userPrompt: 
 
 // Direct Gemini API call
 async function callGemini(apiKey: string, prompt: string): Promise<string> {
-  const models = ["gemini-2.0-flash", "gemini-2.0-flash-lite"];
+  const models = ["gemini-2.0-flash", "gemini-1.5-flash-latest"];
   
   for (const model of models) {
     try {
