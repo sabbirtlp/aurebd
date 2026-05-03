@@ -13,12 +13,13 @@ interface ProductCardProps {
   product: {
     _id: string;
     name: string;
+    name_bn?: string;
     price: number;
     discountPrice?: number;
     image: string;
     stock: number;
     category?: string;
-  slug?: string;
+    slug?: string;
   };
   styles?: any; // kept for backwards compatibility but unused
 }
@@ -28,6 +29,8 @@ export default function ProductCard({ product }: ProductCardProps) {
   const { addItem: addWishlistItem, removeItem: removeWishlistItem } = useWishlistStore();
   const isWishlisted = useWishlistStore((state) => state.items.some((i) => i.id === product._id));
   const { language } = useLanguageStore();
+  const isBN = language === "bn";
+  const localizedName = isBN && product.name_bn ? product.name_bn : product.name;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -35,12 +38,12 @@ export default function ProductCard({ product }: ProductCardProps) {
     if (product.stock <= 0) return;
     addItem({
       id: product._id,
-      name: product.name,
+      name: localizedName,
       price: product.discountPrice || product.price,
       image: product.image,
       quantity: 1,
     });
-    toast.success(language === 'bn' ? `${product.name} কার্টে যোগ করা হয়েছে` : `Added ${product.name} to cart`);
+    toast.success(isBN ? `${localizedName} কার্টে যোগ করা হয়েছে` : `Added ${localizedName} to cart`);
   };
 
   const handleWishlist = (e: React.MouseEvent) => {
@@ -49,19 +52,19 @@ export default function ProductCard({ product }: ProductCardProps) {
     
     if (isWishlisted) {
       removeWishlistItem(product._id);
-      toast.info(language === 'bn' ? `${product.name} উইশলিস্ট থেকে সরানো হয়েছে` : `${product.name} removed from wishlist`, {
+      toast.info(isBN ? `${localizedName} উইশলিস্ট থেকে সরানো হয়েছে` : `${localizedName} removed from wishlist`, {
         icon: <span>🤍</span>
       });
     } else {
       addWishlistItem({
         id: product._id,
-        name: product.name,
+        name: localizedName,
         price: product.discountPrice || product.price,
         image: product.image,
         category: product.category || "Aurea BD",
         stock: product.stock,
       });
-      toast.success(language === 'bn' ? `${product.name} উইশলিস্টে যোগ করা হয়েছে` : `${product.name} added to wishlist`, {
+      toast.success(isBN ? `${localizedName} উইশলিস্টে যোগ করা হয়েছে` : `${localizedName} added to wishlist`, {
         icon: <span>❤️</span>
       });
     }
@@ -73,7 +76,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <Link href={`/product/${product.slug || product._id}`} className={styles.imageWrapper}>
           <Image 
             src={product.image} 
-            alt={product.name} 
+            alt={localizedName} 
             fill 
             sizes="(max-width: 600px) 100vw, (max-width: 992px) 50vw, 350px"
             className={styles.image}
@@ -83,7 +86,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Out of Stock Badge */}
         {product.stock <= 0 && (
           <div className={styles.stockBadge}>
-            {language === 'bn' ? 'স্টক নেই' : 'Out of Stock'}
+            {isBN ? 'স্টক নেই' : 'Out of Stock'}
           </div>
         )}
         
@@ -115,13 +118,13 @@ export default function ProductCard({ product }: ProductCardProps) {
         onClick={handleAddToCart}
         disabled={product.stock <= 0}
       >
-        {language === 'bn' ? 'কার্টে যোগ করুন' : 'Add to Cart'}
+        {isBN ? 'কার্টে যোগ করুন' : 'Add to Cart'}
       </button>
-
+ 
       <div className={styles.info}>
         <div className={styles.brand}>{product.category || "Aurea BD"}</div>
         <Link href={`/product/${product.slug || product._id}`} className={styles.name}>
-          {product.name}
+          {localizedName}
         </Link>
         <div className={styles.priceRow}>
           {product.discountPrice ? (

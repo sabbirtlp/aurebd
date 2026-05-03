@@ -27,9 +27,12 @@ export default function EditProductClient({ product }: { product: any }) {
   const [loading, setLoading] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [dbCategories, setDbCategories] = useState<{name: string, slug: string}[]>([]);
+  const [activeLang, setActiveLang] = useState<"en" | "bn">("en");
   const [form, setForm] = useState({
     name: product.name || "",
+    name_bn: product.name_bn || "",
     description: product.description || "",
+    description_bn: product.description_bn || "",
     price: product.price?.toString() || "",
     image: product.image || "",
     gallery: product.gallery || [],
@@ -42,8 +45,11 @@ export default function EditProductClient({ product }: { product: any }) {
     isGiftSet: product.isGiftSet || false,
     discountPrice: product.discountPrice?.toString() || "",
     ingredients: product.ingredients || "",
+    ingredients_bn: product.ingredients_bn || "",
     howToUse: product.howToUse || "",
+    howToUse_bn: product.howToUse_bn || "",
     shortDescription: product.shortDescription || "",
+    shortDescription_bn: product.shortDescription_bn || "",
   });
 
   useEffect(() => {
@@ -125,6 +131,22 @@ export default function EditProductClient({ product }: { product: any }) {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          {/* Language Toggle */}
+          <div className="flex bg-black/20 rounded-full p-1 border border-white/10 mr-4">
+            <button 
+              onClick={() => setActiveLang("en")}
+              className={`px-4 py-1.5 rounded-full text-[10px] font-bold transition-all ${activeLang === "en" ? "bg-[var(--primary)] text-white shadow-lg" : "text-white/40 hover:text-white"}`}
+            >
+              EN
+            </button>
+            <button 
+              onClick={() => setActiveLang("bn")}
+              className={`px-4 py-1.5 rounded-full text-[10px] font-bold transition-all ${activeLang === "bn" ? "bg-[var(--primary)] text-white shadow-lg" : "text-white/40 hover:text-white"}`}
+            >
+              BN
+            </button>
+          </div>
+
           <Link href={`/product/${product._id}`} target="_blank" className={styles.btnSecondary}>
             <Eye className="w-4 h-4" />
             Preview
@@ -154,8 +176,18 @@ export default function EditProductClient({ product }: { product: any }) {
             </div>
             <div className={styles.fieldGrid}>
               <div className={styles.fieldFull}>
-                <label className={styles.contentFieldLabel}>Formal Product Name</label>
-                <input type="text" name="name" value={form.name} onChange={handleChange} className={styles.formInput} placeholder="e.g. Japan Sakura Radiance Serum" required />
+                <label className={styles.contentFieldLabel}>
+                  Formal Product Name ({activeLang === "en" ? "English" : "Bangla"})
+                </label>
+                <input 
+                  type="text" 
+                  name={activeLang === "en" ? "name" : "name_bn"} 
+                  value={activeLang === "en" ? form.name : form.name_bn} 
+                  onChange={handleChange} 
+                  className={styles.formInput} 
+                  placeholder={activeLang === "en" ? "e.g. Japan Sakura Radiance Serum" : "যেমন: জাপান সাকুরা রেডিয়েন্স সিরাম"} 
+                  required={activeLang === "en"} 
+                />
               </div>
               <div className={styles.fieldFull}>
                 <label className={styles.contentFieldLabel}>Select Categories</label>
@@ -200,47 +232,51 @@ export default function EditProductClient({ product }: { product: any }) {
               {/* Short Description */}
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className={styles.contentFieldLabel}>Hook / Short Description</label>
+                  <label className={styles.contentFieldLabel}>Hook / Short Description ({activeLang.toUpperCase()})</label>
                 </div>
                 <AIAssistant 
                   productName={form.name} 
                   category={form.category} 
-                  field="description" 
-                  existingContent={form.shortDescription}
+                  field="shortDescription" 
+                  language={activeLang}
+                  existingContent={activeLang === "en" ? form.shortDescription : form.shortDescription_bn}
                   onGenerate={(text) => {
-                    const shortText = text.split('.').slice(0, 2).join('.') + '.';
-                    setForm({ ...form, shortDescription: shortText });
+                    const fieldName = activeLang === "en" ? "shortDescription" : "shortDescription_bn";
+                    setForm({ ...form, [fieldName]: text });
                     setIsSaved(false);
                   }} 
                 />
                 <textarea 
-                  name="shortDescription" 
-                  value={form.shortDescription} 
+                  name={activeLang === "en" ? "shortDescription" : "shortDescription_bn"} 
+                  value={activeLang === "en" ? form.shortDescription : form.shortDescription_bn} 
                   onChange={handleChange} 
                   className={styles.formInput} 
                   rows={2} 
-                  placeholder="A catchy 2-sentence summary for the product header..."
+                  placeholder="A catchy summary for the product header..."
                 />
               </div>
 
               {/* Ingredients */}
               <div>
-                <label className={styles.contentFieldLabel}>Active Ingredients</label>
+                <label className={styles.contentFieldLabel}>Active Ingredients ({activeLang.toUpperCase()})</label>
                 <AIAssistant 
                   productName={form.name} 
                   category={form.category} 
                   field="ingredients" 
-                  existingContent={form.ingredients}
+                  language={activeLang}
+                  existingContent={activeLang === "en" ? form.ingredients : form.ingredients_bn}
                   onGenerate={(text) => {
-                    setForm({ ...form, ingredients: text });
+                    const fieldName = activeLang === "en" ? "ingredients" : "ingredients_bn";
+                    setForm({ ...form, [fieldName]: text });
                     setIsSaved(false);
                   }} 
                 />
                 <RichTextEditor 
                   label=""
-                  value={form.ingredients}
+                  value={activeLang === "en" ? form.ingredients : form.ingredients_bn}
                   onChange={(val) => {
-                    setForm({ ...form, ingredients: val });
+                    const fieldName = activeLang === "en" ? "ingredients" : "ingredients_bn";
+                    setForm({ ...form, [fieldName]: val });
                     setIsSaved(false);
                   }}
                 />
@@ -248,22 +284,25 @@ export default function EditProductClient({ product }: { product: any }) {
 
               {/* Usage */}
               <div>
-                <label className={styles.contentFieldLabel}>Application Guide</label>
+                <label className={styles.contentFieldLabel}>Application Guide ({activeLang.toUpperCase()})</label>
                 <AIAssistant 
                   productName={form.name} 
                   category={form.category} 
                   field="howToUse" 
-                  existingContent={form.howToUse}
+                  language={activeLang}
+                  existingContent={activeLang === "en" ? form.howToUse : form.howToUse_bn}
                   onGenerate={(text) => {
-                    setForm({ ...form, howToUse: text });
+                    const fieldName = activeLang === "en" ? "howToUse" : "howToUse_bn";
+                    setForm({ ...form, [fieldName]: text });
                     setIsSaved(false);
                   }} 
                 />
                 <RichTextEditor 
                   label=""
-                  value={form.howToUse}
+                  value={activeLang === "en" ? form.howToUse : form.howToUse_bn}
                   onChange={(val) => {
-                    setForm({ ...form, howToUse: val });
+                    const fieldName = activeLang === "en" ? "howToUse" : "howToUse_bn";
+                    setForm({ ...form, [fieldName]: val });
                     setIsSaved(false);
                   }}
                 />
@@ -271,18 +310,28 @@ export default function EditProductClient({ product }: { product: any }) {
 
               {/* Main Description */}
               <div>
-                <label className={styles.contentFieldLabel}>Full Detailed Description</label>
+                <label className={styles.contentFieldLabel}>Full Detailed Description ({activeLang.toUpperCase()})</label>
                 <AIAssistant 
                   productName={form.name} 
                   category={form.category} 
                   field="description" 
-                  existingContent={form.description}
+                  language={activeLang}
+                  existingContent={activeLang === "en" ? form.description : form.description_bn}
                   onGenerate={(text) => {
-                    setForm({ ...form, description: text });
+                    const fieldName = activeLang === "en" ? "description" : "description_bn";
+                    setForm({ ...form, [fieldName]: text });
                     setIsSaved(false);
                   }} 
                 />
-                <textarea name="description" value={form.description} onChange={handleChange} className={styles.formInput} rows={6} placeholder="Describe the science and benefits of this product..." required />
+                <textarea 
+                  name={activeLang === "en" ? "description" : "description_bn"} 
+                  value={activeLang === "en" ? form.description : form.description_bn} 
+                  onChange={handleChange} 
+                  className={styles.formInput} 
+                  rows={6} 
+                  placeholder="Describe the science and benefits of this product..." 
+                  required={activeLang === "en"} 
+                />
               </div>
             </div>
           </section>

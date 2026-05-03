@@ -34,9 +34,10 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     await dbConnect();
     const body = await req.json();
     const { 
-      name, description, shortDescription, price, discountPrice, image, gallery, 
+      name, name_bn, description, description_bn, shortDescription, shortDescription_bn, 
+      price, discountPrice, image, gallery, 
       stock, category, categories, isNewArrival, isBestSeller, isSpecialOffer, 
-      isGiftSet, ingredients, howToUse 
+      isGiftSet, ingredients, ingredients_bn, howToUse, howToUse_bn 
     } = body;
 
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -44,7 +45,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     const product = await Product.findByIdAndUpdate(
       params.id,
       { 
-        name, slug, description, shortDescription, 
+        name, name_bn, slug, description, description_bn, shortDescription, shortDescription_bn,
         price: Number(price), 
         discountPrice: discountPrice ? Number(discountPrice) : null,
         image, 
@@ -57,7 +58,9 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
         isSpecialOffer: Boolean(isSpecialOffer),
         isGiftSet: Boolean(isGiftSet),
         ingredients,
+        ingredients_bn,
         howToUse,
+        howToUse_bn,
       },
       { new: true }
     );

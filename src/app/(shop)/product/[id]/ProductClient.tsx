@@ -17,6 +17,15 @@ const TAB_KEYS: Record<string, string> = {
 
 export default function ProductClient({ product, relatedProducts }: { product: any, relatedProducts: any[] }) {
   const { language, t } = useLanguageStore();
+  const isBN = language === "bn";
+
+  // Localized Content Helpers
+  const localizedName = isBN && product.name_bn ? product.name_bn : product.name;
+  const localizedShortDesc = isBN && product.shortDescription_bn ? product.shortDescription_bn : product.shortDescription;
+  const localizedDesc = isBN && product.description_bn ? product.description_bn : product.description;
+  const localizedIngredients = isBN && product.ingredients_bn ? product.ingredients_bn : product.ingredients;
+  const localizedHowToUse = isBN && product.howToUse_bn ? product.howToUse_bn : product.howToUse;
+
   const [mainImage, setMainImage] = useState(product.image);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("description");
@@ -147,7 +156,7 @@ export default function ProductClient({ product, relatedProducts }: { product: a
           <div className={styles.info}>
             <div className={styles.header}>
               <span className={styles.categoryBadge}>{product.category}</span>
-              <h1 className={styles.title}>{product.name}</h1>
+              <h1 className={styles.title}>{localizedName}</h1>
               <div className={styles.ratingRow}>
                 <div className={styles.stars}>
                   {"★".repeat(Math.round(product.rating || 5)) + "☆".repeat(5 - Math.round(product.rating || 5))}
@@ -165,7 +174,7 @@ export default function ProductClient({ product, relatedProducts }: { product: a
             </div>
 
             <p className={styles.shortDesc}>
-              {product.shortDescription || t('product.short_desc')}
+              {localizedShortDesc || t('product.short_desc')}
             </p>
 
             <div className={styles.actions}>
@@ -234,15 +243,15 @@ export default function ProductClient({ product, relatedProducts }: { product: a
             <div className={`${styles.tabContent} nm-card`} suppressHydrationWarning>
               {activeTab === "description" && (
                 <div className="animate-fade-in">
-                  <p>{product.description}</p>
+                  <p>{localizedDesc}</p>
                   <p>{t('product.desc_extra')}</p>
                 </div>
               )}
               {activeTab === "ingredients" && (
-                <div className={`${styles.richText} animate-fade-in`} dangerouslySetInnerHTML={{ __html: product.ingredients || '<p>Aqua, Prunus Lannesiana Flower Extract, Ascorbic Acid, Malic Acid, Prunus Mume Fruit Extract, Citric Acid, Potassium Hydroxide, Sodium Hyaluronate.</p>' }} />
+                <div className={`${styles.richText} animate-fade-in`} dangerouslySetInnerHTML={{ __html: localizedIngredients || '<p>Aqua, Prunus Lannesiana Flower Extract, Ascorbic Acid, Malic Acid, Prunus Mume Fruit Extract, Citric Acid, Potassium Hydroxide, Sodium Hyaluronate.</p>' }} />
               )}
               {activeTab === "howToUse" && (
-                <div className={`${styles.richText} animate-fade-in`} dangerouslySetInnerHTML={{ __html: product.howToUse || `<p>1. Cleanse your face with Sakura Facewash.<br/>2. Apply a small amount to fingertips.<br/>3. Gently massage onto skin.<br/>4. Use morning and night.</p>` }} />
+                <div className={`${styles.richText} animate-fade-in`} dangerouslySetInnerHTML={{ __html: localizedHowToUse || `<p>1. Cleanse your face with Sakura Facewash.<br/>2. Apply a small amount to fingertips.<br/>3. Gently massage onto skin.<br/>4. Use morning and night.</p>` }} />
               )}
             </div>
           </div>

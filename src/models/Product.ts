@@ -8,9 +8,12 @@ const ReviewSchema = new mongoose.Schema({
 
 const ProductSchema = new mongoose.Schema({
   name: { type: String, required: true },
+  name_bn: { type: String },
   slug: { type: String, required: true, unique: true },
   description: { type: String, required: true },
+  description_bn: { type: String },
   shortDescription: { type: String },
+  shortDescription_bn: { type: String },
   price: { type: Number, required: true },
   image: { type: String, required: true },
   gallery: [{ type: String }],
@@ -18,7 +21,9 @@ const ProductSchema = new mongoose.Schema({
   category: { type: String, required: true }, // Main category slug
   categories: [{ type: String }], // Array of category slugs
   ingredients: { type: String },
+  ingredients_bn: { type: String },
   howToUse: { type: String },
+  howToUse_bn: { type: String },
   isNewArrival: { type: Boolean, default: false },
   isBestSeller: { type: Boolean, default: false },
   isSpecialOffer: { type: Boolean, default: false },
