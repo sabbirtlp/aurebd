@@ -62,28 +62,33 @@ export async function POST(req: Request) {
     if (language === "bn" && geminiKey) {
       const genAI = new GoogleGenerativeAI(geminiKey);
       const prompt = `
-        ROLE: Expert Skincare Copywriter for Aurea BD (Bangladesh).
-        TASK: Write professional, high-end ${field} for "${name}" in BANGLA.
-        
-        ### CRITICAL: TERMINOLOGY PROTOCOL
-        1. NO HALLUCINATIONS: Do NOT invent Bangla words for chemicals (e.g., avoid "সুমেকসপ্টারস"). 
-        2. CHEMICAL NAMES: Keep technical names in English or standard, readable transliterations:
-           - Correct: Niacinamide (নিয়াসিনামাইড), Vitamin C (ভিটামিন সি), Hyaluronic Acid (হায়ালুরোনিক অ্যাসিড), Alpha Arbutin (আলফা আরবুটিন).
-           - Wrong: Inventing weird Bangla sounds.
-        3. NATURAL BENEFITS: Describe what the ingredient DOES in natural, persuasive Bangla:
-           - "ত্বকের কালো দাগ দূর করে" (Removes dark spots).
-           - "ত্বককে ভেতর থেকে উজ্জ্বল করে" (Brightens skin from within).
-           - "রোদে পোড়া ভাব দূর করে" (Removes tanning).
-        4. TONE: Premium, medical-grade but accessible. Use "সিরাম" (Serum), "ব্যবহার করুন" (Use).
-        
-        FACTS FROM LINK: ${browsingData || "None"}
+        ### ROLE
+        You are a Professional Native Bengali Beauty Copywriter for Aurea BD. 
+        You specialize in Japanese and Korean skincare marketing.
+
+        ### THE CHALLENGE: ZERO TOLERANCE FOR HALLUCINATIONS
+        - NEVER invent chemical names (e.g., NO "সোয়ারোভাইটামাইন", NO "ট্রাইহাইড্রোক্সিবেনজোয়েট").
+        - If no specific ingredients are found in the BROWSING DATA, do NOT mention any specific chemicals. Stick to general benefits like "ভিটামিন", "প্রাকৃতিক উপাদান".
+        - BRAND NAME: Use the brand name exactly as it appears in the product name "${name}".
+
+        ### WRITING STYLE: NATIVE & LUXURIOUS
+        - AVOID literal translations of "Glow", "Radiance", "Correcting".
+        - USE natural phrases like: "ত্বকের হারানো উজ্জ্বলতা ফিরিয়ে আনতে", "দাগহীন ও মসৃণ ত্বক", "ত্বকের গভীর থেকে পুষ্টি যোগাতে".
+        - TERMS TO AVOID: "রোজালি", "সেরুম", "প্রয়োগ করুন", "চেকআইন", "চেহারায় আলোর সূক্ষ্মতা".
+        - TERMS TO USE: "সিরাম", "ব্যবহার করুন", "নিয়মিত", "ত্বকের উজ্জ্বলতা".
+
+        ### INPUT DATA
+        PRODUCT NAME: ${name}
+        LINK DATA: ${browsingData || "No link provided. DO NOT INVENT INGREDIENTS."}
         USER INSTRUCTION: ${customPrompt || "None"}
-        PRODUCT: ${name}
+        
+        ### TASK
+        Write the ${field} in sophisticated, professional, and natural BANGLA.
         
         FORMATTING:
-        - If ingredients: HTML <ul> list with ingredient name in English/Transliterated and benefit in Bangla.
-        - If howToUse: HTML <ol> list in natural Bangla.
-        - If description: One elegant, persuasive paragraph.
+        - If ingredients: HTML <ul> list. ONLY include ingredients mentioned in LINK DATA.
+        - If howToUse: HTML <ol> list in natural, simple Bangla.
+        - If description: One elegant paragraph focusing on emotional benefits and results.
       `;
 
       try {
@@ -104,17 +109,19 @@ export async function POST(req: Request) {
       
       const prompt = `
         ### SYSTEM ROLE
-        Premium Skincare Copywriter for Bangladesh.
+        Native Bengali Skincare Marketing Specialist.
         
-        ### INSTRUCTIONS:
-        - Write the ${field} for "${name}" in ${targetLang}.
-        - TECHNICAL TERMS: Use English for chemical names if a natural Bangla term doesn't exist.
-        - NEVER invent nonsense Bangla words for scientific terms.
-        - FOCUS: Skin radiance, health, and authenticity.
-        - STYLE: High-end, native, and flowing.
+        ### STRICT RULES:
+        - DO NOT invent scientific names.
+        - DO NOT translate literally.
+        - Use "সিরাম" for Serum.
+        - Focus on "উজ্জ্বল ত্বক", "দাগহীন ত্বক", "সতেজ অনুভব".
+        - If no info is provided in 'Browsing Data', do NOT mention specific ingredients.
+        - Write only the ${field} for "${name}".
 
-        ### REQUIREMENTS
-        - Output: ONLY the generated text for ${field} in ${targetLang}.
+        ### DATA:
+        Product: ${name}
+        Browsing Data: ${browsingData || 'None'}
       `;
 
       let lastErr = null;
@@ -123,11 +130,11 @@ export async function POST(req: Request) {
           const groq = new OpenAI({ apiKey: groqKey, baseURL: "https://api.groq.com/openai/v1" });
           const chatCompletion = await groq.chat.completions.create({
             messages: [
-              { role: "system", content: `You are a Skincare Copywriter in ${targetLang}. Use English for complex chemical names to ensure accuracy.` },
+              { role: "system", content: `You are a high-end native Bengali copywriter. You write only natural, high-quality content in ${targetLang}.` },
               { role: "user", content: prompt }
             ],
             model: model,
-            temperature: 0.3, // Lower temperature for more factual accuracy
+            temperature: 0.2, // Very low for zero hallucinations
             max_tokens: 1500,
           });
 
@@ -150,6 +157,7 @@ export async function POST(req: Request) {
       const prompt = `
         ACT AS A PROFESSIONAL SKINCARE COPYWRITER.
         CRITICAL RULE: You MUST write the output in ${targetLang}.
+        DO NOT HALLUCINATE SCIENTIFIC NAMES.
         
         FACTS FROM LINK: ${browsingData || "None"}
         USER INSTRUCTION: ${customPrompt || "None"}
