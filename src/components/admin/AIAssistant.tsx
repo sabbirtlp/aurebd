@@ -9,10 +9,11 @@ interface AIAssistantProps {
   category?: string;
   field: string;
   existingContent?: string;
+  language?: string;
   onGenerate: (text: string) => void;
 }
 
-export default function AIAssistant({ productName, category, field, existingContent, onGenerate }: AIAssistantProps) {
+export default function AIAssistant({ productName, category, field, existingContent, language = "en", onGenerate }: AIAssistantProps) {
   const [loading, setLoading] = useState(false);
   const [customPrompt, setCustomPrompt] = useState("");
 
@@ -33,7 +34,8 @@ export default function AIAssistant({ productName, category, field, existingCont
           features: "Luxury, Organic, Effective",
           field,
           customPrompt,
-          existingContent
+          existingContent,
+          language
         })
       });
 

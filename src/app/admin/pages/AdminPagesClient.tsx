@@ -432,6 +432,7 @@ export default function AdminPagesClient({ initialContent }: { initialContent: a
                           category="CMS Content"
                           field={field.label}
                           existingContent={getValue(pageGroup.page, sec.section, field.key)}
+                          language={activeLang}
                           onGenerate={(text) => setValue(pageGroup.page, sec.section, field.key, text)}
                         />
                       </div>
@@ -460,6 +461,7 @@ export default function AdminPagesClient({ initialContent }: { initialContent: a
                           category="CMS Content"
                           field={field.label}
                           existingContent={getValue(pageGroup.page, sec.section, field.key)}
+                          language={activeLang}
                           onGenerate={(text) => setValue(pageGroup.page, sec.section, field.key, text)}
                         />
                       </div>

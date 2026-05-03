@@ -44,7 +44,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "No AI API Key configured." }, { status: 500 });
     }
 
-    const { name, category, features, field, customPrompt, existingContent } = await req.json();
+    const { name, category, features, field, customPrompt, existingContent, language } = await req.json();
     
     // Detect URL in prompt and browse if exists
     let browsingData = "";
@@ -54,6 +54,8 @@ export async function POST(req: Request) {
       browsingData = await fetchUrlContent(foundUrls[0]);
     }
 
+    const targetLang = language === "bn" ? "BANGLA" : "ENGLISH";
+
     let text = "";
 
     // 1. TRY GROQ FIRST
@@ -61,8 +63,13 @@ export async function POST(req: Request) {
       const groqModels = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
       
       const prompt = `
+        ### TARGET LANGUAGE
+        CRITICAL: You MUST write the output in ${targetLang}.
+        ${language === "bn" ? 'Even if the input or browsing data is in English, you MUST translate and summarize it into natural, high-quality BANGLA.' : ''}
+
         ### REAL-TIME BROWSING DATA
-        ${browsingData ? `FACTUAL CONTENT: "${browsingData}"` : 'No external link.'}
+        ${browsingData ? `FACTUAL CONTENT FROM LINK: "${browsingData}"` : 'No external link.'}
+        INSTRUCTION: Use the information from the link above to write the ${field} for "${name}".
 
         ### USER INSTRUCTIONS
         ${customPrompt ? `FOLLOW THESE: "${customPrompt}"` : 'Follow luxury tone.'}
@@ -72,19 +79,15 @@ export async function POST(req: Request) {
         Category: ${category}
         Target Field: ${field}
 
-        ### DEFAULT LANGUAGE
-        CRITICAL RULE: You MUST write the output in ENGLISH by default. 
-        ONLY write in Bangla if the USER explicitly asks for Bangla in the "USER INSTRUCTIONS".
-
-        ### BANGLA WRITING RULES (ONLY IF BANGLA IS EXPLICITLY REQUESTED):
-        1. NO LITERAL TRANSLATIONS: Do not use "জৈব মহাকর্য" for "organic masterpiece". Use natural phrases like "ত্বকের অসাধারণ যত্ন".
-        2. NO ROBOTIC TERMS: Avoid dictionary-literal terms like "ফর্ম এবং সমতল". Use "ত্বক টানটান ও মসৃণ করে".
-        3. TONE: Professional, sophisticated, and natural (যেমন একজন প্রফেশনাল কপিরাইটার লেখেন).
+        ### BANGLA WRITING RULES (IF BANGLA):
+        1. NO LITERAL TRANSLATIONS: Use natural phrases like "ত্বকের অসাধারণ যত্ন" instead of "জৈব মহাকর্য".
+        2. NO ROBOTIC TERMS: Use "ত্বক টানটান ও মসৃণ করে" instead of "ফর্ম এবং সমতল".
+        3. TONE: Professional, sophisticated, and natural.
         4. FLOW: The text must flow naturally like native Bangladeshi advertising.
 
         ### REQUIREMENTS
         - Style: Professional luxury skincare brand tone.
-        - Output: ONLY the generated text for ${field}.
+        - Output: ONLY the generated text for ${field} in ${targetLang}.
         ${field === 'description' ? '- Format: A single elegant paragraph.' : ''}
         ${field === 'ingredients' ? '- Format: An HTML <ul> list.' : ''}
         ${field === 'howToUse' ? '- Format: An HTML <ol> list.' : ''}
@@ -96,7 +99,7 @@ export async function POST(req: Request) {
           const groq = new OpenAI({ apiKey: groqKey, baseURL: "https://api.groq.com/openai/v1" });
           const chatCompletion = await groq.chat.completions.create({
             messages: [
-              { role: "system", content: "You are an Expert Luxury Copywriter for Aurea BD. You write elegant, natural, and highly professional content. You MUST write in English by default unless explicitly asked for Bangla." },
+              { role: "system", content: `You are an Expert Luxury Copywriter for Aurea BD. You write elegant, natural, and highly professional content. You MUST write in ${targetLang}.` },
               { role: "user", content: prompt }
             ],
             model: model,
@@ -119,13 +122,12 @@ export async function POST(req: Request) {
     if (geminiKey) {
       const genAI = new GoogleGenerativeAI(geminiKey);
       const prompt = `
-        ACT AS A PROFESSIONAL SKINCARE COPYWRITER WITH BROWSING ACCESS.
-        CRITICAL RULE: You MUST write the output in ENGLISH by default. 
-        ONLY write in Bangla if the USER INSTRUCTION explicitly asks for Bangla.
+        ACT AS A PROFESSIONAL SKINCARE COPYWRITER.
+        CRITICAL RULE: You MUST write the output in ${targetLang}.
         
         FACTS FROM LINK: ${browsingData || "None"}
         USER INSTRUCTION: ${customPrompt || "None"}
-        TASK: Generate the ${field} for "${name}".
+        TASK: Generate the ${field} for "${name}" in ${targetLang}.
         
         FORMATTING:
         - If ingredients: Provide ONLY an HTML <ul> list.
