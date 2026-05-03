@@ -93,8 +93,9 @@ async function callOpenRouter(apiKey: string, systemPrompt: string, messages: an
 }
 
 async function callGemini(apiKey: string, systemPrompt: string, messages: any[]): Promise<string> {
-  const models = ["gemini-2.0-flash", "gemini-1.5-flash-latest"];
+  const models = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-flash-latest"];
   const lastMessage = messages[messages.length - 1].content;
+  
   for (const model of models) {
     try {
       const response = await fetch(
@@ -104,14 +105,32 @@ async function callGemini(apiKey: string, systemPrompt: string, messages: any[])
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             contents: [{ parts: [{ text: `SYSTEM_INSTRUCTIONS: ${systemPrompt}\n\nUSER_MESSAGE: ${lastMessage}` }] }],
-            generationConfig: { temperature: 0.7, maxOutputTokens: 1024 },
+            generationConfig: { 
+              temperature: 0.7, 
+              maxOutputTokens: 1024,
+              topP: 0.95,
+              topK: 40
+            },
+            safetySettings: [
+              { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+              { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+              { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+              { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+            ]
           }),
         }
       );
-      if (!response.ok) continue;
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error(`Gemini (${model}) error:`, JSON.stringify(errorData));
+        continue;
+      }
       const data = await response.json();
       return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-    } catch { continue; }
+    } catch (err: any) { 
+      console.error(`Gemini (${model}) fetch failed:`, err.message);
+      continue; 
+    }
   }
   return "";
 }
