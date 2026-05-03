@@ -93,6 +93,40 @@ function shouldUseWeb(query: string) {
 }
 
 // --------------------
+// PROVIDER CALL FUNCTION
+// --------------------
+
+async function callProvider(url: string, apiKey: string, body: any) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+    if (!res.ok) return "";
+
+    const data = await res.json();
+    return (
+      data.choices?.[0]?.message?.content ||
+      data.candidates?.[0]?.content?.parts?.[0]?.text ||
+      ""
+    );
+  } catch (error) {
+    clearTimeout(timeoutId);
+    return "";
+  }
+}
+
+// --------------------
 // MAIN HANDLER
 // --------------------
 
@@ -182,39 +216,6 @@ User চাইলে:
 
     const groqKey = process.env.GROQ_API_KEY;
     const openRouterKey = process.env.OPENROUTER_API_KEY;
-
-    // --------------------
-    // PROVIDER CALL FUNCTION
-    // --------------------
-    async function callProvider(url: string, apiKey: string, body: any) {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000);
-
-      try {
-        const res = await fetch(url, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-          signal: controller.signal,
-        });
-
-        clearTimeout(timeoutId);
-        if (!res.ok) return "";
-
-        const data = await res.json();
-        return (
-          data.choices?.[0]?.message?.content ||
-          data.candidates?.[0]?.content?.parts?.[0]?.text ||
-          ""
-        );
-      } catch (error) {
-        clearTimeout(timeoutId);
-        return "";
-      }
-    }
 
     // --------------------
     // GROQ FIRST
