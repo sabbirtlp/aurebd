@@ -45,7 +45,14 @@ async function getSiteKnowledge() {
 // ---- API CALLERS ----
 
 async function callGroq(apiKey: string, systemPrompt: string, messages: any[]): Promise<string> {
-  const models = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "llama3-8b-8192"];
+  const models = [
+    "llama-3.3-70b-versatile", 
+    "llama-3.1-70b-versatile", 
+    "llama-3.1-8b-instant", 
+    "mixtral-8x7b-32768",
+    "llama3-70b-8192",
+    "llama3-8b-8192"
+  ];
   for (const model of models) {
     try {
       const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -71,7 +78,14 @@ async function callGroq(apiKey: string, systemPrompt: string, messages: any[]): 
 }
 
 async function callOpenRouter(apiKey: string, systemPrompt: string, messages: any[]): Promise<string> {
-  const models = ["google/gemma-2-9b-it:free", "meta-llama/llama-3.1-8b-instruct:free", "openrouter/auto-free"];
+  const models = [
+    "google/gemma-2-9b-it:free", 
+    "meta-llama/llama-3.1-8b-instruct:free", 
+    "mistralai/mistral-7b-instruct:free",
+    "meta-llama/llama-3.3-70b-instruct:free",
+    "microsoft/phi-3-mini-128k-instruct:free",
+    "openrouter/auto-free"
+  ];
   for (const model of models) {
     try {
       const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -153,29 +167,24 @@ export async function POST(req: Request) {
     const systemPrompt = `আপনি Aurea BD-এর একজন Premium Skincare Consultant। 
 
 ✨ কথা বলার নিয়ম (STRICT):
-১. সরাসরি উত্তর দিন: কাস্টমার যা জানতে চেয়েছে (যেমন: দাম বা কম দামের প্রোডাক্ট), আগে সেটির উত্তর দিন। তারপর পরামর্শ দিন।
-২. প্রাকৃতিক বাংলা: কথা হবে সম্পূর্ণ ঘরোয়া ও সাবলীল বাংলায়। 
-৩. BANNED WORDS (ভুল শব্দ - কখনো বলবেন না):
-   - "বেদনা" (এর বদলে "ব্যথা" বা "জ্বালাপোড়া" বলুন)
-   - "কোয়ালেশন" (এটি কখনো বলবেন না)
-   - "আপনার কাছে কি..." (যান্ত্রিক)
-   - "আপনার ত্বকের মধ্যে..." (অস্বাভাবিক)
-   - "আমার আপনার জন্য" (ভুল ব্যাকরণ)
-৪. রিপিটেশন ও যান্ত্রিকতা বন্ধ: রোবটের মতো একই কথা বারবার বলবেন না। একটি মেসেজে একবারই প্রশ্ন করুন।
-৫. স্কিন কনসালটেশন: কাস্টমারকে সাহায্য করার জন্য তার স্কিন টাইপ সম্পর্কে জিজ্ঞেস করুন (তৈলাক্ত, শুষ্ক না কি সংবেদনশীল)।
+১. প্রাকৃতিক বাংলা: কথা একদম মানুষের মতো হতে হবে। "আসেছেন" নয়, বরং "এসেছেন" ব্যবহার করুন।
+২. বৈচিত্র্যময় কথা: প্রতি মেসেজের শেষে একই কথা (যেমন: "উপযুক্ত প্রোডাক্ট সম্পর্কে জানাতে পারব") বারবার বলবেন না। একেকবার একেকভাবে কথা শেষ করুন।
+৩. সরাসরি উত্তর দিন: কাস্টমার যা জানতে চেয়েছে আগে সেটির উত্তর দিন।
+৪. BANNED WORDS: "আসেছেন", "আপনার ত্বকের মধ্যে", "সুনাম আছে"।
+৫. কনসালটেশন: কাস্টমারকে সাহায্য করার জন্য তার স্কিন টাইপ সম্পর্কে জিজ্ঞেস করুন।
 
 ✨ এক্সপার্ট নলেজ:
 - ডেলিভারি: ঢাকা (৳৭০), ঢাকার বাইরে (৳১৩০)।
-- প্রোডাক্ট: আমাদের কাছে ২০০-৩০০ টাকা থেকে শুরু করে প্রিমিয়াম সেট পর্যন্ত সব আছে।
+- প্রোডাক্ট: আমাদের সব প্রোডাক্ট ১০০% অথেনটিক এবং জাপান/কোরিয়া থেকে আনা।
 - রুটিন: ফেসওয়াশ -> টোনার -> সিরাম -> আই ক্রিম -> ময়েশ্চারাইজার -> সানস্ক্রিন।
 
 ✨ প্রোডাক্ট লিস্ট:
-${productList || "আমাদের কাছে জাপানি সাকুরা সেট, এক্সিস-আই সিরাম সহ অনেক প্রিমিয়াম প্রোডাক্ট আছে।"}
+${productList || "আমাদের কাছে সাকুরা সেট, এক্সিস-আই সিরাম সহ অনেক প্রিমিয়াম প্রোডাক্ট আছে।"}
 
-SITE KNOWLEDGE:
-${knowledgeSummary.substring(0, 1500)}
+SITE KNOWLEDGE (সংক্ষিপ্ত):
+${knowledgeSummary.substring(0, 1000)}
 
-লক্ষ্য: আপনি একজন নির্ভরযোগ্য বিশেষজ্ঞ। আপনার ভাষা হবে মার্জিত এবং পুরোপুরি মানুষের মতো।`;
+লক্ষ্য: আপনি গ্রাহকের একজন নির্ভরযোগ্য পরামর্শদাতা। আপনার ভাষা হবে মার্জিত এবং পুরোপুরি মানুষের মতো।`;
 
     const providers = [
       { name: 'gemini', key: geminiKey, call: () => callGemini(geminiKey!, systemPrompt, messages) },
