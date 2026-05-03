@@ -318,14 +318,20 @@ export default function AdminPagesClient({ initialContent }: { initialContent: a
         body: JSON.stringify({ items }),
       });
 
-      const data = await res.json().catch(() => ({}));
+      let data: any = {};
+      const contentType = res.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        data = await res.json();
+      }
 
       if (res.ok) {
         setSaved(true);
         setChangedKeys(new Set()); // Clear changed tracker
         setTimeout(() => setSaved(false), 3000);
       } else {
-        alert(`Failed to save: ${data.message || "Unknown error"}${data.error ? ` (${data.error})` : ""}`);
+        const errorMsg = data.message || `Server Error: ${res.status} ${res.statusText}`;
+        const detailMsg = data.error ? ` (${data.error})` : "";
+        alert(`Failed to save: ${errorMsg}${detailMsg}`);
       }
     } catch (error) {
       console.error("Save error:", error);
