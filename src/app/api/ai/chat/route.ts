@@ -10,25 +10,33 @@ import SiteContent from "@/models/SiteContent";
 async function getSiteKnowledge() {
   try {
     await dbConnect();
+    
+    // 1. Products
     const products = await Product.find({ stock: { $gt: 0 } })
       .sort({ updatedAt: -1 })
       .limit(10)
       .select("name price discountPrice")
       .lean();
-
     const productList = products
       .map((p) => `- ${p.name}: ৳${p.discountPrice || p.price}`)
       .join("\n");
 
-    const cmsData = await SiteContent.find({}).limit(8).lean();
-    const knowledgeSummary = cmsData
-      .map((item) => `${item.key}: ${item.value.substring(0, 400)}`)
+    // 2. About page content
+    const aboutData = await SiteContent.find({ page: "about" }).lean();
+    const aboutSummary = aboutData
+      .map((item) => `${item.section}.${item.key}: ${item.value.substring(0, 500)}`)
       .join("\n");
 
-    return { productList, knowledgeSummary };
+    // 3. General site content (home, contact, etc.)
+    const siteData = await SiteContent.find({ page: { $ne: "about" } }).limit(10).lean();
+    const siteSummary = siteData
+      .map((item) => `${item.page}.${item.section}.${item.key}: ${item.value.substring(0, 300)}`)
+      .join("\n");
+
+    return { productList, aboutSummary, siteSummary };
   } catch (error) {
     console.error("Knowledge Fetch Error:", error);
-    return { productList: "", knowledgeSummary: "" };
+    return { productList: "", aboutSummary: "", siteSummary: "" };
   }
 }
 
@@ -71,7 +79,7 @@ async function callProvider(url: string, apiKey: string, body: any, isOpenRouter
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
-    const { productList, knowledgeSummary } = await getSiteKnowledge();
+    const { productList, aboutSummary, siteSummary } = await getSiteKnowledge();
 
     const systemPrompt = `আপনি Aurea BD-এর একজন অভিজ্ঞ প্রিমিয়াম স্কিনকেয়ার বিশেষজ্ঞ।
 
@@ -80,12 +88,15 @@ export async function POST(req: Request) {
 পণ্য তালিকা:
 ${productList}
 
+Aurea BD সম্পর্কে (About Us):
+${aboutSummary}
+
 সাইট তথ্য:
-${knowledgeSummary}
+${siteSummary}
 ঠিকানা: তিলকপুর, আক্কেলপুর, জয়পুরহাট।
 
 নিয়মাবলী:
-১. শুধুমাত্র উপরের পণ্য তালিকা এবং সাইট তথ্য থেকে উত্তর দিন। কাল্পনিক তথ্য দেবেন না।
+১. উপরের পণ্য তালিকা, About Us এবং সাইট তথ্য ব্যবহার করে উত্তর দিন। কাল্পনিক তথ্য দেবেন না।
 ২. পণ্যের নাম ও ক্যাটাগরি ENGLISH-এ রাখুন।
 ৩. বাক্য সাবলীল, মার্জিত ও পেশাদার হবে। একই কথা বারবার বলবেন না।
 ৪. কাস্টমার কিনতে চাইলে বলুন: "ঠিক আছে 👍 আপনার নাম আর ডেলিভারি ঠিকানাটা দিন, আমরা দ্রুত পাঠিয়ে দিচ্ছি।"
