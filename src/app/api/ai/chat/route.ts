@@ -128,12 +128,20 @@ export async function POST(req: Request) {
 
     const systemPrompt = `আপনি Aurea BD-এর একজন অভিজ্ঞ স্কিনকেয়ার বিশেষজ্ঞ।
 
-নির্দেশনা:
-১. মানুষের মতো স্বাভাবিকভাবে কথা বলুন। রোবটের মতো একই বাক্য বারবার বলবেন না। 
-২. আউরেয়া বিডি (AureaBD) সম্পর্কে জানতে চাইলে নিচের SITE INFO থেকে তথ্য দিন।
-৩. পন্য ব্যবহারের নিয়ম: Cream/Essence/Serum ধোয়ার দরকার নেই। Sunscreen বাইরে যাওয়ার ১৫ মিনিট আগে দিন।
-৪. কাস্টমার কিনতে না চাইলে জোর করবেন না বা নাম-ঠিকানা চাইবেন না। 
-৫. পণ্যের নাম সবসময় English-এ রাখবেন। (যেমন: Axis-Y Serum)।
+----------------------------------
+🚫 STRICT NAMING RULE (খুব গুরুত্বপূর্ণ)
+----------------------------------
+- প্রোডাক্টের নাম সবসময় English-এ লিখবেন। কোনোভাবেই বাংলা উচ্চারণ বা অনুবাদ করবেন না।
+- ভুল বানান বা অদ্ভুত শব্দ (যেমন: সারুম, সোপ্ট, সোপ্তিক, মুখ ওয়াশ) পুরোপুরি নিষিদ্ধ।
+- সঠিক নাম ব্যবহার করুন: Serum (সারুম নয়), Face Wash (মুখ ওয়াশ নয়), Supple/Soft (সোপ্তিক নয়)।
+
+----------------------------------
+📖 নির্দেশনা
+----------------------------------
+১. মানুষের মতো স্বাভাবিক ও প্রফেশনাল বাংলায় কথা বলুন।
+২. প্রোডাক্ট সম্পর্কে তথ্য দিতে নিচের DATABASE PRODUCTS ব্যবহার করুন।
+৩. Cream/Essence/Serum ধোয়ার দরকার নেই; পরিষ্কার ত্বকে লাগিয়ে রেখে দিতে হয়।
+৪. আউরেয়া বিডি (AureaBD) সম্পর্কে জানতে চাইলে SITE INFO দেখুন।
 
 DATABASE PRODUCTS:
 ${productList}
@@ -151,36 +159,34 @@ ${knowledgeSummary}
     const groqKey = process.env.GROQ_API_KEY;
     const openRouterKey = process.env.OPENROUTER_API_KEY;
 
-    // 1. Try Groq (Fastest)
     if (groqKey) {
       let res = await callProvider("https://api.groq.com/openai/v1/chat/completions", groqKey, {
         model: "llama-3.3-70b-versatile",
         messages: [{ role: "system", content: systemPrompt }, ...contextMessages],
-        temperature: 0.2
+        temperature: 0
       });
       if (res) return NextResponse.json({ text: res });
 
       res = await callProvider("https://api.groq.com/openai/v1/chat/completions", groqKey, {
         model: "llama-3.1-8b-instant",
         messages: [{ role: "system", content: systemPrompt }, ...contextMessages],
-        temperature: 0.2
+        temperature: 0
       });
       if (res) return NextResponse.json({ text: res });
     }
 
-    // 2. Try OpenRouter (Reliable Fallback)
     if (openRouterKey) {
       let res = await callProvider("https://openrouter.ai/api/v1/chat/completions", openRouterKey, {
         model: "google/gemini-2.0-flash-exp:free",
         messages: [{ role: "system", content: systemPrompt }, ...contextMessages],
-        temperature: 0.2
+        temperature: 0
       }, true);
       if (res) return NextResponse.json({ text: res });
 
       res = await callProvider("https://openrouter.ai/api/v1/chat/completions", openRouterKey, {
         model: "meta-llama/llama-3.1-8b-instruct:free",
         messages: [{ role: "system", content: systemPrompt }, ...contextMessages],
-        temperature: 0.2
+        temperature: 0
       }, true);
       if (res) return NextResponse.json({ text: res });
     }
