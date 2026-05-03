@@ -3,7 +3,7 @@ import SiteContent from "@/models/SiteContent";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import { NextResponse } from "next/server";
-import { revalidateTag } from "next/cache";
+import { revalidateTag, revalidatePath } from "next/cache";
 
 // GET all site content
 export async function GET() {
@@ -66,6 +66,7 @@ export async function POST(req: Request) {
 
     await SiteContent.bulkWrite(operations);
     revalidateTag("cms");
+    revalidatePath("/", "layout");
     return NextResponse.json({ success: true, message: "Content updated successfully" });
   } catch (error) {
     console.error("PUT /api/admin/content Error:", error);
