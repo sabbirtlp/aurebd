@@ -176,6 +176,7 @@ ${knowledgeSummary}
     }
 
     if (openRouterKey) {
+      // A. Gemini 2.0 Flash (Fast & Smart)
       let res = await callProvider("https://openrouter.ai/api/v1/chat/completions", openRouterKey, {
         model: "google/gemini-2.0-flash-exp:free",
         messages: [{ role: "system", content: systemPrompt }, ...contextMessages],
@@ -183,6 +184,23 @@ ${knowledgeSummary}
       }, true);
       if (res) return NextResponse.json({ text: res });
 
+      // B. GPT-4o Mini (Extremely Reliable)
+      res = await callProvider("https://openrouter.ai/api/v1/chat/completions", openRouterKey, {
+        model: "openai/gpt-4o-mini",
+        messages: [{ role: "system", content: systemPrompt }, ...contextMessages],
+        temperature: 0
+      }, true);
+      if (res) return NextResponse.json({ text: res });
+
+      // C. Claude 3 Haiku (Great at natural language)
+      res = await callProvider("https://openrouter.ai/api/v1/chat/completions", openRouterKey, {
+        model: "anthropic/claude-3-haiku",
+        messages: [{ role: "system", content: systemPrompt }, ...contextMessages],
+        temperature: 0
+      }, true);
+      if (res) return NextResponse.json({ text: res });
+
+      // D. Llama 3.1 8B (Final Free Fallback)
       res = await callProvider("https://openrouter.ai/api/v1/chat/completions", openRouterKey, {
         model: "meta-llama/llama-3.1-8b-instruct:free",
         messages: [{ role: "system", content: systemPrompt }, ...contextMessages],
