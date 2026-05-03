@@ -4,60 +4,94 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import { NextResponse } from "next/server";
 
-// Utility to fetch and clean URL content
-async function fetchUrlContent(url: string) {
+// Enhanced URL content extractor
+async function fetchUrlContent(url: string): Promise<string> {
   try {
     const response = await fetch(url, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml',
+        'Accept-Language': 'en-US,en;q=0.9',
       },
-      next: { revalidate: 3600 }
     });
     
     if (!response.ok) return "";
     
-    let html = await response.text();
-    // Simple cleaning: remove scripts, styles, and tags
-    html = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
-    html = html.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "");
-    html = html.replace(/<[^>]+>/g, " ");
-    html = html.replace(/\s+/g, " ").trim();
+    const html = await response.text();
+    const parts: string[] = [];
+
+    // 1. Extract JSON-LD structured data (best source for product info)
+    const jsonLdMatches = html.match(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi);
+    if (jsonLdMatches) {
+      for (const match of jsonLdMatches) {
+        const jsonStr = match.replace(/<script[^>]*>|<\/script>/gi, "").trim();
+        try {
+          const data = JSON.parse(jsonStr);
+          if (data.name || data.description || data.ingredients) {
+            parts.push(`STRUCTURED DATA: ${JSON.stringify(data, null, 0).substring(0, 2000)}`);
+          }
+        } catch { /* skip invalid json */ }
+      }
+    }
+
+    // 2. Extract meta description and og tags
+    const metaDesc = html.match(/<meta[^>]*name="description"[^>]*content="([^"]*)"[^>]*>/i);
+    if (metaDesc) parts.push(`META DESCRIPTION: ${metaDesc[1]}`);
     
-    return html.substring(0, 5000); // Limit context size
+    const ogDesc = html.match(/<meta[^>]*property="og:description"[^>]*content="([^"]*)"[^>]*>/i);
+    if (ogDesc) parts.push(`OG DESCRIPTION: ${ogDesc[1]}`);
+
+    const title = html.match(/<title[^>]*>([^<]*)<\/title>/i);
+    if (title) parts.push(`PAGE TITLE: ${title[1]}`);
+
+    // 3. Extract visible text content (cleaned)
+    let bodyText = html;
+    bodyText = bodyText.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
+    bodyText = bodyText.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "");
+    bodyText = bodyText.replace(/<nav\b[^<]*(?:(?!<\/nav>)<[^<]*)*<\/nav>/gi, "");
+    bodyText = bodyText.replace(/<footer\b[^<]*(?:(?!<\/footer>)<[^<]*)*<\/footer>/gi, "");
+    bodyText = bodyText.replace(/<header\b[^<]*(?:(?!<\/header>)<[^<]*)*<\/header>/gi, "");
+    bodyText = bodyText.replace(/<[^>]+>/g, " ");
+    bodyText = bodyText.replace(/&nbsp;/g, " ");
+    bodyText = bodyText.replace(/&amp;/g, "&");
+    bodyText = bodyText.replace(/\s+/g, " ").trim();
+    
+    if (bodyText.length > 100) {
+      parts.push(`PAGE CONTENT: ${bodyText.substring(0, 3000)}`);
+    }
+    
+    return parts.join("\n\n") || "";
   } catch (err) {
     console.error("URL Fetch error:", err);
     return "";
   }
 }
 
-// Build field-specific formatting instructions
-function getFieldFormat(field: string): string {
+// Field-specific format instructions
+function getFieldFormat(field: string, isBangla: boolean): string {
+  const lang = isBangla ? "Bangla" : "English";
   switch (field) {
     case "ingredients":
-      return "Return ONLY an HTML <ul> list of key ingredients with their skin benefits. No intro text.";
+      return `Return ONLY an HTML <ul> list of the key active ingredients with a short benefit for each. Keep ingredient names in English. Write benefits in ${lang}. Example format:
+<ul>
+<li><strong>Niacinamide</strong> — ${isBangla ? "ত্বকের দাগ কমায় ও উজ্জ্বলতা বাড়ায়" : "Reduces dark spots and enhances radiance"}</li>
+</ul>`;
     case "howToUse":
-      return "Return ONLY an HTML <ol> list of step-by-step usage instructions. No intro text.";
+      return `Return ONLY an HTML <ol> list of clear, simple usage steps in ${lang}. ${isBangla ? 'Example: <ol><li>পরিষ্কার মুখে ২-৩ ফোঁটা সিরাম নিন</li><li>আলতোভাবে ত্বকে মালিশ করুন</li></ol>' : 'Example: <ol><li>Apply 2-3 drops to clean face</li><li>Gently massage into skin</li></ol>'}`;
     case "shortDescription":
-      return "Return ONLY 1-2 short, catchy marketing sentences.";
+      return `Return ONLY 1-2 short, catchy marketing sentences in ${lang}.`;
     case "description":
-      return "Return a compelling 3-5 sentence marketing paragraph.";
+      return `Return a compelling 3-5 sentence marketing paragraph in ${lang}.`;
     default:
-      return "Return the content as plain text.";
+      return `Return the content as plain text in ${lang}.`;
   }
 }
 
-// Gemini model names to try in order (newest first)
-const GEMINI_MODELS = [
-  "gemini-2.0-flash",
-  "gemini-2.0-flash-lite",
-  "gemini-1.5-flash-latest",
-];
+// Gemini model names to try (newest first)
+const GEMINI_MODELS = ["gemini-2.0-flash", "gemini-2.0-flash-lite"];
 
-// Groq model names to try in order
-const GROQ_MODELS = [
-  "llama-3.3-70b-versatile",
-  "llama-3.1-8b-instant",
-];
+// Groq model names to try
+const GROQ_MODELS = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
 
 export async function POST(req: Request) {
   try {
@@ -75,7 +109,7 @@ export async function POST(req: Request) {
 
     const { name, category, field, customPrompt, existingContent, language } = await req.json();
     
-    // Detect URL in prompt and browse if exists
+    // Detect URL in prompt and browse
     let browsingData = "";
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const foundUrls = customPrompt?.match(urlRegex);
@@ -84,42 +118,81 @@ export async function POST(req: Request) {
     }
 
     const isBangla = language === "bn";
-    const langLabel = isBangla ? "Bangla (Bengali)" : "English";
-    const formatInstruction = getFieldFormat(field);
+    const formatInstruction = getFieldFormat(field, isBangla);
 
-    // --- Build a unified, high-quality prompt ---
-    const systemPrompt = isBangla
-      ? `You are a professional luxury skincare copywriter who writes in natural, fluent Bangla for the Bangladeshi market. 
-You work for Aurea BD, a premium Japanese & Korean skincare brand.
+    // ---- BANGLA SYSTEM PROMPT ----
+    const banglaSystemPrompt = `You are a professional Bangladeshi beauty copywriter for Aurea BD — a premium Japanese & Korean skincare brand in Bangladesh.
 
-CRITICAL RULES:
-- Write ONLY in Bangla. Every word of your output must be in Bangla script.
-- Keep brand names (like "Axis-y", "Laikou", "COSRX") in English/Latin script.
-- Keep well-known ingredient names in English (e.g., Niacinamide, Vitamin C, Hyaluronic Acid) — do NOT transliterate them into Bangla.
-- NEVER invent fake ingredient names. Only mention ingredients if they appear in the provided reference data.
-- Use "সিরাম" for Serum, "ময়েশ্চারাইজার" for Moisturizer, "টোনার" for Toner.
-- Write naturally — like a trusted Bangladeshi beauty influencer, not like a robot translating from English.
-- Focus on real skin benefits: উজ্জ্বলতা (brightness), দাগ দূর করা (dark spot removal), আর্দ্রতা (hydration), সতেজতা (freshness).`
-      : `You are a professional luxury skincare copywriter who writes elegant, persuasive English content.
-You work for Aurea BD, a premium Japanese & Korean skincare brand.
+YOUR WRITING STYLE:
+- You write fluent, natural Bangla as spoken by educated urban Bangladeshi women.
+- Your tone is warm, trustworthy, and premium — like a popular beauty influencer recommending a product to a friend.
+- You NEVER translate literally from English. You write original Bangla copy.
 
-CRITICAL RULES:
-- Write polished, high-end marketing copy.
-- Focus on benefits: radiance, hydration, dark spot correction, youthful glow.
-- Keep it concise and compelling. No filler words.
-- NEVER invent fake ingredient names. Only mention ingredients if they appear in the provided reference data.`;
+VOCABULARY RULES:
+- Brand names stay in English: "Axis-y", "Laikou", "COSRX"
+- Ingredient names stay in English: "Niacinamide", "Vitamin C", "Hyaluronic Acid"
+- Product types use standard Bangla transliterations: সিরাম (serum), টোনার (toner), ময়েশ্চারাইজার (moisturizer), সানস্ক্রিন (sunscreen), ক্রিম (cream), ফেসওয়াশ (face wash)
+- NEVER use: "প্রয়োগ করুন" (too formal), "মুখমণ্ডল" (too clinical), "স্ফীত" (wrong word)
+- ALWAYS use: "ব্যবহার করুন", "মুখে/ত্বকে লাগান", "মুখে দিন"
+
+GOOD BANGLA EXAMPLES:
+- "পরিষ্কার মুখে ২-৩ ফোঁটা সিরাম নিয়ে আলতোভাবে মালিশ করুন"
+- "এই সিরাম ত্বকের গভীর থেকে পুষ্টি যোগায় এবং কালো দাগ হালকা করে"
+- "প্রতিদিন সকালে ও রাতে ব্যবহার করুন সেরা ফলাফলের জন্য"
+- "আপনার ত্বকে প্রাকৃতিক উজ্জ্বলতা ফিরিয়ে আনতে এই সিরাম অসাধারণ কার্যকর"
+
+NEVER WRITE:
+- "চুলার জল দিয়ে মুখমণ্ডলকে স্ফীত করুন" — this is nonsense
+- "একটি ছোট পরিমাণ আপনার মুখে প্রয়োগ করুন" — too robotic
+- Do NOT invent fake ingredient names in Bangla`;
+
+    // ---- ENGLISH SYSTEM PROMPT ----
+    const englishSystemPrompt = `You are a professional luxury skincare copywriter for Aurea BD — a premium Japanese & Korean skincare brand.
+
+YOUR WRITING STYLE:
+- Elegant, persuasive, and results-focused.
+- Think Sephora or Glossier product descriptions.
+- Concise but compelling. Every sentence should sell.
+
+RULES:
+- Focus on tangible benefits: radiance, hydration, dark spot correction, even skin tone.
+- NEVER invent ingredient names. Only mention ingredients found in the provided reference data.
+- Keep it professional and premium.`;
+
+    const systemPrompt = isBangla ? banglaSystemPrompt : englishSystemPrompt;
 
     const userPrompt = `Product: "${name}"
 Category: ${category || "Skincare"}
 Field to generate: ${field}
+${browsingData ? `\nREFERENCE DATA FROM PRODUCT LINK:\n${browsingData}\n\nIMPORTANT: Use the actual product information from the link above. Extract real ingredients, real usage steps, and real product benefits from this data.` : ""}
+${customPrompt ? `\nADDITIONAL INSTRUCTIONS: ${customPrompt}` : ""}
 
-${browsingData ? `REFERENCE DATA FROM LINK:\n${browsingData}\n` : ""}${customPrompt ? `ADDITIONAL INSTRUCTIONS: ${customPrompt}\n` : ""}
 FORMAT: ${formatInstruction}
 
-Generate the ${field} now. Output ONLY the content — no explanations, no markdown code fences.`;
+Generate the ${field} now. Output ONLY the final content — no explanations, no intro text, no markdown code fences, no "Here is..." prefix.`;
 
-    // --- Try Groq first (faster, more reliable for both languages) ---
-    if (groqKey) {
+    // ---- For BANGLA: Try Gemini first (much better at Bangla than Llama) ----
+    if (isBangla && geminiKey) {
+      const genAI = new GoogleGenerativeAI(geminiKey);
+      for (const modelName of GEMINI_MODELS) {
+        try {
+          const model = genAI.getGenerativeModel({ model: modelName });
+          const result = await model.generateContent(`${systemPrompt}\n\n${userPrompt}`);
+          let output = result.response.text();
+          output = output.replace(/```html|```/g, "").trim();
+          
+          if (output && output.length > 10) {
+            return NextResponse.json({ text: output });
+          }
+        } catch (err: any) {
+          console.warn(`Gemini ${modelName} failed:`, err.message);
+          continue;
+        }
+      }
+    }
+
+    // ---- For ENGLISH: Try Groq first (faster) ----
+    if (!isBangla && groqKey) {
       for (const model of GROQ_MODELS) {
         try {
           const groq = new OpenAI({ apiKey: groqKey, baseURL: "https://api.groq.com/openai/v1" });
@@ -140,29 +213,46 @@ Generate the ${field} now. Output ONLY the content — no explanations, no markd
             return NextResponse.json({ text: result });
           }
         } catch (err: any) {
-          console.warn(`Groq model ${model} failed:`, err.message);
+          console.warn(`Groq ${model} failed:`, err.message);
           continue;
         }
       }
     }
 
-    // --- Fallback to Gemini ---
-    if (geminiKey) {
+    // ---- Fallback: Try the other provider ----
+    // Bangla fallback → Groq
+    if (isBangla && groqKey) {
+      try {
+        const groq = new OpenAI({ apiKey: groqKey, baseURL: "https://api.groq.com/openai/v1" });
+        const completion = await groq.chat.completions.create({
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPrompt }
+          ],
+          model: "llama-3.3-70b-versatile",
+          temperature: 0.4,
+          max_tokens: 1500,
+        });
+        let result = completion.choices[0].message.content || "";
+        result = result.replace(/```html|```/g, "").trim();
+        if (result && result.length > 10) return NextResponse.json({ text: result });
+      } catch (err: any) {
+        console.warn("Groq Bangla fallback failed:", err.message);
+      }
+    }
+
+    // English fallback → Gemini
+    if (!isBangla && geminiKey) {
       const genAI = new GoogleGenerativeAI(geminiKey);
-      const fullPrompt = `${systemPrompt}\n\n${userPrompt}`;
-      
       for (const modelName of GEMINI_MODELS) {
         try {
           const model = genAI.getGenerativeModel({ model: modelName });
-          const result = await model.generateContent(fullPrompt);
+          const result = await model.generateContent(`${systemPrompt}\n\n${userPrompt}`);
           let output = result.response.text();
           output = output.replace(/```html|```/g, "").trim();
-          
-          if (output && output.length > 10) {
-            return NextResponse.json({ text: output });
-          }
+          if (output && output.length > 10) return NextResponse.json({ text: output });
         } catch (err: any) {
-          console.warn(`Gemini model ${modelName} failed:`, err.message);
+          console.warn(`Gemini English fallback ${modelName} failed:`, err.message);
           continue;
         }
       }
