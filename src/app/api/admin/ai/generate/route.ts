@@ -30,6 +30,35 @@ async function fetchUrlContent(url: string) {
   }
 }
 
+// Build field-specific formatting instructions
+function getFieldFormat(field: string): string {
+  switch (field) {
+    case "ingredients":
+      return "Return ONLY an HTML <ul> list of key ingredients with their skin benefits. No intro text.";
+    case "howToUse":
+      return "Return ONLY an HTML <ol> list of step-by-step usage instructions. No intro text.";
+    case "shortDescription":
+      return "Return ONLY 1-2 short, catchy marketing sentences.";
+    case "description":
+      return "Return a compelling 3-5 sentence marketing paragraph.";
+    default:
+      return "Return the content as plain text.";
+  }
+}
+
+// Gemini model names to try in order (newest first)
+const GEMINI_MODELS = [
+  "gemini-2.0-flash",
+  "gemini-2.0-flash-lite",
+  "gemini-1.5-flash-latest",
+];
+
+// Groq model names to try in order
+const GROQ_MODELS = [
+  "llama-3.3-70b-versatile",
+  "llama-3.1-8b-instant",
+];
+
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -44,7 +73,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "No AI API Key configured." }, { status: 500 });
     }
 
-    const { name, category, features, field, customPrompt, existingContent, language } = await req.json();
+    const { name, category, field, customPrompt, existingContent, language } = await req.json();
     
     // Detect URL in prompt and browse if exists
     let browsingData = "";
@@ -54,106 +83,92 @@ export async function POST(req: Request) {
       browsingData = await fetchUrlContent(foundUrls[0]);
     }
 
-    const targetLang = language === "bn" ? "BANGLA" : "ENGLISH";
+    const isBangla = language === "bn";
+    const langLabel = isBangla ? "Bangla (Bengali)" : "English";
+    const formatInstruction = getFieldFormat(field);
 
-    let text = "";
+    // --- Build a unified, high-quality prompt ---
+    const systemPrompt = isBangla
+      ? `You are a professional luxury skincare copywriter who writes in natural, fluent Bangla for the Bangladeshi market. 
+You work for Aurea BD, a premium Japanese & Korean skincare brand.
 
-    // 1. TRY GEMINI FIRST FOR BANGLA
-    if (language === "bn" && geminiKey) {
-      const genAI = new GoogleGenerativeAI(geminiKey);
-      
-      let specificInstructions = "";
-      if (field === "ingredients") {
-        specificInstructions = `
-          TASK: LIST ONLY THE INGREDIENTS.
-          FORMAT: Return ONLY an HTML <ul> list.
-          RULE: No introductory sentences. No marketing text. No bold names. 
-          LIST ONLY THE INGREDIENTS found in LINK DATA.
-        `;
-      } else if (field === "description" || field === "shortDescription") {
-        specificInstructions = `
-          TASK: Write a 1-2 sentence hook.
-          FORMAT: A single short paragraph. 
-          STYLE: Luxurious and brief.
-        `;
-      }
+CRITICAL RULES:
+- Write ONLY in Bangla. Every word of your output must be in Bangla script.
+- Keep brand names (like "Axis-y", "Laikou", "COSRX") in English/Latin script.
+- Keep well-known ingredient names in English (e.g., Niacinamide, Vitamin C, Hyaluronic Acid) — do NOT transliterate them into Bangla.
+- NEVER invent fake ingredient names. Only mention ingredients if they appear in the provided reference data.
+- Use "সিরাম" for Serum, "ময়েশ্চারাইজার" for Moisturizer, "টোনার" for Toner.
+- Write naturally — like a trusted Bangladeshi beauty influencer, not like a robot translating from English.
+- Focus on real skin benefits: উজ্জ্বলতা (brightness), দাগ দূর করা (dark spot removal), আর্দ্রতা (hydration), সতেজতা (freshness).`
+      : `You are a professional luxury skincare copywriter who writes elegant, persuasive English content.
+You work for Aurea BD, a premium Japanese & Korean skincare brand.
 
-      const prompt = `
-        ROLE: Expert Skincare Copywriter.
-        BRAND NAME: Keep brand names like "Axis-y" or "Laikou" in English characters or very clean Bangla (e.g. অ্যাক্সিস-ওয়াই).
-        TARGET LANGUAGE: ${targetLang}
-        
-        ${specificInstructions}
+CRITICAL RULES:
+- Write polished, high-end marketing copy.
+- Focus on benefits: radiance, hydration, dark spot correction, youthful glow.
+- Keep it concise and compelling. No filler words.
+- NEVER invent fake ingredient names. Only mention ingredients if they appear in the provided reference data.`;
 
-        LINK DATA: ${browsingData || "None"}
-        USER INSTRUCTION: ${customPrompt || "None"}
-        PRODUCT NAME: ${name}
-        
-        OUTPUT: ONLY the ${field} content. No conversational filler.
-      `;
+    const userPrompt = `Product: "${name}"
+Category: ${category || "Skincare"}
+Field to generate: ${field}
 
-      try {
-        const model = genAI.getGenerativeModel({ 
-          model: "gemini-1.5-flash",
-          generationConfig: {
-            temperature: 0.1,
-            maxOutputTokens: 500,
-          }
-        });
-        const result = await model.generateContent(prompt);
-        text = result.response.text();
-        
-        if (text && !text.includes("I cannot") && !text.includes("unable to")) {
-          // Clean markdown code blocks if present
-          text = text.replace(/```html|```/g, "").trim();
-          return NextResponse.json({ text });
-        }
-      } catch (err: any) {
-        console.error("Gemini Bangla failed:", err.message);
-      }
-    }
+${browsingData ? `REFERENCE DATA FROM LINK:\n${browsingData}\n` : ""}${customPrompt ? `ADDITIONAL INSTRUCTIONS: ${customPrompt}\n` : ""}
+FORMAT: ${formatInstruction}
 
-    // 2. TRY GROQ (Restricted)
+Generate the ${field} now. Output ONLY the content — no explanations, no markdown code fences.`;
+
+    // --- Try Groq first (faster, more reliable for both languages) ---
     if (groqKey) {
-      const prompt = `
-        TASK: Write ${field} for "${name}" in ${targetLang}.
-        IF ingredients: ONLY an HTML <ul> list. No intro.
-        IF shortDescription: ONLY 1-2 sentences.
-        DATA: ${browsingData || 'None'}
-      `;
+      for (const model of GROQ_MODELS) {
+        try {
+          const groq = new OpenAI({ apiKey: groqKey, baseURL: "https://api.groq.com/openai/v1" });
+          const completion = await groq.chat.completions.create({
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userPrompt }
+            ],
+            model,
+            temperature: 0.4,
+            max_tokens: 1500,
+          });
 
-      try {
-        const groq = new OpenAI({ apiKey: groqKey, baseURL: "https://api.groq.com/openai/v1" });
-        const chatCompletion = await groq.chat.completions.create({
-          messages: [
-            { role: "system", content: "You are a brief, technical copywriter. No fluff." },
-            { role: "user", content: prompt }
-          ],
-          model: "llama-3.3-70b-versatile",
-          temperature: 0.1,
-          max_tokens: 500,
-        });
-
-        text = chatCompletion.choices[0].message.content || "";
-        text = text.replace(/```html|```/g, "").trim();
-        return NextResponse.json({ text });
-      } catch (err: any) {
-        console.error("Groq failed:", err.message);
+          let result = completion.choices[0].message.content || "";
+          result = result.replace(/```html|```/g, "").trim();
+          
+          if (result && result.length > 10) {
+            return NextResponse.json({ text: result });
+          }
+        } catch (err: any) {
+          console.warn(`Groq model ${model} failed:`, err.message);
+          continue;
+        }
       }
     }
 
-    // 3. FINAL FALLBACK
+    // --- Fallback to Gemini ---
     if (geminiKey) {
       const genAI = new GoogleGenerativeAI(geminiKey);
-      const prompt = `ONLY ${field} for "${name}" in ${targetLang}. DATA: ${browsingData || "None"}`;
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      const result = await model.generateContent(prompt);
-      let t = result.response.text();
-      t = t.replace(/```html|```/g, "").trim();
-      return NextResponse.json({ text: t });
+      const fullPrompt = `${systemPrompt}\n\n${userPrompt}`;
+      
+      for (const modelName of GEMINI_MODELS) {
+        try {
+          const model = genAI.getGenerativeModel({ model: modelName });
+          const result = await model.generateContent(fullPrompt);
+          let output = result.response.text();
+          output = output.replace(/```html|```/g, "").trim();
+          
+          if (output && output.length > 10) {
+            return NextResponse.json({ text: output });
+          }
+        } catch (err: any) {
+          console.warn(`Gemini model ${modelName} failed:`, err.message);
+          continue;
+        }
+      }
     }
 
-    throw new Error(text ? "No text generated" : "All models failed to generate content");
+    throw new Error("All AI models failed to generate content");
   } catch (error: any) {
     console.error("API Error in AI Generate:", error.message);
     return NextResponse.json({ message: error.message || "Failed to generate content" }, { status: 500 });
