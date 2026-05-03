@@ -8,147 +8,50 @@ import SiteContent from "@/models/SiteContent";
 async function getSiteKnowledge() {
   try {
     await dbConnect();
-    
-    // 1. Get Top Products
-    const products = await Product.find({ stock: { $gt: 0 } })
-      .sort({ updatedAt: -1 })
-      .limit(100)
-      .select('name price discountPrice isSpecialOffer category slug')
-      .lean();
-    
-    const productList = products.map(p => {
-      const priceText = p.discountPrice ? `৳${p.discountPrice} (Original: ৳${p.price})` : `৳${p.price}`;
-      const offerText = p.isSpecialOffer ? " [SPECIAL OFFER!]" : "";
-      return `- ${p.name} (${priceText})${offerText} -> /product/${p.slug}`;
-    }).join('\n');
-
-    // 2. Get CMS Data
+    const products = await Product.find({ stock: { $gt: 0 } }).sort({ updatedAt: -1 }).limit(100).select('name price discountPrice isSpecialOffer slug').lean();
+    const productList = products.map(p => `- ${p.name} (৳${p.discountPrice || p.price})${p.isSpecialOffer ? ' [Offer]' : ''}`).join('\n');
     const cmsData = await SiteContent.find({}).limit(100).lean();
-    const siteKnowledge = cmsData.reduce((acc: any, item: any) => {
-      if (!acc[item.page]) acc[item.page] = [];
-      const val = item.value.length > 150 ? item.value.substring(0, 150) + '...' : item.value;
-      acc[item.page].push(`${item.key}: ${val}`);
-      return acc;
-    }, {});
-
-    const knowledgeSummary = Object.entries(siteKnowledge).map(([page, lines]: [string, any]) => {
-      return `PAGE ${page.toUpperCase()}:\n${lines.join('\n')}`;
-    }).join('\n\n');
-
+    const knowledgeSummary = cmsData.map(item => `${item.key}: ${item.value.substring(0, 100)}`).join('\n');
     return { productList, knowledgeSummary };
-  } catch (err) {
-    console.error("Knowledge fetch error:", err);
-    return { productList: "", knowledgeSummary: "" };
-  }
+  } catch { return { productList: "", knowledgeSummary: "" }; }
 }
 
-// ---- API CALLERS ----
+// ---- API CALLERS (Direct Fetch for Stability) ----
 
-async function callGroq(apiKey: string, systemPrompt: string, messages: any[]): Promise<string> {
-  const models = [
-    "llama-3.3-70b-versatile", 
-    "llama-3.1-70b-versatile", 
-    "llama-3.1-8b-instant", 
-    "mixtral-8x7b-32768",
-    "llama3-70b-8192",
-    "llama3-8b-8192"
-  ];
-  for (const model of models) {
-    try {
-      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: model,
-          messages: [{ role: "system", content: systemPrompt }, ...messages],
-          temperature: 0.4,
-          max_tokens: 1024,
-        }),
-      });
-      if (response.status === 429) continue;
-      if (!response.ok) continue;
-      const data = await response.json();
-      return data.choices?.[0]?.message?.content || "";
-    } catch { continue; }
-  }
-  return "";
+async function callProvider(url: string, apiKey: string, body: any): Promise<string> {
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { 
+        "Authorization": `Bearer ${apiKey}`, 
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://aureabd.com",
+        "X-Title": "AureaBD"
+      },
+      body: JSON.stringify(body),
+    });
+    if (!response.ok) return "";
+    const data = await response.json();
+    return data.choices?.[0]?.message?.content || data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  } catch { return ""; }
 }
 
-async function callOpenRouter(apiKey: string, systemPrompt: string, messages: any[]): Promise<string> {
-  const models = [
-    "google/gemma-2-9b-it:free", 
-    "meta-llama/llama-3.1-8b-instruct:free", 
-    "mistralai/mistral-7b-instruct:free",
-    "meta-llama/llama-3.3-70b-instruct:free",
-    "microsoft/phi-3-mini-128k-instruct:free",
-    "openrouter/auto-free"
-  ];
-  for (const model of models) {
-    try {
-      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": "https://aureabd.vercel.app",
-          "X-Title": "Aurea BD",
-        },
-        body: JSON.stringify({
-          model: model,
-          messages: [{ role: "system", content: systemPrompt }, ...messages],
-          temperature: 0.4,
-        }),
-      });
-      if (!response.ok) continue;
-      const data = await response.json();
-      return data.choices?.[0]?.message?.content || data.choices?.[0]?.text || "";
-    } catch { continue; }
-  }
-  return "";
-}
-
-async function callGemini(apiKey: string, systemPrompt: string, messages: any[]): Promise<string> {
-  const models = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-flash-latest"];
-  const lastMessage = messages[messages.length - 1].content;
-  
-  for (const model of models) {
-    try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 8000); // 8s timeout
-
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          signal: controller.signal,
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: `SYSTEM_INSTRUCTIONS: ${systemPrompt}\n\nUSER_MESSAGE: ${lastMessage}` }] }],
-            generationConfig: { 
-              temperature: 0.4, 
-              maxOutputTokens: 1024,
-              topP: 0.95,
-              topK: 40
-            },
-            safetySettings: [
-              { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-              { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-              { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-              { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
-            ]
-          }),
-        }
-      );
-      clearTimeout(timeout);
-      if (!response.ok) continue;
-      const data = await response.json();
-      return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-    } catch { continue; }
-  }
-  return "";
+async function callGemini(apiKey: string, systemPrompt: string, lastMessage: string): Promise<string> {
+  try {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: `SYSTEM: ${systemPrompt}\n\nUSER: ${lastMessage}` }] }],
+        generationConfig: { temperature: 0.3, maxOutputTokens: 800 },
+        safetySettings: [{ category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }]
+      }),
+    });
+    if (!response.ok) return "";
+    const data = await response.json();
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  } catch { return ""; }
 }
 
 // ---- MAIN HANDLER ----
@@ -156,66 +59,63 @@ async function callGemini(apiKey: string, systemPrompt: string, messages: any[])
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
-    const groqKey = process.env.GROQ_API_KEY;
-    const geminiKey = process.env.GEMINI_API_KEY;
-    const openRouterKey = process.env.OPENROUTER_API_KEY;
-    const errors: string[] = [];
+    const lastMsg = messages[messages.length - 1].content;
     const { productList, knowledgeSummary } = await getSiteKnowledge();
 
-    const systemPrompt = `আপনি Aurea BD-এর একজন Senior Skincare Expert এবং Consultant। আপনার কথা বলার ধরন হতে হবে অত্যন্ত মার্জিত, বুদ্ধিদীপ্ত এবং মানুষের মতো।
+    const systemPrompt = `You are Aurea AI, a Senior Skincare Expert at AureaBD. 
+Target Language: BANGLA (বাংলা).
 
-✨ আপনার লক্ষ্য (Objectives):
-১. বিশেষজ্ঞের মতো পরামর্শ দিন: গ্রাহকের স্কিন টাইপ (Oily, Dry, Sensitive) এবং সমস্যা (ব্রণ, দাগ, সান-ট্যান) বুঝে গভীর সমাধান দিন। 
-২. মার্জিত ভাষা: "সস্তা" এর বদলে "সাশ্রয়ী", "খারাপ হয়ে গেছে" এর বদলে "ত্বকে কোনো সমস্যা হচ্ছে কি না" — এভাবে কথা বলুন।
-৩. অর্ডার প্রসেস: কেউ অর্ডার করতে চাইলে বুঝিয়ে বলুন: "আপনার পছন্দের পণ্যটি কার্টে (Cart) যোগ করুন এবং চেকআউট (Checkout) পেজে গিয়ে আপনার নাম-ঠিকানা দিন। আমরা আপনাকে ফোন করে অর্ডার কনফার্ম করব।"
+STRICT RULES (বিপদজনক ভুল এড়াতে):
+1. NO ROBOTIC REPETITION: Do not repeat phrases like "আমাদের ওয়েবসাইটে পণ্য আছে". 
+2. NATURAL TONE: Speak like a real human skincare expert in Dhaka. 
+3. NO "SASTA" (সস্তা): Never use the word "সস্তা". Use "সাশ্রয়ী" (Affordable) or "বাজেট ফ্রেন্ডলি".
+4. SALAAM: Only give Salaam in the first greeting.
+5. ORDERING: Select Product -> Add to Cart -> View Cart -> Checkout. Don't say "we will call you to take order".
+6. GRAMMAR: Use "এসেছেন" not "আসেছেন". Use "কোনটি কিনতে চান?" not "আপনি কিনতে চান যে পণ্যটি?".
 
-✨ কথা বলার নিয়ম (STRICT):
-১. blunt বা রুক্ষ হবেন না। গ্রাহকের সাথে বন্ধুর মতো কথা বলুন।
-২. রিপিটিভ ডায়ালগ এড়িয়ে চলুন। প্রতিবার ইউনিক ভাবে কথা বলুন।
-৩. এক মেসেজে অনেক তথ্য দিবেন না। ধাপে ধাপে কথা বলুন।
-৪. বাংলা ব্যাকরণ: "আসেছেন" নয়, "এসেছেন" বলুন। 
+SKINCARE EXPERTISE:
+- Shipping: Dhaka (৳70), Outside (৳130).
+- Authentication: 100% Original Imports.
+- Routine: Cleanser -> Toner -> Serum -> Eye Cream -> Moisturizer -> SPF.
 
-✨ এক্সপার্ট নলেজ:
-- ডেলিভারি: ঢাকা (৳৭০), ঢাকার বাইরে (৳১৩০)।
-- অথেন্টিসিটি: ১০০% অরিজিনাল জাপান ও কোরিয়ান প্রোডাক্ট।
-- পেমেন্ট: ক্যাশ অন ডেলিভারি (Cash on Delivery) সুবিধা আছে।
+PRODUCTS:
+${productList || "Check our shop for details."}
 
-✨ প্রোডাক্ট লিস্ট:
-${productList || "আমাদের প্রিমিয়াম সাকুরা কালেকশন এবং সিরামগুলো দেখতে পারেন।"}
-
-SITE KNOWLEDGE (Top Priority):
+SITE INFO:
 ${knowledgeSummary.substring(0, 800)}
 
-লক্ষ্য: আপনি একজন উচ্চপদস্থ স্কিনকেয়ার স্পেশালিস্ট। আপনার প্রতিটি উত্তর যেন গ্রাহকের মনে বিশ্বাস তৈরি করে।`;
+TONE: Premium, Helpful, Native. Ask one question at a time.`;
 
-    const providers = [
-      { name: 'gemini', key: geminiKey, call: () => callGemini(geminiKey!, systemPrompt, messages) },
-      { name: 'openrouter', key: openRouterKey, call: () => callOpenRouter(openRouterKey!, systemPrompt, messages) },
-      { name: 'groq', key: groqKey, call: () => callGroq(groqKey!, systemPrompt, messages) }
-    ];
+    const groqKey = process.env.GROQ_API_KEY;
+    const openRouterKey = process.env.OPENROUTER_API_KEY;
+    const geminiKey = process.env.GEMINI_API_KEY;
 
-    for (const provider of providers) {
-      if (provider.key) {
-        try {
-          const text = await provider.call();
-          if (text && text.length > 2) {
-            // Final check to prevent obvious robotic/broken Bangla
-            if (text.includes("আমার আপনার জন্য") || text.includes("কি আপনার ত্বকের সাথে ভালো") || text.includes("কোয়ালেশন")) {
-              continue; 
-            }
-            return NextResponse.json({ text });
-          }
-        } catch (err: any) {
-          console.error(`Chat Provider ${provider.name} failed:`, err.message);
-          errors.push(`${provider.name}: ${err.message}`);
-        }
-      }
+    // RESILIENT PROVIDER CHAIN (Try Groq First for Speed, then OpenRouter, then Gemini)
+    if (groqKey) {
+      const res = await callProvider("https://api.groq.com/openai/v1/chat/completions", groqKey, {
+        model: "llama-3.3-70b-versatile",
+        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: lastMsg }],
+        temperature: 0.3
+      });
+      if (res) return NextResponse.json({ text: res });
     }
 
-    console.error("All Chat Providers Failed:", errors);
-    return NextResponse.json({ text: "দুঃখিত, আমাদের সার্ভার এখন কিছুটা ব্যস্ত। দয়া করে কিছুক্ষণ পর আবার চেষ্টা করুন! আমরা আপনার সেবা দিতে সবসময় প্রস্তুত। ✨" });
+    if (openRouterKey) {
+      const res = await callProvider("https://openrouter.ai/api/v1/chat/completions", openRouterKey, {
+        model: "google/gemini-2.0-flash-exp:free",
+        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: lastMsg }],
+        temperature: 0.3
+      });
+      if (res) return NextResponse.json({ text: res });
+    }
+
+    if (geminiKey) {
+      const res = await callGemini(geminiKey, systemPrompt, lastMsg);
+      if (res) return NextResponse.json({ text: res });
+    }
+
+    return NextResponse.json({ text: "দুঃখিত, আমি এই মুহূর্তে কানেক্ট হতে পারছি না। দয়া করে ১ মিনিট পর আবার চেষ্টা করুন! ✨" });
   } catch (error: any) {
-    console.error("Global Chat Error:", error);
-    return NextResponse.json({ message: error.message }, { status: 500 });
+    return NextResponse.json({ message: "System Error" }, { status: 500 });
   }
 }
