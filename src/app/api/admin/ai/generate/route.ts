@@ -17,7 +17,7 @@ async function fetchUrlContent(url: string): Promise<string> {
     const html = await response.text();
     const parts: string[] = [];
 
-    // 1. Extract JSON-LD structured data (best source for product info)
+    // 1. Extract JSON-LD structured data
     const jsonLdMatches = html.match(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi);
     if (jsonLdMatches) {
       for (const match of jsonLdMatches) {
@@ -62,7 +62,9 @@ async function fetchUrlContent(url: string): Promise<string> {
   }
 }
 
-// Direct Groq API call (avoids openai SDK version issues)
+// ---- API CALLERS ----
+
+// Direct Groq API call
 async function callGroq(apiKey: string, systemPrompt: string, userPrompt: string): Promise<string> {
   const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
@@ -90,7 +92,37 @@ async function callGroq(apiKey: string, systemPrompt: string, userPrompt: string
   return data.choices?.[0]?.message?.content || "";
 }
 
-// Direct Gemini API call (avoids SDK model name issues)
+// Direct OpenRouter API call (free models, great for Bangla)
+async function callOpenRouter(apiKey: string, systemPrompt: string, userPrompt: string): Promise<string> {
+  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+      "HTTP-Referer": "https://aureabd.vercel.app",
+      "X-Title": "Aurea BD Admin",
+    },
+    body: JSON.stringify({
+      model: "nvidia/llama-3.3-70b-instruct:free",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      temperature: 0.4,
+      max_tokens: 1500,
+    }),
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`OpenRouter ${response.status}: ${errText.substring(0, 200)}`);
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || "";
+}
+
+// Direct Gemini API call
 async function callGemini(apiKey: string, prompt: string): Promise<string> {
   const models = ["gemini-2.0-flash", "gemini-2.0-flash-lite"];
   
@@ -108,20 +140,65 @@ async function callGemini(apiKey: string, prompt: string): Promise<string> {
         }
       );
 
-      if (!response.ok) {
-        console.warn(`Gemini ${model}: ${response.status}`);
-        continue;
-      }
+      if (!response.ok) continue;
 
       const data = await response.json();
       return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-    } catch (err: any) {
-      console.warn(`Gemini ${model} error:`, err.message);
+    } catch {
       continue;
     }
   }
   return "";
 }
+
+// ---- PROMPT BUILDERS ----
+
+function buildSystemPrompt(isBangla: boolean): string {
+  if (isBangla) {
+    return `You are a professional Bangladeshi beauty copywriter for Aurea BD — a premium Japanese & Korean skincare brand in Bangladesh.
+
+WRITING STYLE:
+- Write fluent, natural Bangla as spoken by educated urban Bangladeshi women.
+- Warm, trustworthy, and premium tone — like a popular beauty influencer.
+- NEVER translate literally from English. Write original Bangla.
+
+VOCABULARY:
+- Brand names stay in English: "Axis-y", "Laikou", "COSRX"
+- Ingredient names stay in English: "Niacinamide", "Vitamin C", "Hyaluronic Acid"  
+- Product types: সিরাম, টোনার, ময়েশ্চারাইজার, সানস্ক্রিন, ক্রিম, ফেসওয়াশ
+- Use: "ব্যবহার করুন", "মুখে লাগান", "ত্বকে দিন", "মালিশ করুন"
+- NEVER use: "প্রয়োগ করুন", "মুখমণ্ডল", "স্ফীত করুন"
+
+EXAMPLE GOOD BANGLA:
+- "পরিষ্কার মুখে ২-৩ ফোঁটা সিরাম নিয়ে আলতোভাবে মালিশ করুন"
+- "এই সিরাম ত্বকের কালো দাগ হালকা করে এবং উজ্জ্বলতা বাড়ায়"
+- "প্রতিদিন সকালে ও রাতে ব্যবহার করুন সেরা ফলাফলের জন্য"`;
+  }
+
+  return `You are a professional luxury skincare copywriter for Aurea BD — a premium Japanese & Korean skincare brand. Write elegant, persuasive English. Focus on radiance, hydration, and real benefits. Never invent ingredients.`;
+}
+
+function buildFormatGuide(field: string, isBangla: boolean): string {
+  if (field === "ingredients") {
+    return isBangla
+      ? `Return ONLY an HTML <ul> list. Ingredient names in English, benefits in Bangla.
+Example: <ul><li><strong>Niacinamide</strong> — ত্বকের দাগ কমায় ও উজ্জ্বলতা বাড়ায়</li></ul>`
+      : `Return ONLY an HTML <ul> list of key ingredients with benefits.
+Example: <ul><li><strong>Niacinamide</strong> — Reduces dark spots and enhances radiance</li></ul>`;
+  }
+  if (field === "howToUse") {
+    return isBangla
+      ? `Return ONLY an HTML <ol> list in natural Bangla.
+Example: <ol><li>পরিষ্কার মুখে ২-৩ ফোঁটা সিরাম নিন</li><li>আলতোভাবে ত্বকে মালিশ করুন</li></ol>`
+      : `Return ONLY an HTML <ol> list of usage steps.`;
+  }
+  if (field === "shortDescription") {
+    return "Return ONLY 1-2 catchy marketing sentences.";
+  }
+  return "Return a compelling 3-5 sentence marketing paragraph.";
+}
+
+// ---- MAIN HANDLER ----
 
 export async function POST(req: Request) {
   try {
@@ -132,9 +209,12 @@ export async function POST(req: Request) {
 
     const groqKey = process.env.GROQ_API_KEY;
     const geminiKey = process.env.GEMINI_API_KEY;
+    const openRouterKey = process.env.OPENROUTER_API_KEY;
 
-    if (!groqKey && !geminiKey) {
-      return NextResponse.json({ message: "No AI API Key configured. Add GROQ_API_KEY or GEMINI_API_KEY to environment." }, { status: 500 });
+    if (!groqKey && !geminiKey && !openRouterKey) {
+      return NextResponse.json({ 
+        message: "No AI API Key configured. Add GROQ_API_KEY, OPENROUTER_API_KEY, or GEMINI_API_KEY to environment." 
+      }, { status: 500 });
     }
 
     const { name, category, field, customPrompt, language } = await req.json();
@@ -148,92 +228,59 @@ export async function POST(req: Request) {
     }
 
     const isBangla = language === "bn";
-
-    // ---- Build prompts ----
-    const systemPrompt = isBangla
-      ? `You are a professional Bangladeshi beauty copywriter for Aurea BD — a premium Japanese & Korean skincare brand in Bangladesh.
-
-WRITING STYLE:
-- Write fluent, natural Bangla as spoken by educated urban Bangladeshi women.
-- Warm, trustworthy, and premium tone — like a popular beauty influencer.
-- NEVER translate literally from English. Write original Bangla.
-
-VOCABULARY:
-- Brand names in English: "Axis-y", "Laikou", "COSRX"
-- Ingredient names in English: "Niacinamide", "Vitamin C", "Hyaluronic Acid"  
-- Product types: সিরাম, টোনার, ময়েশ্চারাইজার, সানস্ক্রিন, ক্রিম, ফেসওয়াশ
-- Use: "ব্যবহার করুন", "মুখে লাগান", "ত্বকে দিন", "মালিশ করুন"
-- NEVER use: "প্রয়োগ করুন", "মুখমণ্ডল", "স্ফীত করুন"
-
-EXAMPLE GOOD BANGLA:
-- "পরিষ্কার মুখে ২-৩ ফোঁটা সিরাম নিয়ে আলতোভাবে মালিশ করুন"
-- "এই সিরাম ত্বকের কালো দাগ হালকা করে এবং উজ্জ্বলতা বাড়ায়"
-- "প্রতিদিন সকালে ও রাতে ব্যবহার করুন"`
-      : `You are a professional luxury skincare copywriter for Aurea BD — a premium Japanese & Korean skincare brand. Write elegant, persuasive English. Focus on radiance, hydration, and real benefits. Never invent ingredients.`;
-
-    let formatGuide = "";
-    if (field === "ingredients") {
-      formatGuide = isBangla
-        ? `Return ONLY an HTML <ul> list. Keep ingredient names in English. Write benefits in Bangla.
-Example: <ul><li><strong>Niacinamide</strong> — ত্বকের দাগ কমায় ও উজ্জ্বলতা বাড়ায়</li></ul>`
-        : `Return ONLY an HTML <ul> list of key ingredients with benefits.
-Example: <ul><li><strong>Niacinamide</strong> — Reduces dark spots and enhances radiance</li></ul>`;
-    } else if (field === "howToUse") {
-      formatGuide = isBangla
-        ? `Return ONLY an HTML <ol> list in natural Bangla.
-Example: <ol><li>পরিষ্কার মুখে ২-৩ ফোঁটা সিরাম নিন</li><li>আলতোভাবে ত্বকে মালিশ করুন</li><li>সম্পূর্ণ শুষে যাওয়া পর্যন্ত অপেক্ষা করুন</li></ol>`
-        : `Return ONLY an HTML <ol> list of usage steps.`;
-    } else if (field === "shortDescription") {
-      formatGuide = "Return ONLY 1-2 catchy marketing sentences.";
-    } else {
-      formatGuide = "Return a compelling 3-5 sentence marketing paragraph.";
-    }
+    const systemPrompt = buildSystemPrompt(isBangla);
+    const formatGuide = buildFormatGuide(field, isBangla);
 
     const userPrompt = `Product: "${name}"
 Category: ${category || "Skincare"}
 Field: ${field}
-${browsingData ? `\nREFERENCE DATA FROM PRODUCT LINK:\n${browsingData}\n\nUse the real product info from this link.` : ""}
+${browsingData ? `\nREFERENCE DATA FROM PRODUCT LINK:\n${browsingData}\n\nUse the real product info from the link above.` : ""}
 ${customPrompt ? `\nInstructions: ${customPrompt}` : ""}
 
 FORMAT: ${formatGuide}
 
-Output ONLY the content. No explanations, no code fences, no "Here is..." prefix.`;
+Output ONLY the final content. No explanations, no code fences, no "Here is..." prefix.`;
 
     const errors: string[] = [];
 
-    // ---- Try Groq (primary — works for both EN and BN) ----
+    // ---- PROVIDER 1: Groq (fast, reliable) ----
     if (groqKey) {
       try {
         let result = await callGroq(groqKey, systemPrompt, userPrompt);
         result = result.replace(/```html|```/g, "").trim();
-        if (result) {
-          return NextResponse.json({ text: result });
-        }
+        if (result) return NextResponse.json({ text: result });
         errors.push("Groq returned empty");
       } catch (err: any) {
         errors.push(`Groq: ${err.message}`);
-        console.error("Groq failed:", err.message);
       }
     }
 
-    // ---- Fallback to Gemini ----
+    // ---- PROVIDER 2: OpenRouter (free tier, many models) ----
+    if (openRouterKey) {
+      try {
+        let result = await callOpenRouter(openRouterKey, systemPrompt, userPrompt);
+        result = result.replace(/```html|```/g, "").trim();
+        if (result) return NextResponse.json({ text: result });
+        errors.push("OpenRouter returned empty");
+      } catch (err: any) {
+        errors.push(`OpenRouter: ${err.message}`);
+      }
+    }
+
+    // ---- PROVIDER 3: Gemini (if configured) ----
     if (geminiKey) {
       try {
         let result = await callGemini(geminiKey, `${systemPrompt}\n\n${userPrompt}`);
         result = result.replace(/```html|```/g, "").trim();
-        if (result) {
-          return NextResponse.json({ text: result });
-        }
+        if (result) return NextResponse.json({ text: result });
         errors.push("Gemini returned empty");
       } catch (err: any) {
         errors.push(`Gemini: ${err.message}`);
-        console.error("Gemini failed:", err.message);
       }
     }
 
-    // ---- If we get here, everything failed ----
     return NextResponse.json({ 
-      message: `AI generation failed. Details: ${errors.join(" | ") || "No API keys configured"}` 
+      message: `AI generation failed. ${errors.join(" | ")}` 
     }, { status: 500 });
 
   } catch (error: any) {
