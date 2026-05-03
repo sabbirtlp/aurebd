@@ -242,10 +242,7 @@ export default function ProductClient({ product, relatedProducts }: { product: a
             </div>
             <div className={`${styles.tabContent} nm-card`} suppressHydrationWarning>
               {activeTab === "description" && (
-                <div className="animate-fade-in">
-                  <p>{localizedDesc}</p>
-                  <p>{t('product.desc_extra')}</p>
-                </div>
+                <div className={`${styles.richText} animate-fade-in`} dangerouslySetInnerHTML={{ __html: localizedDesc || '<p>No description available.</p>' }} />
               )}
               {activeTab === "ingredients" && (
                 <div className={`${styles.richText} animate-fade-in`} dangerouslySetInnerHTML={{ __html: localizedIngredients || '<p>Aqua, Prunus Lannesiana Flower Extract, Ascorbic Acid, Malic Acid, Prunus Mume Fruit Extract, Citric Acid, Potassium Hydroxide, Sodium Hyaluronate.</p>' }} />
