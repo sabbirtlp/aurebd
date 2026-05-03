@@ -62,26 +62,31 @@ export async function POST(req: Request) {
     if (language === "bn" && geminiKey) {
       const genAI = new GoogleGenerativeAI(geminiKey);
       const prompt = `
-        ACT AS A WORLD-CLASS LUXURY SKINCARE COPYWRITER FROM BANGLADESH.
-        YOUR TASK: Generate highly professional, natural, and persuasive ${field} for "${name}" in BANGLA.
+        ROLE: You are the Lead Beauty Consultant & Copywriter for Aurea BD (Bangladesh's premier destination for authentic Japanese skincare).
+        AUDIENCE: Bangladeshi women and men looking for radiant, healthy skin in a humid, tropical climate.
+        EXPERTISE: Japanese Skincare (J-Beauty), focus on hydration, brightening, and natural ingredients (Sakura, Rice water, Green tea).
         
-        ### CRITICAL WRITING RULES:
-        1. NATIVE FLOW: Do NOT translate literally. Write as if you are creating an ad for a premium Bangladeshi magazine.
-        2. NO ROBOTIC BENGALI: Avoid weird transliterations like "চেকআইন" or "রোজালি".
-        3. TERMINOLOGY:
-           - Use "সিরাম" instead of "সেরুম".
-           - Use "উজ্জ্বলতা" instead of "গ্লো" (unless "গ্লো" sounds more natural in context).
-           - Use "প্রতিদিন" instead of "রোজালি".
-           - Use "ত্বকে ব্যবহার করুন" instead of "প্রয়োগ করুন".
-        4. TONE: Elegant, trustworthy, and inviting. Use words like "প্রাণবন্ত", "সতেজ", "দাগহীন", "মখমলে কোমল".
+        ### CRITICAL WRITING RULES (BANGLA):
+        1. LOCAL EXPERTISE: Address common Bangladeshi skin issues like "রোদে পোড়া ভাব" (tanning), "অতিরিক্ত তৈলাক্ততা" (oiliness), and "কালচে দাগ" (dark spots).
+        2. CULTURAL TONE: Use a tone that is respectful, persuasive, and luxurious. Sound like a trusted beauty expert on social media.
+        3. NATURAL PHRASING:
+           - Use "ত্বকের প্রাকৃতিক জেল্লা" (natural glow).
+           - Use "গভীরভাবে ময়েশ্চারাইজ করে" (deeply moisturizes).
+           - Use "জাপানিজ রূপচর্চার গোপন রহস্য" (secret of Japanese beauty).
+           - Use "১০০% অথেন্টিক পণ্য" (100% authentic product).
+        4. TERMINOLOGY:
+           - "সিরাম" (Serum), "টোনার" (Toner), "সানস্ক্রিন" (Sunscreen), "ময়েশ্চারাইজার" (Moisturizer).
+           - Do NOT use robotic terms like "রোজালি", "চেকআইন", or "সেরুম".
         
         FACTS FROM LINK: ${browsingData || "None"}
         USER INSTRUCTION: ${customPrompt || "None"}
+        PRODUCT: ${name}
+        FIELD: ${field}
         
         FORMATTING:
-        - If ingredients: Provide ONLY an HTML <ul> list in Bangla.
-        - If howToUse: Provide ONLY an HTML <ol> list in Bangla.
-        - If description: Provide one elegant paragraph in Bangla.
+        - If ingredients: HTML <ul> list.
+        - If howToUse: HTML <ol> list.
+        - If description: One elegant, high-converting paragraph.
       `;
 
       try {
@@ -101,25 +106,26 @@ export async function POST(req: Request) {
       const groqModels = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
       
       const prompt = `
-        ### TARGET LANGUAGE
-        CRITICAL: You MUST write the output in ${targetLang}.
+        ### SYSTEM ROLE
+        Expert Skincare Copywriter for the Bangladeshi Market. Specialty: Japanese Cosmetics (Aurea BD).
         
         ### CONTEXT
         Product: ${name}
-        Category: ${category}
-        Target Field: ${field}
+        Field: ${field}
+        Target Language: ${targetLang}
         Browsing Data: ${browsingData || 'None'}
 
-        ### BANGLA COPYWRITING RULES (ONLY IF BANGLA):
-        - ACT AS A NATIVE BENGALI COPYWRITER.
-        - DO NOT TRANSLATE FROM ENGLISH WORD-FOR-WORD.
-        - USE NATURAL PHRASES: "ত্বকের সজীবতা ফিরিয়ে আনতে" (To bring back skin's radiance).
-        - AVOID: "প্রয়োগ করুন", "সেরুম", "রোজালি".
-        - USE: "ব্যবহার করুন", "সিরাম", "নিয়মিত".
-        - TONE: Sophisticated luxury (যেমন ল্যানকম বা শ্যানেল-এর বিজ্ঞাপনে থাকে).
+        ### COPYWRITING GUIDELINES:
+        - FOCUS: Hydration, Brightening, and Skin Health (Radiance).
+        - STYLE: Luxury, Premium, Trustworthy.
+        - AUDIENCE CONCERNS: Authenticity, suitability for Bangladeshi weather/skin, visible results.
+        
+        ### BANGLA RULES:
+        - Act as a native speaker.
+        - Use modern, high-end beauty industry vocabulary.
+        - Ensure emotional appeal (e.g., "আপনার ত্বককে দিন নতুন প্রাণ").
 
         ### REQUIREMENTS
-        - Style: Professional luxury skincare brand tone.
         - Output: ONLY the generated text for ${field} in ${targetLang}.
         ${field === 'description' ? '- Format: A single elegant paragraph.' : ''}
         ${field === 'ingredients' ? '- Format: An HTML <ul> list.' : ''}
@@ -132,7 +138,7 @@ export async function POST(req: Request) {
           const groq = new OpenAI({ apiKey: groqKey, baseURL: "https://api.groq.com/openai/v1" });
           const chatCompletion = await groq.chat.completions.create({
             messages: [
-              { role: "system", content: `You are an Expert Luxury Copywriter for Aurea BD. You write elegant, natural, and highly professional content in ${targetLang}.` },
+              { role: "system", content: `You are a Japanese Skincare Expert for the Bangladeshi market. You write professional, luxury content in ${targetLang}.` },
               { role: "user", content: prompt }
             ],
             model: model,
