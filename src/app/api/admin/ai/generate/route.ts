@@ -368,14 +368,14 @@ export async function POST(req: Request) {
     const errors: string[] = [];
     const providers = isBangla
       ? [
-        { name: 'gemini', key: geminiKey, call: () => callGemini(geminiKey!, `${systemPrompt}\n\n${userPrompt}`) },
         { name: 'openrouter', key: openRouterKey, call: () => callOpenRouter(openRouterKey!, systemPrompt, userPrompt) },
-        { name: 'groq', key: groqKey, call: () => callGroq(groqKey!, systemPrompt, userPrompt) }
+        { name: 'groq', key: groqKey, call: () => callGroq(groqKey!, systemPrompt, userPrompt) },
+        { name: 'gemini', key: geminiKey, call: () => callGemini(geminiKey!, `${systemPrompt}\n\n${userPrompt}`) }
       ]
       : [
         { name: 'groq', key: groqKey, call: () => callGroq(groqKey!, systemPrompt, userPrompt) },
-        { name: 'gemini', key: geminiKey, call: () => callGemini(geminiKey!, `${systemPrompt}\n\n${userPrompt}`) },
-        { name: 'openrouter', key: openRouterKey, call: () => callOpenRouter(openRouterKey!, systemPrompt, userPrompt) }
+        { name: 'openrouter', key: openRouterKey, call: () => callOpenRouter(openRouterKey!, systemPrompt, userPrompt) },
+        { name: 'gemini', key: geminiKey, call: () => callGemini(geminiKey!, `${systemPrompt}\n\n${userPrompt}`) }
       ];
 
     for (const provider of providers) {
