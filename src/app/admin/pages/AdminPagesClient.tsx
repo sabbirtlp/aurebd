@@ -279,6 +279,8 @@ export default function AdminPagesClient({ initialContent }: { initialContent: a
   const [activeLang, setActiveLang] = useState<"en" | "bn">("en");
   const [selectedPage, setSelectedPage] = useState("home");
 
+  const [changedKeys, setChangedKeys] = useState<Set<string>>(new Set());
+
   const getKey = (page: string, section: string, key: string) => {
     return `${page}__${section}__${key}__${activeLang}`;
   };
@@ -288,17 +290,25 @@ export default function AdminPagesClient({ initialContent }: { initialContent: a
   };
 
   const setValue = (page: string, section: string, key: string, value: string) => {
-    setContent({ ...content, [getKey(page, section, key)]: value });
+    const k = getKey(page, section, key);
+    setContent({ ...content, [k]: value });
+    setChangedKeys(prev => new Set(prev).add(k));
     setSaved(false);
   };
 
   const handleSave = async () => {
+    if (changedKeys.size === 0) {
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+      return;
+    }
+
     setSaving(true);
     setSaved(false);
 
-    const items = Object.entries(content).map(([compositeKey, value]) => {
+    const items = Array.from(changedKeys).map(compositeKey => {
       const [page, section, key, language] = compositeKey.split("__");
-      return { page, section, key, value, language };
+      return { page, section, key, value: content[compositeKey], language };
     });
 
     try {
@@ -308,14 +318,18 @@ export default function AdminPagesClient({ initialContent }: { initialContent: a
         body: JSON.stringify({ items }),
       });
 
+      const data = await res.json().catch(() => ({}));
+
       if (res.ok) {
         setSaved(true);
+        setChangedKeys(new Set()); // Clear changed tracker
         setTimeout(() => setSaved(false), 3000);
       } else {
-        alert("Failed to save content.");
+        alert(`Failed to save: ${data.message || "Unknown error"}${data.error ? ` (${data.error})` : ""}`);
       }
     } catch (error) {
-      alert("An error occurred.");
+      console.error("Save error:", error);
+      alert("An error occurred while connecting to the server.");
     } finally {
       setSaving(false);
     }

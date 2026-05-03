@@ -68,9 +68,23 @@ export function EditableProvider({
       });
 
       if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        console.error("API Error Response:", errData);
-        throw new Error(errData.message || "Failed to save");
+        let errorMessage = "Failed to save";
+        try {
+          const contentType = res.headers.get("content-type");
+          if (contentType && contentType.includes("application/json")) {
+            const errData = await res.json();
+            errorMessage = errData.message || errorMessage;
+            if (errData.error) errorMessage += ` (${errData.error})`;
+          } else {
+            // Non-JSON response (e.g. HTML error page or 413 Payload Too Large)
+            errorMessage = `Server Error: ${res.status} ${res.statusText}`;
+            if (res.status === 413) errorMessage = "Payload too large. Please try a smaller image.";
+          }
+        } catch (e) {
+          console.error("Error parsing error response:", e);
+        }
+        
+        throw new Error(errorMessage);
       }
       toast.success("Content updated!", { autoClose: 1000 });
     } catch (err: any) {
