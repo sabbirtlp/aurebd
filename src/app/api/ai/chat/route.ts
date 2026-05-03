@@ -12,7 +12,7 @@ async function getSiteKnowledge() {
     // 1. Get Top Products
     const products = await Product.find({ stock: { $gt: 0 } })
       .sort({ updatedAt: -1 })
-      .limit(30)
+      .limit(100)
       .select('name price category slug')
       .lean();
     
