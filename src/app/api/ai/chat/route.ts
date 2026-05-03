@@ -1,145 +1,177 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import OpenAI from "openai";
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Product from "@/models/Product";
 import SiteContent from "@/models/SiteContent";
 
+// ---- DATA FETCHERS ----
+
+async function getSiteKnowledge() {
+  try {
+    await dbConnect();
+    
+    // 1. Get Top Products
+    const products = await Product.find({ stock: { $gt: 0 } })
+      .sort({ updatedAt: -1 })
+      .limit(30)
+      .select('name price category slug')
+      .lean();
+    
+    const productList = products.map(p => `- ${p.name} (৳${p.price}) -> /product/${p.slug}`).join('\n');
+
+    // 2. Get CMS Data
+    const cmsData = await SiteContent.find({}).limit(100).lean();
+    const siteKnowledge = cmsData.reduce((acc: any, item: any) => {
+      if (!acc[item.page]) acc[item.page] = [];
+      const val = item.value.length > 150 ? item.value.substring(0, 150) + '...' : item.value;
+      acc[item.page].push(`${item.key}: ${val}`);
+      return acc;
+    }, {});
+
+    const knowledgeSummary = Object.entries(siteKnowledge).map(([page, lines]: [string, any]) => {
+      return `PAGE ${page.toUpperCase()}:\n${lines.join('\n')}`;
+    }).join('\n\n');
+
+    return { productList, knowledgeSummary };
+  } catch (err) {
+    console.error("Knowledge fetch error:", err);
+    return { productList: "", knowledgeSummary: "" };
+  }
+}
+
+// ---- API CALLERS ----
+
+async function callGroq(apiKey: string, systemPrompt: string, messages: any[]): Promise<string> {
+  const models = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "llama3-8b-8192"];
+  for (const model of models) {
+    try {
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: model,
+          messages: [{ role: "system", content: systemPrompt }, ...messages],
+          temperature: 0.7,
+          max_tokens: 1024,
+        }),
+      });
+      if (response.status === 429) continue;
+      if (!response.ok) continue;
+      const data = await response.json();
+      return data.choices?.[0]?.message?.content || "";
+    } catch { continue; }
+  }
+  return "";
+}
+
+async function callOpenRouter(apiKey: string, systemPrompt: string, messages: any[]): Promise<string> {
+  const models = ["google/gemma-2-9b-it:free", "meta-llama/llama-3.1-8b-instruct:free", "openrouter/auto-free"];
+  for (const model of models) {
+    try {
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://aureabd.vercel.app",
+          "X-Title": "Aurea BD",
+        },
+        body: JSON.stringify({
+          model: model,
+          messages: [{ role: "system", content: systemPrompt }, ...messages],
+          temperature: 0.7,
+        }),
+      });
+      if (!response.ok) continue;
+      const data = await response.json();
+      return data.choices?.[0]?.message?.content || data.choices?.[0]?.text || "";
+    } catch { continue; }
+  }
+  return "";
+}
+
+async function callGemini(apiKey: string, systemPrompt: string, messages: any[]): Promise<string> {
+  const models = ["gemini-2.0-flash", "gemini-1.5-flash-latest"];
+  const lastMessage = messages[messages.length - 1].content;
+  for (const model of models) {
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: `SYSTEM_INSTRUCTIONS: ${systemPrompt}\n\nUSER_MESSAGE: ${lastMessage}` }] }],
+            generationConfig: { temperature: 0.7, maxOutputTokens: 1024 },
+          }),
+        }
+      );
+      if (!response.ok) continue;
+      const data = await response.json();
+      return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    } catch { continue; }
+  }
+  return "";
+}
+
+// ---- MAIN HANDLER ----
+
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
-    
     const groqKey = process.env.GROQ_API_KEY;
     const geminiKey = process.env.GEMINI_API_KEY;
+    const openRouterKey = process.env.OPENROUTER_API_KEY;
 
-    if (!groqKey && !geminiKey) {
-      return NextResponse.json({ message: "AI Assistant is resting..." }, { status: 500 });
-    }
+    const { productList, knowledgeSummary } = await getSiteKnowledge();
 
-    // --- FETCH REAL KNOWLEDGE ---
-    try {
-      await dbConnect();
-      
-      // 1. Get Top Products (Limit to prevent context overflow)
-      const products = await Product.find({ stock: { $gt: 0 } })
-        .sort({ updatedAt: -1 })
-        .limit(30)
-        .select('name price category slug')
-        .lean();
-      
-      const productList = products.map(p => `- ${p.name} (৳${p.price}) -> /product/${p.slug}`).join('\n');
+    const systemPrompt = `You are Aurea AI, the senior luxury skincare concierge for AureaBD. 
+Primary Language: BANGLA (বাংলা). 
 
-      // 2. Get CMS Data (Optimized truncation)
-      const cmsData = await SiteContent.find({}).limit(100).lean();
-      const siteKnowledge = cmsData.reduce((acc: any, item: any) => {
-        if (!acc[item.page]) acc[item.page] = [];
-        // Only take the first 100 characters of each value to keep prompt small
-        const val = item.value.length > 150 ? item.value.substring(0, 150) + '...' : item.value;
-        acc[item.page].push(`${item.key}: ${val}`);
-        return acc;
-      }, {});
+RELIGIOUS ETIQUETTE:
+1. IF USER SAYS "Assalamu Alaikum": Respond with "ওয়ালাইকুম আসসালাম" (Walaikum Assalam).
+2. START: Initiate with "আসসালামু আলাইকুম" (Assalamu Alaikum) if it is the first message.
 
-      const knowledgeSummary = Object.entries(siteKnowledge).map(([page, lines]: [string, any]) => {
-        return `PAGE ${page.toUpperCase()}:\n${lines.join('\n')}`;
-      }).join('\n\n');
+SKINCARE EXPERTISE:
+- SHIPPING: Dhaka (৳70), Outside (৳130).
+- AUTHENTICITY: 100% Authentic, J-Beauty/K-Beauty imports.
+- ROUTINE: Cleanser -> Toner -> Serum -> Moisturizer -> SPF.
+- BRAND: Aurea BD focus on "Sakura" (Cherry Blossom) extracts for natural glowing skin.
 
-      const systemPrompt = `You are Aurea AI, the senior luxury skincare concierge and virtual manager for AureaBD. 
-      Primary Language: BANGLA (বাংলা). 
+SITEMAP:
+- Home: / | Shop: /shop | About: /about | Shipping: /shipping
 
-      RELIGIOUS ETIQUETTE & GREETINGS:
-      1. IF USER SAYS "Assalamu Alaikum": You MUST respond with "ওয়ালাইকুম আসসালাম" (Walaikum Assalam) first.
-      2. IF STARTING CONVERSATION: You initiate with "আসসালামু আলাইকুম" (Assalamu Alaikum).
-      3. DO NOT repeat greetings in every message.
-      
-      EXPERT KNOWLEDGE NUGGETS:
-      1. SHIPPING: Dhaka City (24-48 hours, ৳70), Outside Dhaka (3-5 days, ৳130).
-      2. PAYMENTS: We support Cash on Delivery (COD) and bKash/Nagad.
-      3. AUTHENTICITY: All products are 100% Authentic, directly imported (mostly Japan/Korea).
-      4. HOW TO ORDER: Select product -> Add to Cart -> View Cart -> Checkout -> Provide Address -> Confirm.
-      5. BRAND: Aurea BD focus on "Sakura" (Cherry Blossom) skincare for natural glowing skin.
-      
-      LANGUAGE & CONVERSATIONAL RULES:
-      1. DEFAULT: High-quality professional Bangla.
-      2. VOCABULARY: Serum -> সিরাম, Balance -> ব্যালেন্স, Moisturizer -> ময়েশ্চারাইজার, Cleanser -> ক্লিনজার, Skin -> ত্বক.
-      
-      RESPONSE DYNAMICS:
-      1. ADAPTIVE LENGTH: Brief for greetings, detailed for consultations.
-      2. INFORMATION: Provide email/phone from SITE KNOWLEDGE if asked.
-      
-      CRITICAL RULES:
-      1. ONLY suggest products from the list below.
-      2. Use the Sitemap for page links.
-      
-      SITEMAP:
-      - Home: / | Shop: /shop | About: /about | FAQ: /faq | Shipping: /shipping | Returns: /returns
-      
-      REAL PRODUCTS:
-      ${productList || "Visit our shop for latest products."}
-      
-      SITE KNOWLEDGE:
-      ${knowledgeSummary.substring(0, 4000)}
-      
-      Maintain a premium, helpful, and natural human-like tone.`;
+REAL PRODUCTS:
+${productList || "Check our shop for latest arrivals."}
 
-      // 1. TRY GROQ (Ultra Fast Chat)
-      if (groqKey) {
-        const groqModels = ["llama-3.3-70b-versatile", "llama-3.1-70b-versatile", "llama3-70b-8192", "mixtral-8x7b-32768"];
-        
-        for (const model of groqModels) {
-          try {
-            const groq = new OpenAI({ apiKey: groqKey, baseURL: "https://api.groq.com/openai/v1" });
-            const chatCompletion = await groq.chat.completions.create({
-              messages: [
-                { role: "system", content: systemPrompt },
-                ...messages
-              ],
-              model: model,
-              temperature: 0.7,
-              max_tokens: 1024,
-            });
+SITE KNOWLEDGE:
+${knowledgeSummary.substring(0, 3000)}
 
-            const text = chatCompletion.choices[0].message.content || "";
-            if (text) return NextResponse.json({ text });
-          } catch (err: any) {
-            console.warn(`Groq Chat model ${model} failed:`, err.message);
-            continue;
-          }
-        }
-      }
+Maintain a premium, warm, and helpful tone. Speak like a professional beauty consultant.`;
 
-      // 2. FALLBACK TO GEMINI
-      if (geminiKey) {
+    const providers = [
+      { name: 'groq', key: groqKey, call: () => callGroq(groqKey!, systemPrompt, messages) },
+      { name: 'openrouter', key: openRouterKey, call: () => callOpenRouter(openRouterKey!, systemPrompt, messages) },
+      { name: 'gemini', key: geminiKey, call: () => callGemini(geminiKey!, systemPrompt, messages) }
+    ];
+
+    for (const provider of providers) {
+      if (provider.key) {
         try {
-          const genAI = new GoogleGenerativeAI(geminiKey);
-          const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-          
-          // Transform messages for Gemini (Ensuring correct role mapping)
-          const history = messages.slice(0, -1).map((m: any) => ({
-            role: m.role === "user" ? "user" : "model",
-            parts: [{ text: m.content }]
-          }));
-          const lastMessage = messages[messages.length - 1].content;
-
-          const chat = model.startChat({
-            history: history,
-            generationConfig: { maxOutputTokens: 1200 },
-          });
-
-          const result = await chat.sendMessage(`CONTEXT: ${systemPrompt}\n\nUSER_MESSAGE: ${lastMessage}`);
-          const response = await result.response;
-          const text = response.text();
-          if (text) return NextResponse.json({ text });
-        } catch (err: any) {
-          console.error("Gemini Chat Error:", err.message);
+          const text = await provider.call();
+          if (text && text.length > 2) {
+            return NextResponse.json({ text });
+          }
+        } catch (err) {
+          console.warn(`Provider ${provider.name} failed`);
         }
       }
-
-      return NextResponse.json({ message: "All AI providers are currently busy. Please try again in a moment." }, { status: 503 });
-    } catch (error: any) {
-      console.error("Global Chat API Error:", error);
-      return NextResponse.json({ message: error.message }, { status: 500 });
     }
-  } catch (outerError: any) {
-    return NextResponse.json({ message: "Request error" }, { status: 400 });
+
+    return NextResponse.json({ text: "I apologize, our connection is currently being updated to serve you better. Please try again in a few moments! ✨" });
+  } catch (error: any) {
+    return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }
