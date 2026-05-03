@@ -297,6 +297,47 @@ Example:
 - Human-like`
     : `Write a premium 4–6 sentence description.`;
 }
+// ---- SMART INTERNET RESEARCH ----
+
+async function searchProductInfo(productName: string, field: string): Promise<string> {
+  const apiKey = process.env.TAVILY_API_KEY;
+  if (!apiKey || !productName) return "";
+
+  const searchQuery = field === "ingredients"
+    ? `${productName} skincare ingredients list`
+    : field === "howToUse"
+    ? `${productName} skincare how to use application guide`
+    : `${productName} skincare product review benefits`;
+
+  try {
+    const response = await fetch("https://api.tavily.com/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        api_key: apiKey,
+        query: searchQuery,
+        search_depth: "advanced",
+        include_answer: true,
+        max_results: 5,
+      }),
+    });
+
+    if (!response.ok) return "";
+    const data = await response.json();
+
+    const parts: string[] = [];
+    if (data.answer) parts.push(`RESEARCH SUMMARY: ${data.answer}`);
+    if (data.results) {
+      for (const r of data.results) {
+        parts.push(`SOURCE [${r.title}]: ${r.content}`);
+      }
+    }
+    return parts.join("\n\n");
+  } catch {
+    return "";
+  }
+}
+
 // ---- MAIN HANDLER ----
 
 export async function POST(req: Request) {
@@ -311,6 +352,7 @@ export async function POST(req: Request) {
 
     const { name, category, field, customPrompt, language } = await req.json();
 
+    // 1. Smart URL scraping (if admin pastes a link)
     let browsingData = "";
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const foundUrls = customPrompt?.match(urlRegex);
@@ -318,11 +360,18 @@ export async function POST(req: Request) {
       browsingData = await fetchUrlContent(foundUrls[0]);
     }
 
+    // 2. Auto internet research for accurate product info
+    let researchData = "";
+    if (!browsingData) {
+      researchData = await searchProductInfo(name, field);
+    }
+
     const isBangla = language === "bn";
     const systemPrompt = buildSystemPrompt(isBangla);
     const formatGuide = buildFormatGuide(field, isBangla);
 
-    const userPrompt = `Product: "${name}"\nField: ${field}\n${browsingData ? `\nLink Data: ${browsingData}\n` : ""}${customPrompt ? `\nInstructions: ${customPrompt}\n` : ""}\nFORMAT: ${formatGuide}\n\nSTRICT REQUIREMENT: If this is for "ingredients", YOU MUST LIST AT LEAST 6 UNIQUE ACTIVE INGREDIENTS. NEVER provide a short or lazy list. Be exhaustive and professional. Output ONLY content.`;
+    const contextData = browsingData || researchData;
+    const userPrompt = `Product: "${name}"\nField: ${field}\n${contextData ? `\nRESEARCH DATA (use this for accuracy):\n${contextData}\n` : ""}${customPrompt ? `\nInstructions: ${customPrompt}\n` : ""}\nFORMAT: ${formatGuide}\n\nSTRICT REQUIREMENT: Use the RESEARCH DATA above to write accurate, factual content. If this is for "ingredients", YOU MUST LIST AT LEAST 6 UNIQUE ACTIVE INGREDIENTS based on real data. NEVER hallucinate or make up ingredients. Output ONLY content.`;
 
     const errors: string[] = [];
     const providers = isBangla
