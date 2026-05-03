@@ -81,9 +81,26 @@ export async function POST(req: Request) {
     const { messages } = await req.json();
     const { productList, aboutSummary, siteSummary } = await getSiteKnowledge();
 
+    const userMessages = messages.filter((m: any) => m.role === "user");
+    const isFirstMessage = userMessages.length <= 1;
+    const lastUserMsg = userMessages[userMessages.length - 1]?.content?.toLowerCase() || "";
+    const hasSalam = lastUserMsg.includes("salam") || lastUserMsg.includes("সালাম") || lastUserMsg.includes("আসসালামু");
+
+    let salamInstruction = "";
+    if (isFirstMessage) {
+      if (hasSalam) {
+        salamInstruction = `\n🤝 গ্রাহক সালাম দিয়েছেন। উত্তরের শুরুতে "ওয়ালাইকুম আসসালাম!" দিয়ে শুরু করুন। তারপর স্বাভাবিকভাবে কথা বলুন।`;
+      } else {
+        salamInstruction = `\n🤝 এটি গ্রাহকের প্রথম মেসেজ। উত্তরের শুরুতে "আসসালামু আলাইকুম! Aurea BD-তে আপনাকে স্বাগতম 🌸" দিয়ে শুরু করুন। তারপর স্বাভাবিকভাবে কথা বলুন।`;
+      }
+    } else {
+      salamInstruction = `\n🤝 এটি প্রথম মেসেজ নয়। সালাম বা স্বাগতম জানানোর দরকার নেই। সরাসরি উত্তর দিন।`;
+    }
+
     const systemPrompt = `আপনি Aurea BD-এর একজন অভিজ্ঞ প্রিমিয়াম স্কিনকেয়ার বিশেষজ্ঞ।
 
-⚠️ ভাষা: সবসময় প্রাকৃতিক বাংলায় উত্তর দিন। English-এ উত্তর দেওয়া নিষেধ। তবে পণ্যের নাম (যেমন: Axis-Y Serum, Japan Sakura) এবং ক্যাটাগরি (Face Wash, Toner, Serum, Cream) ইংরেজিতেই থাকবে।
+⚠️ ভাষা: সবসময় প্রাকৃতিক বাংলায় উত্তর দিন। English-এ উত্তর দেওয়া নিষেধ। তবে পণ্যের নাম এবং ক্যাটাগরি (Face Wash, Toner, Serum, Cream) ইংরেজিতেই থাকবে।
+${salamInstruction}
 
 পণ্য তালিকা:
 ${productList}
