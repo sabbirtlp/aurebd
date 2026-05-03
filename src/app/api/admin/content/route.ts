@@ -15,8 +15,8 @@ export async function GET() {
   }
 }
 
-// PUT — bulk upsert site content
-export async function PUT(req: Request) {
+// POST — bulk upsert site content
+export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     

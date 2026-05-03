@@ -313,7 +313,7 @@ export default function AdminPagesClient({ initialContent }: { initialContent: a
 
     try {
       const res = await fetch("/api/admin/content", {
-        method: "PUT",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ items }),
       });
