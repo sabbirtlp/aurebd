@@ -124,7 +124,7 @@ export async function POST(req: Request) {
     const groqKey = process.env.GROQ_API_KEY;
     const geminiKey = process.env.GEMINI_API_KEY;
     const openRouterKey = process.env.OPENROUTER_API_KEY;
-
+    const errors: string[] = [];
     const { productList, knowledgeSummary } = await getSiteKnowledge();
 
     const systemPrompt = `আপনি Aurea BD-এর একজন Premium Skincare Consultant। 
@@ -144,7 +144,7 @@ export async function POST(req: Request) {
 ${productList || "আমাদের শপে বিভিন্ন ক্যাটাগরির প্রিমিয়াম প্রোডাক্ট রয়েছে।"}
 
 SITE KNOWLEDGE:
-${knowledgeSummary.substring(0, 3000)}
+${knowledgeSummary.substring(0, 1500)}
 
 লক্ষ্য: আপনি একজন বিশেষজ্ঞের মতো গ্রাহকের ত্বকের সমস্যার সমাধান দিবেন, কোনো রোবটের মতো তথ্য দিবেন না।`;
 
@@ -161,14 +161,17 @@ ${knowledgeSummary.substring(0, 3000)}
           if (text && text.length > 2) {
             return NextResponse.json({ text });
           }
-        } catch (err) {
-          console.warn(`Provider ${provider.name} failed`);
+        } catch (err: any) {
+          console.error(`Chat Provider ${provider.name} failed:`, err.message);
+          errors.push(`${provider.name}: ${err.message}`);
         }
       }
     }
 
-    return NextResponse.json({ text: "I apologize, our connection is currently being updated to serve you better. Please try again in a few moments! ✨" });
+    console.error("All Chat Providers Failed:", errors);
+    return NextResponse.json({ text: "দুঃখিত, আমাদের সার্ভার এখন কিছুটা ব্যস্ত। দয়া করে কিছুক্ষণ পর আবার চেষ্টা করুন! আমরা আপনার সেবা দিতে সবসময় প্রস্তুত। ✨" });
   } catch (error: any) {
+    console.error("Global Chat Error:", error);
     return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }
