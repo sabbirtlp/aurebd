@@ -78,7 +78,7 @@ async function processAIResponse(text: string) {
   if (!text) return text;
   
   // Check if AI generated an order info block
-  const orderRegex = /\[ORDER_INFO:\s*(\{.*?\})\s*\]/s;
+  const orderRegex = /\[ORDER_INFO:\s*(\{[\s\S]*?\})\s*\]/;
   const match = text.match(orderRegex);
   
   if (match) {
@@ -159,19 +159,19 @@ export async function POST(req: Request) {
       salamInstruction = `\n🤝 এটি প্রথম মেসেজ নয়। সালাম বা স্বাগতম জানানোর দরকার নেই। সরাসরি উত্তর দিন।`;
     }
 
-    const systemPrompt = \`আপনি Aurea BD-এর একজন অভিজ্ঞ প্রিমিয়াম স্কিনকেয়ার বিশেষজ্ঞ।
+    const systemPrompt = `আপনি Aurea BD-এর একজন অভিজ্ঞ প্রিমিয়াম স্কিনকেয়ার বিশেষজ্ঞ।
 
 ⚠️ ভাষা: সবসময় প্রাকৃতিক বাংলায় উত্তর দিন। English-এ উত্তর দেওয়া নিষেধ। তবে পণ্যের নাম এবং ক্যাটাগরি (Face Wash, Toner, Serum, Cream) ইংরেজিতেই থাকবে।
-\${salamInstruction}
+${salamInstruction}
 
 পণ্য তালিকা:
-\${productList}
+${productList}
 
 Aurea BD সম্পর্কে (About Us):
-\${aboutSummary}
+${aboutSummary}
 
 সাইট তথ্য:
-\${siteSummary}
+${siteSummary}
 ঠিকানা: তিলকপুর, আক্কেলপুর, জয়পুরহাট।
 
 নিয়মাবলী:
@@ -183,7 +183,7 @@ Aurea BD সম্পর্কে (About Us):
 ৬. ⚠️ অটোরিকুয়েস্ট: যদি কাস্টমার তার মেসেজে কোনো প্রোডাক্টের নাম, তার নিজের নাম, ফোন নাম্বার এবং ঠিকানা (সবগুলো) দিয়ে থাকে, তবে আপনার উত্তরের একদম শেষে হুবহু এই ফরম্যাটে একটি JSON ব্লক যোগ করবেন:
 [ORDER_INFO: {"productName": "পণ্যের নাম", "fullName": "কাস্টমারের নাম", "phone": "ফোন নাম্বার", "address": "ঠিকানা"}]
 
-মনে রাখুন: আপনি সবসময় বাংলায় কথা বলবেন।\`;
+মনে রাখুন: আপনি সবসময় বাংলায় কথা বলবেন।`;
 
     const contextMessages = messages.filter((m: any) => m.content).slice(-6);
     const groqKey = process.env.GROQ_API_KEY;
