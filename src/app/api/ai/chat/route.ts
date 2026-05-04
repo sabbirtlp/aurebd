@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Product from "@/models/Product";
 import SiteContent from "@/models/SiteContent";
+import Order from "@/models/Order";
+import { sendAdminOrderNotification } from "@/lib/email";
 
 // --------------------
 // DATA FETCHERS
@@ -72,6 +74,66 @@ async function callProvider(url: string, apiKey: string, body: any, isOpenRouter
   }
 }
 
+async function processAIResponse(text: string) {
+  if (!text) return text;
+  
+  // Check if AI generated an order info block
+  const orderRegex = /\[ORDER_INFO:\s*(\{.*?\})\s*\]/s;
+  const match = text.match(orderRegex);
+  
+  if (match) {
+    try {
+      const orderData = JSON.parse(match[1]);
+      let product = await Product.findOne({ name: { $regex: new RegExp(orderData.productName, "i") } });
+      
+      if (!product) {
+        const nameParts = orderData.productName.split(' ')[0];
+        product = await Product.findOne({ name: { $regex: new RegExp(nameParts, "i") } });
+      }
+
+      if (product) {
+        // Create the order
+        const order = await Order.create({
+          items: [{
+            product: product._id,
+            name: product.name,
+            price: product.discountPrice || product.price,
+            quantity: 1,
+            image: product.image
+          }],
+          totalAmount: product.discountPrice || product.price,
+          shippingAddress: {
+            fullName: orderData.fullName,
+            address: orderData.address,
+            city: "Bangladesh",
+            phone: orderData.phone
+          },
+          paymentMethod: 'Cash on Delivery',
+          status: 'Pending'
+        });
+
+        // Send email notification
+        try {
+          await sendAdminOrderNotification(order);
+        } catch (e) {
+          console.error("Email notification failed for AI order:", e);
+        }
+
+        // Clean up text and add success message
+        text = text.replace(orderRegex, "").trim();
+        text += "\n\n✅ **আপনার অর্ডারটি সফলভাবে আমাদের সিস্টেমে এন্ট্রি করা হয়েছে!**\nখুব শীঘ্রই আমাদের একজন প্রতিনিধি আপনার সাথে যোগাযোগ করে অর্ডারটি কনফার্ম করবেন।";
+      } else {
+        text = text.replace(orderRegex, "").trim();
+      }
+    } catch (error) {
+      console.error("Order processing from AI failed:", error);
+      text = text.replace(orderRegex, "").trim();
+    }
+  }
+  
+  return text;
+}
+
 // --------------------
 // MAIN HANDLER
 // --------------------
@@ -97,29 +159,31 @@ export async function POST(req: Request) {
       salamInstruction = `\n🤝 এটি প্রথম মেসেজ নয়। সালাম বা স্বাগতম জানানোর দরকার নেই। সরাসরি উত্তর দিন।`;
     }
 
-    const systemPrompt = `আপনি Aurea BD-এর একজন অভিজ্ঞ প্রিমিয়াম স্কিনকেয়ার বিশেষজ্ঞ।
+    const systemPrompt = \`আপনি Aurea BD-এর একজন অভিজ্ঞ প্রিমিয়াম স্কিনকেয়ার বিশেষজ্ঞ।
 
 ⚠️ ভাষা: সবসময় প্রাকৃতিক বাংলায় উত্তর দিন। English-এ উত্তর দেওয়া নিষেধ। তবে পণ্যের নাম এবং ক্যাটাগরি (Face Wash, Toner, Serum, Cream) ইংরেজিতেই থাকবে।
-${salamInstruction}
+\${salamInstruction}
 
 পণ্য তালিকা:
-${productList}
+\${productList}
 
 Aurea BD সম্পর্কে (About Us):
-${aboutSummary}
+\${aboutSummary}
 
 সাইট তথ্য:
-${siteSummary}
+\${siteSummary}
 ঠিকানা: তিলকপুর, আক্কেলপুর, জয়পুরহাট।
 
 নিয়মাবলী:
 ১. উপরের পণ্য তালিকা, About Us এবং সাইট তথ্য ব্যবহার করে উত্তর দিন। কাল্পনিক তথ্য দেবেন না।
 ২. পণ্যের নাম ও ক্যাটাগরি ENGLISH-এ রাখুন।
 ৩. বাক্য সাবলীল, মার্জিত ও পেশাদার হবে। একই কথা বারবার বলবেন না।
-৪. যদি কাস্টমার কোনো প্রোডাক্ট কিনতে চাই তাহলেই শুধু ফোন নাম্বার, নাম , ঠিকানা ( গ্রাম , থানা , জেলা ) দিতে বলবেন ইনশাআল্লাহ আমরা দ্রুত পাঠানোর ব্যবস্থা করবো।"
+৪. যদি কাস্টমার কোনো প্রোডাক্ট কিনতে চায় তাহলেই প্রোডাক্ট এর নাম, ফোন নাম্বার, নাম , ঠিকানা ( গ্রাম , থানা , জেলা ) দিতে বলবেন ইনশাআল্লাহ আমরা দ্রুত পাঠানোর ব্যবস্থা করবো।
 ৫. তথ্য না থাকলে বিনয়ের সাথে জানান।
+৬. ⚠️ অটোরিকুয়েস্ট: যদি কাস্টমার তার মেসেজে কোনো প্রোডাক্টের নাম, তার নিজের নাম, ফোন নাম্বার এবং ঠিকানা (সবগুলো) দিয়ে থাকে, তবে আপনার উত্তরের একদম শেষে হুবহু এই ফরম্যাটে একটি JSON ব্লক যোগ করবেন:
+[ORDER_INFO: {"productName": "পণ্যের নাম", "fullName": "কাস্টমারের নাম", "phone": "ফোন নাম্বার", "address": "ঠিকানা"}]
 
-মনে রাখুন: আপনি সবসময় বাংলায় কথা বলবেন।`;
+মনে রাখুন: আপনি সবসময় বাংলায় কথা বলবেন।\`;
 
     const contextMessages = messages.filter((m: any) => m.content).slice(-6);
     const groqKey = process.env.GROQ_API_KEY;
@@ -132,14 +196,14 @@ ${siteSummary}
         messages: [{ role: "system", content: systemPrompt }, ...contextMessages],
         temperature: 0
       }, true);
-      if (res) return NextResponse.json({ text: res });
+      if (res) return NextResponse.json({ text: await processAIResponse(res) });
 
       res = await callProvider("https://openrouter.ai/api/v1/chat/completions", openRouterKey, {
         model: "openai/gpt-4o-mini",
         messages: [{ role: "system", content: systemPrompt }, ...contextMessages],
         temperature: 0
       }, true);
-      if (res) return NextResponse.json({ text: res });
+      if (res) return NextResponse.json({ text: await processAIResponse(res) });
     }
 
     // 2. Try Groq Llama 3.3 70B
@@ -149,7 +213,7 @@ ${siteSummary}
         messages: [{ role: "system", content: systemPrompt }, ...contextMessages],
         temperature: 0
       });
-      if (res) return NextResponse.json({ text: res });
+      if (res) return NextResponse.json({ text: await processAIResponse(res) });
     }
 
     return NextResponse.json({ text: "দুঃখিত, আমি এই মুহূর্তে সাড়া দিতে পারছি না।" });
