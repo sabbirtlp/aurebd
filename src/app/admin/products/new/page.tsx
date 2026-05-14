@@ -277,14 +277,10 @@ export default function NewProductPage() {
                   }} 
                 />
               </div>
-              <textarea
-                name="shortDescription"
+              <RichTextEditor
+                label=""
                 value={form.shortDescription}
-                onChange={handleChange}
-                className={styles.formInput}
-                rows={2}
-                placeholder="Catchy 2-sentence summary..."
-                style={{ resize: "vertical" }}
+                onChange={(val) => setForm({ ...form, shortDescription: val })}
               />
             </div>
 
@@ -298,15 +294,10 @@ export default function NewProductPage() {
                   onGenerate={(text) => setForm({ ...form, description: text })} 
                 />
               </div>
-              <textarea
-                name="description"
+              <RichTextEditor
+                label=""
                 value={form.description}
-                onChange={handleChange}
-                className={styles.formInput}
-                rows={4}
-                placeholder="Product description..."
-                required
-                style={{ resize: "vertical" }}
+                onChange={(val) => setForm({ ...form, description: val })}
               />
             </div>
           </div>
