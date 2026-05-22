@@ -20,6 +20,8 @@ interface ProductCardProps {
     stock: number;
     category?: string;
     slug?: string;
+    badgeText?: string;
+    showOriginalStamp?: boolean;
   };
   styles?: any; // kept for backwards compatibility but unused
 }
@@ -31,6 +33,10 @@ export default function ProductCard({ product }: ProductCardProps) {
   const { language } = useLanguageStore();
   const isBN = language === "bn";
   const localizedName = isBN && product.name_bn ? product.name_bn : product.name;
+
+  const discountPct = product.discountPrice && product.price > product.discountPrice
+    ? Math.round(((product.price - product.discountPrice) / product.price) * 100)
+    : 0;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -83,16 +89,47 @@ export default function ProductCard({ product }: ProductCardProps) {
           />
         </Link>
         
+        {/* Pill Badges Stacked on Top Left */}
+        <div className={styles.badgeContainer}>
+          {discountPct > 0 && (
+            <span className={`${styles.badge} ${styles.badgeDiscount}`}>
+              -{discountPct}%
+            </span>
+          )}
+          {product.badgeText && (
+            <span className={`${styles.badge} ${styles.badgeCustom}`}>
+              {product.badgeText}
+            </span>
+          )}
+        </div>
+
+        {/* 100% Original Badge where the heart was */}
+        {product.showOriginalStamp && (
+          <div className={styles.originalTextBadge}>
+            {isBN ? "অরিজিনাল" : "ORIGINAL"}
+          </div>
+        )}
+        
         {/* Out of Stock Badge */}
         {product.stock <= 0 && (
           <div className={styles.stockBadge}>
             {isBN ? 'স্টক নেই' : 'Out of Stock'}
           </div>
         )}
-        
-        {/* Wishlist Button */}
+      </div>
+      
+      {/* Action Row: Add to Cart & Wishlist Side by Side */}
+      <div className={styles.actionRow}>
         <button 
-          className={`${styles.wishlistBtn} ${isWishlisted ? styles.wishlisted : ""}`} 
+          className={styles.quickAddBtn} 
+          onClick={handleAddToCart}
+          disabled={product.stock <= 0}
+        >
+          {isBN ? 'কার্টে যোগ করুন' : 'Add to Cart'}
+        </button>
+        
+        <button 
+          className={`${styles.wishlistBtnBottom} ${isWishlisted ? styles.wishlisted : ""}`} 
           onClick={handleWishlist}
           aria-label="Add to wishlist"
         >
@@ -111,15 +148,6 @@ export default function ProductCard({ product }: ProductCardProps) {
           </svg>
         </button>
       </div>
-      
-      {/* Quick Add Button - Now always visible below image */}
-      <button 
-        className={styles.quickAddBtn} 
-        onClick={handleAddToCart}
-        disabled={product.stock <= 0}
-      >
-        {isBN ? 'কার্টে যোগ করুন' : 'Add to Cart'}
-      </button>
  
       <div className={styles.info}>
         <div className={styles.brand}>{product.category || "Aurea BD"}</div>

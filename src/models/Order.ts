@@ -15,8 +15,12 @@ const OrderSchema = new mongoose.Schema({
   shippingAddress: {
     fullName: { type: String, required: true },
     address: { type: String, required: true },
-    city: { type: String, required: true },
+    division: { type: String, required: true },
+    district: { type: String, required: true },
+    policeStation: { type: String },
+    city: { type: String },
     phone: { type: String, required: true },
+    email: { type: String },
   },
   paymentMethod: { type: String, default: 'Cash on Delivery' },
   status: { type: String, enum: ['Pending', 'Processing', 'Delivered'], default: 'Pending' },

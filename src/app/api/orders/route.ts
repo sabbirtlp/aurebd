@@ -19,21 +19,33 @@ export async function POST(req: Request) {
     if (session) {
       userId = session.user.id;
     } else {
-      // Guest Checkout - Create or find user
+      // Guest Checkout - Create or find user by email or phone
       const { fullName, email, phone } = shippingAddress;
-      if (!email) {
-        return NextResponse.json({ message: "Email is required for checkout" }, { status: 400 });
+      
+      if (!phone && !email) {
+        return NextResponse.json({ message: "ফোন নম্বর অথবা ইমেইল প্রয়োজন" }, { status: 400 });
       }
       
-      let user = await User.findOne({ email });
+      let user = null;
+      
+      // Try to find by email first, then by phone
+      if (email) {
+        user = await User.findOne({ email });
+      }
+      if (!user && phone) {
+        user = await User.findOne({ phone });
+      }
+      
       if (!user) {
         // Create a new user without a password (they can set it later)
-        user = await User.create({
+        const userData: any = {
           name: fullName,
-          email,
           phone,
-          role: 'user'
-        });
+          role: 'user',
+          email: email || `${phone || Date.now()}@aureabd.temp`
+        };
+        
+        user = await User.create(userData);
       }
       userId = user._id;
     }

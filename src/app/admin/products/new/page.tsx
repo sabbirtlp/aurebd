@@ -32,6 +32,8 @@ export default function NewProductPage() {
     ingredients: "",
     howToUse: "",
     shortDescription: "",
+    badgeText: "",
+    showOriginalStamp: false,
   });
 
   useEffect(() => {
@@ -232,7 +234,29 @@ export default function NewProductPage() {
                   />
                   <span>Gift Set</span>
                 </label>
+                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
+                  <input 
+                    type="checkbox" 
+                    name="showOriginalStamp" 
+                    checked={form.showOriginalStamp} 
+                    onChange={(e) => setForm({ ...form, showOriginalStamp: e.target.checked })}
+                    style={{ width: "1.2rem", height: "1.2rem" }}
+                  />
+                  <span>100% Original Stamp</span>
+                </label>
               </div>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Custom Badge Text (e.g. HOT, NEW)</label>
+              <input
+                type="text"
+                name="badgeText"
+                value={form.badgeText}
+                onChange={handleChange}
+                className={styles.formInput}
+                placeholder="e.g. HOT"
+              />
             </div>
 
             <div className={`${styles.formGroup} ${styles.formGroupFull}`}>

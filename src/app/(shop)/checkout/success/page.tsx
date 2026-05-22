@@ -41,8 +41,10 @@ function CheckoutSuccessContent() {
     doc.text("INVOICE", 150, 20);
     
     doc.setFontSize(10);
-    doc.text(`Order ID: ${orderData.id}`, 150, 26);
-    doc.text(`Date: ${new Date(orderData.date).toLocaleDateString()}`, 150, 32);
+    doc.setFontSize(10);
+    doc.text(`Order ID: ${orderData._id || orderData.id || "N/A"}`, 150, 26);
+    const orderDate = orderData.createdAt || orderData.date || new Date();
+    doc.text(`Date: ${new Date(orderDate).toLocaleDateString()}`, 150, 32);
 
     // Customer Info
     doc.setFontSize(12);
@@ -53,8 +55,9 @@ function CheckoutSuccessContent() {
     doc.setFontSize(10);
     doc.text(orderData.customer.fullName || "", 14, 52);
     doc.text(orderData.customer.address || "", 14, 58);
-    doc.text(`${orderData.customer.city || ""} ${orderData.customer.zip || ""}`, 14, 64);
-    doc.text(`Phone: ${orderData.customer.phone || ""}`, 14, 70);
+    doc.text(`${orderData.customer.policeStation || ""}, ${orderData.customer.district || ""}`, 14, 64);
+    doc.text(`${orderData.customer.division || ""}`, 14, 70);
+    doc.text(`Phone: ${orderData.customer.phone || ""}`, 14, 76);
 
     // Table
     const tableColumn = ["Product", "Qty", "Price", "Total"];
@@ -68,7 +71,7 @@ function CheckoutSuccessContent() {
     autoTable(doc, {
       head: [tableColumn],
       body: tableRows,
-      startY: 80,
+      startY: 86,
       theme: 'grid',
       headStyles: { fillColor: [203, 163, 148] },
     });
@@ -83,12 +86,12 @@ function CheckoutSuccessContent() {
     doc.setFont("helvetica", "bold");
     doc.text(`Total: BDT ${orderData.total}`, 140, finalY + 24);
 
-    doc.save(`Invoice_${orderData.id}.pdf`);
+    doc.save(`Invoice_${orderData._id || orderData.id || "order"}.pdf`);
   };
 
   if (!mounted) return null;
 
-  const orderId = searchParams.get('order_id') || orderData?.id || "Unknown";
+  const orderId = searchParams.get('order_id') || orderData?._id || orderData?.id || "Unknown";
 
   return (
     <main className={`container animate-fade-in ${styles.successPage}`}>

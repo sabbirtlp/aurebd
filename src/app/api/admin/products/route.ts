@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     const { 
       name, description, shortDescription, price, discountPrice, image, gallery, 
       stock, category, categories, isNewArrival, isBestSeller, isSpecialOffer, 
-      isGiftSet, ingredients, howToUse 
+      isGiftSet, ingredients, howToUse, badgeText, showOriginalStamp
     } = body;
 
     // Auto-generate slug from name
@@ -57,6 +57,8 @@ export async function POST(req: Request) {
       isGiftSet: Boolean(isGiftSet),
       ingredients,
       howToUse,
+      badgeText,
+      showOriginalStamp: Boolean(showOriginalStamp),
     });
 
     // Revalidate cache

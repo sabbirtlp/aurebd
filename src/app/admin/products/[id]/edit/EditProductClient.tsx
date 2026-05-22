@@ -50,6 +50,8 @@ export default function EditProductClient({ product }: { product: any }) {
     howToUse_bn: product.howToUse_bn || "",
     shortDescription: product.shortDescription || "",
     shortDescription_bn: product.shortDescription_bn || "",
+    badgeText: product.badgeText || "",
+    showOriginalStamp: product.showOriginalStamp || false,
   });
 
   useEffect(() => {
@@ -425,6 +427,26 @@ export default function EditProductClient({ product }: { product: any }) {
                   <span className={styles.slider}></span>
                 </div>
               </label>
+              <div className="border-t border-[var(--border)] my-2"></div>
+              <label className={styles.switchLabel}>
+                <span className="text-xs font-bold opacity-80">100% Original Stamp</span>
+                <div className={styles.switch}>
+                  <input type="checkbox" checked={form.showOriginalStamp} onChange={() => handleToggle('showOriginalStamp')} />
+                  <span className={styles.slider}></span>
+                </div>
+              </label>
+              <div className="mt-3">
+                <label className={styles.contentFieldLabel} style={{ fontSize: "11px", marginBottom: "4px" }}>Custom Badge Text (e.g. HOT, NEW)</label>
+                <input 
+                  type="text" 
+                  name="badgeText" 
+                  value={form.badgeText} 
+                  onChange={handleChange} 
+                  className={styles.formInput} 
+                  style={{ padding: "6px 12px", fontSize: "12px" }}
+                  placeholder="e.g. HOT" 
+                />
+              </div>
             </div>
           </section>
 

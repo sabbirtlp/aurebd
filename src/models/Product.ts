@@ -30,6 +30,8 @@ const ProductSchema = new mongoose.Schema({
   isGiftSet: { type: Boolean, default: false },
   discountPrice: { type: Number },
   soldCount: { type: Number, default: 0 },
+  badgeText: { type: String },
+  showOriginalStamp: { type: Boolean, default: false },
   reviews: [ReviewSchema],
   rating: { type: Number, default: 0 },
   numReviews: { type: Number, default: 0 },

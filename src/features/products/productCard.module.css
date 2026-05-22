@@ -214,3 +214,124 @@
     font-size: 1rem;
   }
 }
+
+/* Pill Badges */
+.badgeContainer {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: white;
+  border-radius: 9999px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  letter-spacing: 0.05em;
+  text-align: center;
+  width: fit-content;
+}
+
+.badgeDiscount {
+  background: #ff4d4d; /* Bright red discount badge */
+}
+
+.badgeCustom {
+  background: #ff4747; /* Bright red hot/custom badge */
+}
+
+/* Original Stamp Seal */
+.originalStampWrapper {
+  position: absolute;
+  top: 62px;
+  right: 6px;
+  width: 60px;
+  height: 60px;
+  z-index: 9;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(255, 71, 71, 0.2));
+  opacity: 0.9;
+}
+
+.originalStamp {
+  width: 100%;
+  height: 100%;
+  color: #ff4747; /* Match the red ink stamp color */
+  transform: rotate(-12deg);
+  transition: transform 0.5s ease;
+}
+
+.card:hover .originalStamp {
+  transform: rotate(-5deg) scale(1.05);
+}
+
+/* Action Row at the bottom of the card content */
+.actionRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  margin-top: 12px;
+  z-index: 5;
+}
+
+/* Override quickAddBtn margin inside actionRow */
+.actionRow .quickAddBtn {
+  margin-top: 0;
+  flex: 1;
+}
+
+/* Wishlist Button in the action row */
+.wishlistBtnBottom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--bg-color);
+  border: 1px solid var(--border);
+  color: var(--text-light);
+  cursor: pointer;
+  box-shadow: var(--nm-outer-raised-sm);
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.wishlistBtnBottom:hover {
+  color: var(--accent);
+  box-shadow: var(--nm-inner-pressed-sm);
+  transform: scale(0.95);
+}
+
+.wishlistBtnBottom.wishlisted {
+  color: var(--accent);
+  box-shadow: var(--nm-inner-pressed-sm);
+}
+
+/* Premium Gold Text Badge for Original Product Stamp */
+.originalTextBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: linear-gradient(135deg, #d4af37, #aa7c11);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 10;
+  box-shadow: 0 4px 8px rgba(170, 124, 17, 0.25);
+  pointer-events: none;
+}

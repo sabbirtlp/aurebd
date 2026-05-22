@@ -37,7 +37,8 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       name, name_bn, description, description_bn, shortDescription, shortDescription_bn, 
       price, discountPrice, image, gallery, 
       stock, category, categories, isNewArrival, isBestSeller, isSpecialOffer, 
-      isGiftSet, ingredients, ingredients_bn, howToUse, howToUse_bn 
+      isGiftSet, ingredients, ingredients_bn, howToUse, howToUse_bn,
+      badgeText, showOriginalStamp
     } = body;
 
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -61,6 +62,8 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
         ingredients_bn,
         howToUse,
         howToUse_bn,
+        badgeText,
+        showOriginalStamp: Boolean(showOriginalStamp),
       },
       { new: true }
     );

@@ -49,16 +49,19 @@ export const getFeaturedProducts = unstable_cache(
   { revalidate: 3600, tags: ["featured-products"] }
 );
 
+// Fields needed for the shop listing — excludes heavy base64 gallery, reviews, and long text
+const LISTING_FIELDS = "name name_bn slug price discountPrice image stock category categories isNewArrival isBestSeller isSpecialOffer isGiftSet soldCount badgeText showOriginalStamp rating numReviews shortDescription shortDescription_bn createdAt";
+
 async function _getProducts() {
   try {
     await dbConnect();
-    let products = await Product.find({}).lean();
+    let products = await Product.find({}).select(LISTING_FIELDS).lean();
     
     // Auto-seed if database is empty (common on first Vercel deploy)
     if (products.length === 0) {
       console.log("No products found, seeding database...");
       await seedDatabase();
-      products = await Product.find({}).lean();
+      products = await Product.find({}).select(LISTING_FIELDS).lean();
     }
     
     return JSON.parse(JSON.stringify(products));
@@ -68,11 +71,19 @@ async function _getProducts() {
   }
 }
 
-export const getProducts = unstable_cache(
-  _getProducts,
-  ["all-products"],
-  { revalidate: 3600, tags: ["all-products"] }
-);
+// Safe wrapper: if unstable_cache fails (e.g. payload >2MB), fall back to uncached
+export async function getProducts() {
+  try {
+    return await unstable_cache(
+      _getProducts,
+      ["all-products"],
+      { revalidate: 3600, tags: ["all-products"] }
+    )();
+  } catch (err) {
+    console.warn("unstable_cache failed for getProducts, falling back to direct query:", err);
+    return await _getProducts();
+  }
+}
 
 async function _getProductBySlug(slug: string) {
   try {
