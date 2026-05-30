@@ -24,7 +24,7 @@ export default function ReviewImageCarousel() {
 
   const fetchImages = useCallback(async () => {
     try {
-      const res = await fetch("/api/review-images");
+      const res = await fetch("/api/review-images", { cache: "no-store" });
       const data = await res.json();
       if (data.images && data.images.length > 0) {
         setImages(data.images);
@@ -48,10 +48,13 @@ export default function ReviewImageCarousel() {
     return () => window.removeEventListener("resize", handleResize);
   }, [fetchImages, handleResize]);
 
+  const isCentered = images.length <= visibleCount;
+  const dotsCount = Math.max(1, images.length - (window.innerWidth <= 640 ? 0 : visibleCount - 1));
+
   // Handle scroll events to update current page dot indicator
   const handleScroll = () => {
     if (!containerRef.current) return;
-    const { scrollLeft, clientWidth } = containerRef.current;
+    const { scrollLeft } = containerRef.current;
     
     // Find the actual rendered slide width
     const firstSlide = containerRef.current.firstElementChild as HTMLElement;
@@ -60,15 +63,13 @@ export default function ReviewImageCarousel() {
       const gap = parseFloat(style.gap || "0");
       const slideWidth = firstSlide.offsetWidth + gap;
       
-      const newIndex = Math.round(scrollLeft / slideWidth);
-      if (newIndex !== current && newIndex >= 0 && newIndex < images.length) {
+      const rawIndex = Math.round(scrollLeft / slideWidth);
+      const newIndex = Math.min(dotsCount - 1, Math.max(0, rawIndex));
+      if (newIndex !== current) {
         setCurrent(newIndex);
       }
     }
   };
-
-  const isCentered = images.length <= visibleCount;
-  const dotsCount = Math.max(1, images.length - (window.innerWidth <= 640 ? 0 : visibleCount - 1));
 
   const scrollTo = (index: number) => {
     if (!containerRef.current) return;

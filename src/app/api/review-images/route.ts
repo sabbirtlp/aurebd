@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import dbConnect from "@/lib/db";
 import ReviewImage from "@/models/ReviewImage";
 import { NextResponse } from "next/server";
