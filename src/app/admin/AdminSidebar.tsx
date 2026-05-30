@@ -23,6 +23,7 @@ const navGroups = [
     items: [
       { href: "/admin/pages", label: "Pages (CMS)", icon: "📝" },
       { href: "/admin/testimonials", label: "Testimonials", icon: "💬" },
+      { href: "/admin/review-images", label: "Review Images", icon: "📸" },
     ]
   }
 ];

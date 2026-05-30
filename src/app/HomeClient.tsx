@@ -14,6 +14,7 @@ import EditableImage from "@/components/cms/EditableImage";
 
 // Lazy load non-critical sections
 const TestimonialSlider = dynamic(() => import('@/components/shared/TestimonialSlider'), { ssr: false });
+const ReviewImageCarousel = dynamic(() => import('@/components/shared/ReviewImageCarousel'), { ssr: false });
 const Newsletter = dynamic(() => import('@/components/shared/Newsletter'), { ssr: false });
 
 const MotionLink = motion(Link);
@@ -362,6 +363,9 @@ export default function HomeClient({ products }: { products: any[] }) {
 
       {/* 7. TESTIMONIALS SECTION */}
       <TestimonialSlider />
+
+      {/* 7b. CUSTOMER REVIEW IMAGES */}
+      <ReviewImageCarousel />
 
       {/* 8. NEWSLETTER SECTION */}
       <Newsletter />
