@@ -14,13 +14,20 @@ const ReviewImage = mongoose.models.ReviewImage || mongoose.model('ReviewImage',
 async function main() {
   await mongoose.connect(MONGODB_URI);
   const images = await ReviewImage.find({});
-  console.log("Images length:", images.length);
-  for (let i = 0; i < images.length; i++) {
-    for (let j = i + 1; j < images.length; j++) {
-      const isSame = images[i].imageUrl === images[j].imageUrl;
-      console.log(`Image ${i} and Image ${j} are ${isSame ? 'IDENTICAL' : 'DIFFERENT'}`);
+  console.log("Total images before cleanup:", images.length);
+  
+  const seenUrls = new Set();
+  for (const img of images) {
+    if (seenUrls.has(img.imageUrl)) {
+      console.log(`Deleting duplicate image: id=${img._id}, order=${img.order}`);
+      await ReviewImage.deleteOne({ _id: img._id });
+    } else {
+      seenUrls.add(img.imageUrl);
     }
   }
+  
+  const remaining = await ReviewImage.find({});
+  console.log("Total images after cleanup:", remaining.length);
   await mongoose.disconnect();
 }
 

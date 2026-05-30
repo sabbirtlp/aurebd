@@ -13,7 +13,6 @@ import Editable from "@/components/cms/Editable";
 import EditableImage from "@/components/cms/EditableImage";
 
 // Lazy load non-critical sections
-const TestimonialSlider = dynamic(() => import('@/components/shared/TestimonialSlider'), { ssr: false });
 const ReviewImageCarousel = dynamic(() => import('@/components/shared/ReviewImageCarousel'), { ssr: false });
 const Newsletter = dynamic(() => import('@/components/shared/Newsletter'), { ssr: false });
 
@@ -361,10 +360,7 @@ export default function HomeClient({ products }: { products: any[] }) {
         </div>
       </section>
 
-      {/* 7. TESTIMONIALS SECTION */}
-      <TestimonialSlider />
-
-      {/* 7b. CUSTOMER REVIEW IMAGES */}
+      {/* 7. CUSTOMER REVIEW IMAGES */}
       <ReviewImageCarousel />
 
       {/* 8. NEWSLETTER SECTION */}

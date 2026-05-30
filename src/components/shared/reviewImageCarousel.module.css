@@ -22,22 +22,26 @@
 }
 
 .carousel {
-  display: block;
+  display: flex;
   width: 100%;
-  overflow: hidden;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  gap: var(--sp-4);
+  padding: var(--sp-2) var(--sp-2) var(--sp-4) var(--sp-2);
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
 }
 
-.track {
-  cursor: grab;
-}
-
-.track:active {
-  cursor: grabbing;
+.carousel::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 .slide {
-  flex-shrink: 0;
-  padding: var(--sp-2);
+  flex: 0 0 calc((100% - (var(--sp-4) * 2)) / 3);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  box-sizing: border-box;
 }
 
 .imageCard {
@@ -48,6 +52,7 @@
   overflow: hidden;
   cursor: pointer;
   transition: box-shadow 0.4s ease;
+  width: 100%;
 }
 
 .imageCard:hover {
@@ -114,6 +119,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: var(--bg-color);
 }
 
 .verifiedBadge {
@@ -293,8 +299,12 @@
   to { opacity: 1; }
 }
 
-/* Responsive */
+/* Responsive Styles */
 @media (max-width: 1024px) {
+  .slide {
+    flex: 0 0 calc((100% - var(--sp-4)) / 2);
+    scroll-snap-align: start;
+  }
   .imageCard {
     border-radius: 16px;
   }
@@ -307,42 +317,64 @@
   .section {
     padding: var(--sp-6) 0 var(--sp-2);
   }
+  
+  .container {
+    padding: 0 var(--sp-2);
+  }
+
   .subtitle {
     font-size: 0.9rem;
     margin-bottom: var(--sp-4);
   }
-  .slide {
-    padding: var(--sp-1) var(--sp-2);
+  
+  .carousel {
+    padding: var(--sp-2) var(--sp-4) var(--sp-4) var(--sp-4);
+    gap: var(--sp-3);
   }
+
+  .slide {
+    flex: 0 0 85%;
+    scroll-snap-align: center;
+  }
+
   .imageCard {
     border-radius: 16px;
   }
+
   .imageWrapper {
     border-radius: 16px 16px 0 0;
   }
+
   .cardFooter {
     padding: 10px 14px;
   }
+
   .verifiedBadge {
     font-size: 0.7rem;
   }
+
   .stars {
     font-size: 0.75rem;
   }
+
   .navBtn {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
   }
+
   .lightboxNav {
     width: 40px;
     height: 40px;
   }
+
   .lightboxPrev {
     left: 10px;
   }
+
   .lightboxNext {
     right: 10px;
   }
+
   .lightboxClose {
     top: 12px;
     right: 12px;
