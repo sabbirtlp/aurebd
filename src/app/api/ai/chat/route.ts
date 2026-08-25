@@ -3,6 +3,7 @@ import dbConnect from "@/lib/db";
 import Product from "@/models/Product";
 import SiteContent from "@/models/SiteContent";
 import Order from "@/models/Order";
+import User from "@/models/User";
 import { sendAdminOrderNotification } from "@/lib/email";
 
 // --------------------
@@ -83,46 +84,108 @@ async function processAIResponse(text: string) {
   
   if (match) {
     try {
+      await dbConnect();
       const orderData = JSON.parse(match[1]);
-      let product = await Product.findOne({ name: { $regex: new RegExp(orderData.productName, "i") } });
+      const rawProductName = (orderData.productName || "").trim();
+      const escapedName = rawProductName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+      let product = null;
+      if (escapedName) {
+        product = await Product.findOne({
+          $or: [
+            { name: { $regex: new RegExp(escapedName, "i") } },
+            { name_bn: { $regex: new RegExp(escapedName, "i") } }
+          ]
+        });
+      }
       
-      if (!product) {
-        const nameParts = orderData.productName.split(' ')[0];
-        product = await Product.findOne({ name: { $regex: new RegExp(nameParts, "i") } });
+      if (!product && rawProductName) {
+        const words = rawProductName.split(/\s+/).filter((w: string) => w.length > 2);
+        for (const word of words) {
+          const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          product = await Product.findOne({
+            $or: [
+              { name: { $regex: new RegExp(escapedWord, "i") } },
+              { name_bn: { $regex: new RegExp(escapedWord, "i") } }
+            ]
+          });
+          if (product) break;
+        }
       }
 
       if (product) {
+        // Link or create guest user
+        let userId = undefined;
+        const phone = orderData.phone?.toString()?.trim() || "";
+        const email = orderData.email?.toString()?.trim() || "";
+        const fullName = orderData.fullName?.toString()?.trim() || "Chat Customer";
+
+        if (phone || email) {
+          let user = null;
+          if (phone) user = await User.findOne({ phone });
+          if (!user && email) user = await User.findOne({ email });
+
+          if (!user) {
+            user = await User.create({
+              name: fullName,
+              phone: phone || undefined,
+              role: 'user',
+              email: email || `${phone || Date.now()}@aureabd.temp`
+            });
+          }
+          userId = user._id;
+        }
+
+        const price = product.discountPrice || product.price;
+
         // Create the order
         const order = await Order.create({
+          user: userId,
           items: [{
             product: product._id,
             name: product.name,
-            price: product.discountPrice || product.price,
+            price: price,
             quantity: 1,
-            image: product.image
+            image: product.image || ""
           }],
-          totalAmount: product.discountPrice || product.price,
+          totalAmount: price,
           shippingAddress: {
-            fullName: orderData.fullName,
-            address: orderData.address,
-            city: "Bangladesh",
-            phone: orderData.phone
+            fullName: fullName,
+            address: orderData.address || "N/A",
+            division: orderData.division || "N/A",
+            district: orderData.district || "N/A",
+            city: orderData.city || orderData.district || "Bangladesh",
+            phone: phone || "N/A",
+            email: email || undefined
           },
           paymentMethod: 'Cash on Delivery',
           status: 'Pending'
         });
 
-        // Send email notification
+        console.log("Chatbot Order Created Successfully:", order._id);
+
+        // Decrement stock and increment sold count
+        try {
+          await Product.findByIdAndUpdate(product._id, {
+            $inc: { stock: -1, soldCount: 1 }
+          });
+        } catch (stockErr) {
+          console.error("Failed to update stock:", stockErr);
+        }
+
+        // Send email notification to admin
         try {
           await sendAdminOrderNotification(order);
+          console.log("Admin notification email sent successfully for order:", order._id);
         } catch (e) {
           console.error("Email notification failed for AI order:", e);
         }
 
         // Clean up text and add success message
         text = text.replace(orderRegex, "").trim();
-        text += "\n\n✅ **আপনার অর্ডারটি সফলভাবে আমাদের সিস্টেমে এন্ট্রি করা হয়েছে!**\nখুব শীঘ্রই আমাদের একজন প্রতিনিধি আপনার সাথে যোগাযোগ করে অর্ডারটি কনফার্ম করবেন।";
+        text += `\n\n✅ **আপনার অর্ডারটি সফলভাবে আমাদের সিস্টেমে এন্ট্রি করা হয়েছে! (অর্ডার আইডি: #${order._id.toString().slice(-6).toUpperCase()})**\nখুব শীঘ্রই আমাদের একজন প্রতিনিধি আপনার সাথে যোগাযোগ করে ডেলিভারি কনফার্ম করবেন।`;
       } else {
+        console.warn("Product not found for chatbot orderData:", orderData);
         text = text.replace(orderRegex, "").trim();
       }
     } catch (error) {

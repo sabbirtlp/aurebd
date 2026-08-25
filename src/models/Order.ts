@@ -15,8 +15,8 @@ const OrderSchema = new mongoose.Schema({
   shippingAddress: {
     fullName: { type: String, required: true },
     address: { type: String, required: true },
-    division: { type: String, required: true },
-    district: { type: String, required: true },
+    division: { type: String, default: 'N/A' },
+    district: { type: String, default: 'N/A' },
     policeStation: { type: String },
     city: { type: String },
     phone: { type: String, required: true },
@@ -26,4 +26,9 @@ const OrderSchema = new mongoose.Schema({
   status: { type: String, enum: ['Pending', 'Processing', 'Delivered'], default: 'Pending' },
 }, { timestamps: true });
 
+if (process.env.NODE_ENV !== 'production') {
+  delete mongoose.models.Order;
+}
+
 export default mongoose.models.Order || mongoose.model('Order', OrderSchema);
+
