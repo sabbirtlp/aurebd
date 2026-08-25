@@ -87,8 +87,31 @@ async function processAIResponse(text: string) {
       await dbConnect();
       const orderData = JSON.parse(match[1]);
       const rawProductName = (orderData.productName || "").trim();
-      const escapedName = rawProductName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const rawFullName = (orderData.fullName || "").toString().trim();
+      const rawPhone = (orderData.phone || "").toString().trim();
+      const rawAddress = (orderData.address || "").toString().trim();
+      const rawEmail = (orderData.email || "").toString().trim();
 
+      const cleanPhoneDigits = rawPhone.replace(/[^0-9]/g, "");
+      const hasValidName = rawFullName && rawFullName.toLowerCase() !== "n/a" && rawFullName.toLowerCase() !== "chat customer" && rawFullName.length >= 2;
+      const hasValidPhone = rawPhone && cleanPhoneDigits.length >= 10;
+      const hasValidAddress = rawAddress && rawAddress.toLowerCase() !== "n/a" && rawAddress.length >= 4;
+
+      // STRICT VALIDATION: Cannot place order without valid Name, Phone, and Address
+      if (!hasValidName || !hasValidPhone || !hasValidAddress) {
+        console.warn("Blocked order due to missing customer details:", { rawFullName, rawPhone, rawAddress });
+        text = text.replace(orderRegex, "").trim();
+
+        const missingFields: string[] = [];
+        if (!hasValidName) missingFields.push("আপনার সম্পূর্ণ নাম");
+        if (!hasValidPhone) missingFields.push("সচল মোবাইল নাম্বার");
+        if (!hasValidAddress) missingFields.push("সম্পূর্ণ ডেলিভারি ঠিকানা (গ্রাম/রোড, থানা ও জেলা)");
+
+        text += `\n\n📌 **অর্ডারটি সফলভাবে কনফার্ম করতে অনুগ্রহ করে বাকি তথ্যগুলো দিন:**\n${missingFields.map(f => `👉 ${f}`).join("\n")}`;
+        return text;
+      }
+
+      const escapedName = rawProductName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       let product = null;
       if (escapedName) {
         product = await Product.findOne({
@@ -116,9 +139,9 @@ async function processAIResponse(text: string) {
       if (product) {
         // Link or create guest user
         let userId = undefined;
-        const phone = orderData.phone?.toString()?.trim() || "";
-        const email = orderData.email?.toString()?.trim() || "";
-        const fullName = orderData.fullName?.toString()?.trim() || "Chat Customer";
+        const phone = rawPhone;
+        const email = rawEmail;
+        const fullName = rawFullName;
 
         if (phone || email) {
           let user = null;
@@ -151,11 +174,11 @@ async function processAIResponse(text: string) {
           totalAmount: price,
           shippingAddress: {
             fullName: fullName,
-            address: orderData.address || "N/A",
+            address: rawAddress,
             division: orderData.division || "N/A",
             district: orderData.district || "N/A",
             city: orderData.city || orderData.district || "Bangladesh",
-            phone: phone || "N/A",
+            phone: phone,
             email: email || undefined
           },
           paymentMethod: 'Cash on Delivery',
@@ -222,7 +245,7 @@ export async function POST(req: Request) {
       salamInstruction = `\n🤝 এটি প্রথম মেসেজ নয়। সালাম বা স্বাগতম জানানোর দরকার নেই। সরাসরি উত্তর দিন।`;
     }
 
-    const systemPrompt = `আপনি Aurea BD-এর একজন অভিজ্ঞ প্রিমিয়াম স্কিনকেয়ার বিশেষজ্ঞ।
+    const systemPrompt = `আপনি Aurea BD-এর একজন অভিজ্ঞ প্রিমিয়াম স্কিনকেয়ার বিশেষজ্ঞ ও কনসাল্টেন্ট।
 
 ⚠️ ভাষা: সবসময় প্রাকৃতিক বাংলায় উত্তর দিন। English-এ উত্তর দেওয়া নিষেধ। তবে পণ্যের নাম এবং ক্যাটাগরি (Face Wash, Toner, Serum, Cream) ইংরেজিতেই থাকবে।
 ${salamInstruction}
@@ -240,11 +263,18 @@ ${siteSummary}
 নিয়মাবলী:
 ১. উপরের পণ্য তালিকা, About Us এবং সাইট তথ্য ব্যবহার করে উত্তর দিন। কাল্পনিক তথ্য দেবেন না।
 ২. পণ্যের নাম ও ক্যাটাগরি ENGLISH-এ রাখুন।
-৩. বাক্য সাবলীল, মার্জিত ও পেশাদার হবে। একই কথা বারবার বলবেন না।
-৪. যদি কাস্টমার কোনো প্রোডাক্ট কিনতে চায় তাহলেই প্রোডাক্ট এর নাম, ফোন নাম্বার, নাম , ঠিকানা ( গ্রাম , থানা , জেলা ) দিতে বলবেন ইনশাআল্লাহ আমরা দ্রুত পাঠানোর ব্যবস্থা করবো।
-৫. তথ্য না থাকলে বিনয়ের সাথে জানান।
-৬. ⚠️ অটোরিকুয়েস্ট: যদি কাস্টমার তার মেসেজে কোনো প্রোডাক্টের নাম, তার নিজের নাম, ফোন নাম্বার এবং ঠিকানা (সবগুলো) দিয়ে থাকে, তবে আপনার উত্তরের একদম শেষে হুবহু এই ফরম্যাটে একটি JSON ব্লক যোগ করবেন:
+৩. বাক্য সাবলীল, মার্জিত ও পেশাদার হবে।
+৪. 🛑 **অর্ডার সংক্রান্ত গুরুত্বপূর্ণ নিয়ম (আবশ্যক)**:
+   - কাস্টমার যদি কোনো পণ্য অর্ডার করতে চায় বা কিনতে চায়, তবে অর্ডার সম্পন্ন করার জন্য অবশ্যই এই ৩টি তথ্য আবশ্যক:
+     ১. কাস্টমারের সম্পূর্ণ নাম
+     ২. সচল মোবাইল নাম্বার (১১ ডিজিট)
+     ৩. সম্পূর্ণ ডেলিভারি ঠিকানা (রোড/গ্রাম, থানা ও জেলা)
+   - যদি কাস্টমার এই ৩টি তথ্যের যেকোনো একটিও না দেয় (বা আংশিক তথ্য দেয়), তবে অর্ডার চূড়ান্ত করবেন না। তাকে বিনয়ের সাথে অনুপস্থিত তথ্যগুলো দিতে বলুন।
+৫. ⚠️ **অটোরিকুয়েস্ট রুল (খুব সতর্ক)**:
+   - কাস্টমার যদি নির্দিষ্ট পণ্যের নাম, তার নিজের নাম, মোবাইল নাম্বার এবং সম্পূর্ণ ঠিকানা — এই **৪টি তথ্যই স্পষ্টভাবে প্রদান করে**, কেবল তখনই এবং শুধুমাত্র তখনই আপনার উত্তরের একদম শেষে নিচের JSON ব্লকটি যুক্ত করবেন:
 [ORDER_INFO: {"productName": "পণ্যের নাম", "fullName": "কাস্টমারের নাম", "phone": "ফোন নাম্বার", "address": "ঠিকানা"}]
+   - **সতর্কতা**: নাম, ফোন বা ঠিকানার যেকোনো একটি মিসিং থাকলে কোনোভাবেই [ORDER_INFO: ...] ব্লক যোগ করবেন না!
+৬. তথ্য না থাকলে বিনয়ের সাথে জানান।
 
 মনে রাখুন: আপনি সবসময় বাংলায় কথা বলবেন।`;
 
